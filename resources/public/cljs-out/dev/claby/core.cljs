@@ -3,7 +3,7 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]))
 
-(println "This text is printed from src/claby/core.cljs. Go ahead and edit it and see reloading in action.")
+(println "This text is printed from src/claby/core.cljs. Go ahead and edit it and see reloading in action. Ok.")
 
 (defn multiply [a b] (* a b))
 

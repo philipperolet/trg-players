@@ -1,8 +1,5 @@
-# Todo
-- Hello world in a browser
-
-
-# Backlog
+# Project Management
+## Backlog
 - turn matrix into HTML board
 - react component with matrix
 - up action
@@ -12,3 +9,7 @@
 - score counter
 
 - Create and display a nice board from static data
+
+## Done
+- Hello world in a browser
+

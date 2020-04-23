@@ -3,7 +3,7 @@ goog.provide('claby.core');
 goog.require('cljs.core');
 goog.require('goog.dom');
 goog.require('reagent.core');
-cljs.core.println.call(null,"This text is printed from src/claby/core.cljs. Go ahead and edit it and see reloading in action.");
+cljs.core.println.call(null,"This text is printed from src/claby/core.cljs. Go ahead and edit it and see reloading in action. Ok.");
 claby.core.multiply = (function claby$core$multiply(a,b){
 return (a * b);
 });
