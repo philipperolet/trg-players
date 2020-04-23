@@ -1,6 +1,6 @@
-# claby
+# Claby
 
-FIXME: Write a one-line description of your library/project.
+A simple game of eating fruits in a maze.
 
 ## Overview
 
@@ -32,6 +32,6 @@ To create a production build run:
 
 ## License
 
-Copyright © 2018 FIXME
+Copyright © 2018 Philippe Rolet
 
-Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
+Distributed under the Apache Public License 2.0
