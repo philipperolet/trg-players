@@ -9,7 +9,7 @@
   'score' is the total number of fruit eaten."
   (:require [clojure.spec.alpha :as s]))
 
-(def game-size 30)
+(def game-size 3)
 
 ;; Game state specs
 
@@ -24,6 +24,5 @@
 (defn create-game
   "Creates an empty game"
   []
-  (println x "Hello, World!"))
-
-(foo 3)
+  {::game-board (vec (repeat game-size (vec (repeat game-size :empty))))
+   ::player-position [0 0]})

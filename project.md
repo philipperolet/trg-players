@@ -1,9 +1,8 @@
 # Project Management
-- allow magit auth with 2fa outside emacs
-- create game
+- turn matrix into HTML board
 
 ## Backlog
-- turn matrix into HTML board
+
 - react component with matrix
 - up action
 - l,r,d action
@@ -14,5 +13,8 @@
 - Create and display a nice board from static data
 
 ## Done
+- setup testing workflow
+- create game with empty board, working test
+- allow magit auth with 2fa outside emacs
 - Hello world in a browser
 
