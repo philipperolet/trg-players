@@ -1,7 +1,8 @@
-(ns claby.core-test
-  (:require [clojure.test :refer :all]
-            [claby.core :refer :all]))
+(ns claby.game-test
+  (:require [clojure.test :refer [testing deftest is]]
+            [clojure.spec.alpha :as s]
+            [claby.game :refer [create-game]]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(deftest create-game-test
+  (testing "Creation of board"
+    (is (s/valid? ::game-board (create-game)))))
