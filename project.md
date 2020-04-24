@@ -1,4 +1,6 @@
 # Project Management
+- allow magit auth with 2fa outside emacs
+- create game
 
 ## Backlog
 - turn matrix into HTML board
