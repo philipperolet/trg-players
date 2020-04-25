@@ -7,22 +7,27 @@
 
 (println "Top of claby.core.")
   
-(s/fdef get-html-from-state
+(s/fdef get-html-for-state
   :args ::g/game-state
   :ret   (s/and vector?
                 #(= (first %) :table)))
 
-(defn- get-html-from-line
-  "Generates html for a game board row given row index, row and player position"
-  [index row position]
-  (->> row
-       (map-indexed ; for each cell of the row
-        #(vector
-          (keyword (str "td." (name %2) (if (= position [index %1]) ".player")))))
+(defn- get-html-for-cell
+  "Generates html for a game board cell"
+  [cell-index cell player-position]
+  (-> (str "td." (name cell) (if (= player-position cell-index) ".player"))
+      keyword
+      vector))
+
+(defn- get-html-for-line
+  "Generates html for a game board row"
+  [row-index row player-position]
+  (->> row ; for each cell of the row
+       (map-indexed #(get-html-for-cell [row-index %1] %2 player-position))
        (concat [:tr])
        vec))
 
-(defn get-html-from-state
+(defn get-html-for-state
   "Given a game state, generates the (reagent) html to render it.
 
   E.g. for a game board [[:empty :empty] [:wall :fruit]] with player
@@ -31,7 +36,7 @@
   [state]
   (let [{board ::g/game-board position ::g/player-position} state]
     (->> board ; for each row of the board
-         (map-indexed #(get-html-from-line %1 %2 position))
+         (map-indexed #(get-html-for-line %1 %2 position))
          (concat [:table])
          vec)))
 

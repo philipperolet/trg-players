@@ -7,9 +7,9 @@
      [claby.game :as g]
      [claby.core :as c]))
 
-(deftest get-html-from-state-t
+(deftest get-html-for-state-t
   (testing "Correct specs"
-    (is (= nil (-> (st/check `c/get-html-from-state)
+    (is (= nil (-> (st/check `c/get-html-for-state)
                    first
                    st/abbrev-result
                    (#(if (:failure %) (:failure %) nil))))))
@@ -18,7 +18,7 @@
             [:tr [:td.empty] [:td.empty] [:td.wall]]
             [:tr [:td.empty] [:td.fruit.player] [:td.empty]]
             [:tr [:td.empty] [:td.empty] [:td.empty]]]
-           (c/get-html-from-state
+           (c/get-html-for-state
             {::g/game-board [[:empty :empty :wall]
                              [:empty :fruit :empty]
                              [:empty :empty :empty]]

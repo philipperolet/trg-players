@@ -1,9 +1,7 @@
 # Project Management
-- refactor html-gen code to limit arg nb & add gen-html-cell
+- react component showing the state
 
 ## Backlog
-
-- react component with matrix
 - up action
 - l,r,d action
 - wall capability
@@ -13,6 +11,7 @@
 - Create and display a nice board from static data
 
 ## Done
+- refactor html-gen code to limit arg nb & add gen-html-cell
 - turn matrix into HTML board
 - setup testing workflow
 - create game with empty board, working test
