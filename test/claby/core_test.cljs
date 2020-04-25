@@ -13,11 +13,22 @@
                    first
                    st/abbrev-result
                    (#(if (:failure %) (:failure %) nil))))))
+  
   (testing "Converts appropriately a board to reagent html"
     (is (= [:table
-            [:tr [:td.empty] [:td.empty] [:td.wall]]
-            [:tr [:td.empty] [:td.fruit.player] [:td.empty]]
-            [:tr [:td.empty] [:td.empty] [:td.empty]]]
+            [:tbody
+             [:tr {:key "claby-0"}
+              [:td.empty {:key "claby-0-0"}]
+              [:td.empty {:key "claby-0-1"}]
+              [:td.wall {:key "claby-0-2"}]]
+             [:tr {:key "claby-1"}
+              [:td.empty {:key "claby-1-0"}]
+              [:td.fruit.player {:key "claby-1-1"}]
+              [:td.empty {:key "claby-1-2"}]]
+             [:tr {:key "claby-2"}
+              [:td.empty {:key "claby-2-0"}]
+              [:td.empty {:key "claby-2-1"}]
+              [:td.empty {:key "claby-2-2"}]]]]
            (c/get-html-for-state
             {::g/game-board [[:empty :empty :wall]
                              [:empty :fruit :empty]

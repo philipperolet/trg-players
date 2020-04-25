@@ -1,8 +1,7 @@
 # Project Management
-- react component showing the state
+- up action
 
 ## Backlog
-- up action
 - l,r,d action
 - wall capability
 - eat action
@@ -11,6 +10,7 @@
 - Create and display a nice board from static data
 
 ## Done
+- react component showing the state (incl. adding keys to table elts)
 - refactor html-gen code to limit arg nb & add gen-html-cell
 - turn matrix into HTML board
 - setup testing workflow

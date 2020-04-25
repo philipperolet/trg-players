@@ -17,14 +17,15 @@
   [cell-index cell player-position]
   (-> (str "td." (name cell) (if (= player-position cell-index) ".player"))
       keyword
-      vector))
+      vector
+      (conj {:key (str "claby-" (cell-index 0) "-" (cell-index 1))})))
 
 (defn- get-html-for-line
   "Generates html for a game board row"
   [row-index row player-position]
   (->> row ; for each cell of the row
        (map-indexed #(get-html-for-cell [row-index %1] %2 player-position))
-       (concat [:tr])
+       (concat [:tr {:key (str "claby-" row-index)}])
        vec))
 
 (defn get-html-for-state
@@ -35,10 +36,11 @@
   [:table [:tr [:td.empty] [:td.empty.player]] [:tr [:td.wall] [:td.fruit]]]"
   [state]
   (let [{board ::g/game-board position ::g/player-position} state]
-    (->> board ; for each row of the board
+    (->> board
          (map-indexed #(get-html-for-line %1 %2 position))
-         (concat [:table])
-         vec)))
+         (concat [:tbody])
+         vec
+         (vector :table))))
 
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "Hello world!"}))
@@ -49,7 +51,8 @@
 (defn hello-world []
   [:div
    [:h1 (:text @app-state)]
-   [:h3 "Claby world."]])
+   [:h3 "Claby world."]
+   [:div (get-html-for-state (g/create-game))]])
 
 (defn mount [el]
   (reagent/render-component [hello-world] el))
