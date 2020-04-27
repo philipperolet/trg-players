@@ -46,7 +46,9 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:text "Claby ?!"}))
-(defonce game-state (atom (g/create-game)))
+
+(defonce game-size 30)
+(defonce game-state (atom (g/create-game game-size)))
 
 (defn move-player
   "Moves player on the board by changing player-position"

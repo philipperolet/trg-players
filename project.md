@@ -1,5 +1,4 @@
 # Project Management
-- make game size small for tests
 - up action
 - l,r,d action
 - test all specs once in core
@@ -14,6 +13,7 @@
 
 
 ## Done
+- remove game size from specs, put it as arg of game creation
 - react component showing the state (incl. adding keys to table elts)
 - refactor html-gen code to limit arg nb & add gen-html-cell
 - turn matrix into HTML board
