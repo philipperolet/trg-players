@@ -4,7 +4,7 @@
   'maze' is a matrix of elements, either empty terrain,
   wall, or fruit.
 
-  'position' is the index (line, col) of the player on the maze
+  'player-position' is the index (line, col) of the player on the maze
   
   'score' is the total number of fruit eaten."
   (:require [clojure.spec.alpha :as s]))
@@ -21,6 +21,9 @@
 
 (s/def ::game-state (s/keys :req [::game-board ::player-position]))
 
+(s/fdef create-game
+  :ret ::game-state)
+
 (defn create-game
   "Creates an empty game with player in upper left corner and walls & fruits south."
   []
@@ -30,4 +33,12 @@
        (conj (vec (repeat game-size :fruit)))
        (conj (vec (repeat game-size :wall))))})
       
+;;;
+;;; Player movement
+;;;
 
+(s/fdef move-player
+  :args (s/cat :game-state ::game-state
+               :direction #{:up :right :down :left})
+
+  :ret ::game-state)

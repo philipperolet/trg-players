@@ -5,8 +5,10 @@
    [claby.game :as g]
    [reagent.core :as reagent :refer [atom]]))
 
-(println "Top of claby.core.")
-  
+;;;
+;;; Conversion of game state to HTML
+;;; 
+
 (s/fdef get-html-for-state
   :args ::g/game-state
   :ret   (s/and vector?
@@ -43,7 +45,13 @@
          (vector :table))))
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:text "Hello world!"}))
+(defonce app-state (atom {:text "Claby ?!"}))
+(defonce game-state (atom (g/create-game)))
+
+(defn move-player
+  "Moves player on the board by changing player-position"
+  [e]
+  (swap! game-state assoc ::g/player-position (vec (map inc (@game-state ::g/player-position)))))
 
 (defn get-app-element []
   (gdom/getElement "app"))
@@ -51,10 +59,11 @@
 (defn hello-world []
   [:div
    [:h1 (:text @app-state)]
-   [:h3 "Claby world."]
-   [:div (get-html-for-state (g/create-game))]])
+   [:h2 (str (@game-state ::g/player-position))]
+   [:div.board (get-html-for-state @game-state)]])
 
 (defn mount [el]
+  (.addEventListener js/window "keydown" move-player)
   (reagent/render-component [hello-world] el))
 
 (defn mount-app-element []

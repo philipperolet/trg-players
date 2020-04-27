@@ -1,13 +1,17 @@
 # Project Management
+- make game size small for tests
 - up action
+- l,r,d action
+- test all specs once in core
+- instrument functions during testing & dev
 
 ## Backlog
-- l,r,d action
+
 - wall capability
+- add walls & fruits with clicks
 - eat action
 - score counter
 
-- Create and display a nice board from static data
 
 ## Done
 - react component showing the state (incl. adding keys to table elts)
