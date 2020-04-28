@@ -1,16 +1,17 @@
 (ns claby.game
   "The game is about eating fruits in a maze.
 
-  'maze' is a matrix of elements, either empty terrain,
+  'game-board' is a matrix of elements, either empty terrain,
   wall, or fruit.
 
-  'player-position' is the index (line, col) of the player on the maze
-  
-  'score' is the total number of fruit eaten."
+  'player-position' is the index (line, col) of the player on the maze"  
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]))
 
-;; Game state specs
+;;;
+;;; Game state specs
+;;;
+
 (defonce min-board-size 5)
 (defonce max-board-size 100)
 (defonce max-test-board-size 10)
@@ -55,10 +56,15 @@
                      #(< ((% ::player-position) 0) (count (::game-board %)))
                      #(< ((% ::player-position) 1) (count (::game-board %))))
     #(game-state-generator (generate-test-board-size))))
-    
+
+;;;
+;;; Game creation
+;;;
+
 (s/fdef create-game
-  :args ::board-size
-  :ret ::game-state)
+  :args (s/cat :size ::board-size)
+  :ret ::game-state
+  :fn #(= (-> % :args :size) (-> % :ret ::game-board count)))
 
 (defn create-game
   "Creates an empty game with player in upper left corner and walls & fruits south."
@@ -68,13 +74,13 @@
    (-> (vec (repeat (- game-size 2) (vec (repeat game-size :empty))))
        (conj (vec (repeat game-size :fruit)))
        (conj (vec (repeat game-size :wall))))})
-      
+
 ;;;
 ;;; Player movement
 ;;;
 
-(s/fdef move-player
+(def sda "(s/fdef move-player
   :args (s/cat :game-state ::game-state
                :direction #{:up :right :down :left})
 
-  :ret ::game-state)
+  :ret ::game-state)")

@@ -7,6 +7,14 @@
      [claby.game :as g]
      [claby.core :as c]))
 
+(deftest test-all-specs
+  (is (= () (->> (st/check)
+                  (map #(select-keys (st/abbrev-result %) [:failure :sym]))
+                  (remove #(not (:sym %)))
+                  ;; if spec conformance test failed, returns failure data 
+                  (filter #(:failure %))))))
+
+
 (deftest get-html-for-state-t
   (testing "Correct specs"
     (is (= nil (-> (st/check `c/get-html-for-state)

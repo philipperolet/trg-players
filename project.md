@@ -1,7 +1,6 @@
 # Project Management
 - up action
 - l,r,d action
-- test all specs once in core
 - instrument functions during testing & dev
 
 ## Backlog
@@ -13,6 +12,7 @@
 
 
 ## Done
+- test all specs once in core
 - remove game size from specs, put it as arg of game creation
 - react component showing the state (incl. adding keys to table elts)
 - refactor html-gen code to limit arg nb & add gen-html-cell

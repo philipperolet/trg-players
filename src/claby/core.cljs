@@ -10,9 +10,9 @@
 ;;; 
 
 (s/fdef get-html-for-state
-  :args ::g/game-state
-  :ret   (s/and vector?
-                #(= (first %) :table)))
+  :args (s/cat :state ::g/game-state)
+  :ret  (s/and vector?
+               #(= (first %) :table)))
 
 (defn- get-html-for-cell
   "Generates html for a game board cell"
