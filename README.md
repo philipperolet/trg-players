@@ -4,7 +4,13 @@ A simple game of eating fruits in a maze.
 
 ## Overview
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+### Requirements ###
+The project uses Leiningen. See project.clj for requirements / dependencies and which version of what you need to install.
+
+### Use ###
+- Install by cloning this rep.
+- Run with ``lein fig:build``
+Move the player with arrow keys, or e - d - s - f keys
 
 ## Development
 
@@ -32,6 +38,6 @@ To create a production build run:
 
 ## License
 
-Copyright © 2018 Philippe Rolet
+Copyright © 2020 Philippe Rolet
 
 Distributed under the Apache Public License 2.0
