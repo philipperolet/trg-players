@@ -79,8 +79,18 @@
 ;;; Player movement
 ;;;
 
-(def sda "(s/fdef move-player
-  :args (s/cat :game-state ::game-state
+(s/fdef move-player
+  :args (s/cat :state ::game-state
                :direction #{:up :right :down :left})
 
-  :ret ::game-state)")
+  :ret ::game-state)
+
+(defn move-player
+  "Moves player according to provided direction on given state"
+  [state direction]
+  (->> (case direction :up [-1 0] :right [0 1] :down [1 0] :left [0 -1])
+       ;; add direction to player position modulo size of board
+       (map #(mod (+ %1 %2) (-> state ::game-board count)) (::player-position state))
+       vec
+       (assoc state ::player-position)))
+

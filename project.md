@@ -1,17 +1,16 @@
 # Project Management
-- up action
-- l,r,d action
 - instrument functions during testing & dev
+- wall capability
 
 ## Backlog
-
-- wall capability
-- add walls & fruits with clicks
-- eat action
+- eat capability
 - score counter
-
+- add walls & fruits with clicks
+- make it beautiful
 
 ## Done
+- up action
+- l,r,d action
 - test all specs once in core
 - remove game size from specs, put it as arg of game creation
 - react component showing the state (incl. adding keys to table elts)
