@@ -1,6 +1,8 @@
 # Project Management
+- prevent player from existing on wall on the board in specs
+	
 - instrument functions during testing & dev
-- wall capability
+
 
 ## Backlog
 - eat capability
@@ -9,6 +11,7 @@
 - make it beautiful
 
 ## Done
+- wall capabilities and tests
 - up action
 - l,r,d action
 - test all specs once in core

@@ -69,7 +69,7 @@
 (defn create-game
   "Creates an empty game with player in upper left corner and walls & fruits south."
   [game-size]
-  {::player-position [1 1]
+  {::player-position [0 0]
    ::game-board
    (-> (vec (repeat (- game-size 2) (vec (repeat game-size :empty))))
        (conj (vec (repeat game-size :fruit)))
@@ -86,11 +86,21 @@
   :ret ::game-state)
 
 (defn move-player
-  "Moves player according to provided direction on given state"
-  [state direction]
+  "Moves player according to provided direction on given state: returns
+  state with updated player-position and board."
+  [{:keys [::game-board ::player-position], :as state} direction]
   (->> (case direction :up [-1 0] :right [0 1] :down [1 0] :left [0 -1])
-       ;; add direction to player position modulo size of board
-       (map #(mod (+ %1 %2) (-> state ::game-board count)) (::player-position state))
-       vec
-       (assoc state ::player-position)))
 
+       ;; add direction to player position modulo size of board
+       (map #(mod (+ %1 %2) (count game-board)) player-position)
+       vec
+       
+       ;; do not move if wall
+       (#(if (= ((game-board (% 0)) (% 1)) :wall)
+          state
+          (assoc state ::player-position %)))))
+
+(defn move-player-path
+  [state directions]
+  "Moves player repeatedly on the given collection of directions"
+  (reduce move-player state directions))

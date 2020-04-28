@@ -16,12 +16,6 @@
 
 
 (deftest get-html-for-state-t
-  (testing "Correct specs"
-    (is (= nil (-> (st/check `c/get-html-for-state)
-                   first
-                   st/abbrev-result
-                   (#(if (:failure %) (:failure %) nil))))))
-  
   (testing "Converts appropriately a board to reagent html"
     (is (= [:table
             [:tbody
