@@ -29,8 +29,8 @@
               [:td.empty {:key "claby-0-4"}]]
              [:tr {:key "claby-1"}
               [:td.empty {:key "claby-1-0"}]
-              [:td.fruit.player {:key "claby-1-1"}]
-              [:td.empty {:key "claby-1-2"}]
+              [:td.fruit {:key "claby-1-1"}]
+              [:td.empty.player {:key "claby-1-2"}]
               [:td.empty {:key "claby-1-3"}]
               [:td.empty {:key "claby-1-4"}]]
              [:tr {:key "claby-2"}
@@ -58,4 +58,4 @@
                              [:empty :empty :wall :empty :empty]
                              [:empty :empty :empty :empty :empty]
                              [:empty :empty :empty :empty :empty]]
-             ::g/player-position [1 1]})))))
+             ::g/player-position [1 2]})))))

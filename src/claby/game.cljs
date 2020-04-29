@@ -55,8 +55,8 @@
                      ;; player postion is inside board
                      #(< ((% ::player-position) 0) (count (::game-board %)))
                      #(< ((% ::player-position) 1) (count (::game-board %)))
-                     ;; player is not on a wall
-                     #(not= (-> % ::game-board (get-in (::player-position %))) :wall))
+                     ;; player is on an empty space (not wall or fruit)
+                     #(= (-> % ::game-board (get-in (::player-position %))) :empty))
     #(game-state-generator (generate-test-board-size))))
 
 ;;;
@@ -69,7 +69,8 @@
   :fn #(= (-> % :args :size) (-> % :ret ::game-board count)))
 
 (defn create-game
-  "Creates an empty game with player in upper left corner and walls & fruits south."
+  "Creates an empty game with player in upper left corner, walls in all
+  the bottom line and fruits in all the (bottom-1) line."
   [game-size]
   {::player-position [0 0]
    ::game-board
@@ -97,10 +98,13 @@
        (map #(mod (+ %1 %2) (count game-board)) player-position)
        vec
        
-       ;; do not move if wall
-       (#(if (= ((game-board (% 0)) (% 1)) :wall)
-          state
-          (assoc state ::player-position %)))))
+       ;; do not move if wall, move if empty, move & eat if fruit
+       (#(case (get-in game-board %)
+           :wall state
+           :empty (assoc state ::player-position %)
+           :fruit (-> state
+                      (assoc ::player-position %)
+                      (assoc-in (into [::game-board] %) :empty))))))
 
 (defn move-player-path
   [state directions]

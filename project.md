@@ -1,12 +1,17 @@
 # Project Management
-- eat capability
 - score counter
 
 ## Backlog
 - add walls & fruits with clicks
+- nice state generator (continuous walls, fruit dispersion)
 - make it beautiful
+- create game weird board is confined to tests
+
+- let tests be pretty-printed
+- convenient way of having tests in emacs
 
 ## Done
+- eat capability
 - instrument functions during testing & dev
 - prevent player from existing on wall on the board in specs
 - wall capabilities and tests

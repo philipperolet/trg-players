@@ -12,7 +12,7 @@
     (is (not (s/valid? ::g/game-state
                        (assoc test-state ::g/player-position [9 9]))))))
 
-(deftest move-player-test
+(deftest move-player-basic
   (testing "Moves correctly up, down, right, left on canonical
     board (see create game)"
     (let [test-state (assoc test-state ::g/player-position [1 0])]
@@ -26,8 +26,9 @@
     (are [x y] (= x (::g/player-position (g/move-player-path test-state y)))
       [0 (- test-size 3)] [:left :left :left]
       [2 2] [:right :down :right :down]
-      [0 0] [:left :down :up :right]))
+      [0 0] [:left :down :up :right])))
 
+(deftest move-player-walls
   (testing "Moves correctly when blocked by wall. Here (canonical
   board, position [0 0]) it means up is not possible, all other
   directions are, down then twice up blocks back to initial position."
@@ -56,4 +57,15 @@
         [0 0] :down
         [0 0] :left))))
       
-
+(deftest move-player-fruits
+  (testing "If player moves on fruits, fruit disappears. Player goes
+  all the way down, is blocked by wall, then eats 2 fruits left and 3
+  right (6 total)"
+    (is (every? #(= % :fruit) (get-in test-state [::g/game-board 8])))
+    
+    (let [player-path (concat (repeat 10 :down) (repeat 2 :right) (repeat 5 :left))
+          fruits-eaten-state (g/move-player-path test-state player-path)
+          fruit-row (get-in fruits-eaten-state [::g/game-board 8])]
+      (is (every? #(= % :fruit) (subvec fruit-row 3 7)))
+      (is (every? #(= % :empty) (subvec fruit-row 7)))
+      (is (every? #(= % :empty) (subvec fruit-row 0 3))))))
