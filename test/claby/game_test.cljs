@@ -43,13 +43,10 @@
   (testing "If encircled by walls, can't move"
     (let [test-state
           ;; creating test game with player encircled
-          (-> test-state  
-              ::g/game-board
-              (assoc 0 (assoc ((::g/game-board test-state) 0)
-                              1 :wall (dec test-size) :wall))
-              (assoc 1 (assoc ((::g/game-board test-state) 1)
-                              0 :wall))
-              ((fn [x] (hash-map ::g/game-board x ::g/player-position [0 0]))))]
+          (-> test-state
+              (assoc-in [::g/game-board 0 1] :wall)
+              (assoc-in [::g/game-board 0 (dec test-size)] :wall)
+              (assoc-in [::g/game-board 1 0] :wall))]
       ;; blocked everywhere
       (are [x y] (= x (::g/player-position (g/move-player test-state y)))
         [0 0] :up 
@@ -58,9 +55,9 @@
         [0 0] :left))))
       
 (deftest move-player-fruits
-  (testing "If player moves on fruits, fruit disappears. Player goes
-  all the way down, is blocked by wall, then eats 2 fruits left and 3
-  right (6 total)"
+  (testing "If player moves on fruits, fruit disappears and score goes
+  up. Player goes all the way down, is blocked by wall, then eats 2
+  fruits left and 3 right (6 total)"
     (is (every? #(= % :fruit) (get-in test-state [::g/game-board 8])))
     
     (let [player-path (concat (repeat 10 :down) (repeat 2 :right) (repeat 5 :left))
@@ -68,4 +65,5 @@
           fruit-row (get-in fruits-eaten-state [::g/game-board 8])]
       (is (every? #(= % :fruit) (subvec fruit-row 3 7)))
       (is (every? #(= % :empty) (subvec fruit-row 7)))
-      (is (every? #(= % :empty) (subvec fruit-row 0 3))))))
+      (is (every? #(= % :empty) (subvec fruit-row 0 3)))
+      (is (= 6 (fruits-eaten-state ::g/score))))))

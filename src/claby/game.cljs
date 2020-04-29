@@ -46,12 +46,15 @@
   (s/tuple (s/int-in 0 max-board-size)
            (s/int-in 0 max-board-size)))
 
+(s/def ::score nat-int?)
+
 (defn- game-state-generator [size]
   (gen/hash-map ::game-board (game-board-generator size)
-                ::player-position (gen/vector (s/gen (s/int-in 0 size)) 2)))
+                ::player-position (gen/vector (s/gen (s/int-in 0 size)) 2)
+                ::score (s/gen ::score)))
 
 (s/def ::game-state
-  (s/with-gen (s/and (s/keys :req [::game-board ::player-position])
+  (s/with-gen (s/and (s/keys :req [::game-board ::player-position ::score])
                      ;; player postion is inside board
                      #(< ((% ::player-position) 0) (count (::game-board %)))
                      #(< ((% ::player-position) 1) (count (::game-board %)))
@@ -72,7 +75,8 @@
   "Creates an empty game with player in upper left corner, walls in all
   the bottom line and fruits in all the (bottom-1) line."
   [game-size]
-  {::player-position [0 0]
+  {::score 0
+   ::player-position [0 0]
    ::game-board
    (-> (vec (repeat (- game-size 2) (vec (repeat game-size :empty))))
        (conj (vec (repeat game-size :fruit)))
@@ -92,9 +96,9 @@
   "Moves player according to provided direction on given state: returns
   state with updated player-position and board."
   [{:keys [::game-board ::player-position], :as state} direction]
-  (->> (case direction :up [-1 0] :right [0 1] :down [1 0] :left [0 -1])
 
-       ;; add direction to player position modulo size of board
+  ;; add direction to player position modulo size of board
+  (->> (case direction :up [-1 0] :right [0 1] :down [1 0] :left [0 -1])
        (map #(mod (+ %1 %2) (count game-board)) player-position)
        vec
        
@@ -104,6 +108,7 @@
            :empty (assoc state ::player-position %)
            :fruit (-> state
                       (assoc ::player-position %)
+                      (update ::score inc)
                       (assoc-in (into [::game-board] %) :empty))))))
 
 (defn move-player-path

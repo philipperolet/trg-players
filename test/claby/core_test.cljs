@@ -53,7 +53,8 @@
               [:td.empty {:key "claby-4-4"}]]]]
 
            (c/get-html-for-state
-            {::g/game-board [[:empty :empty :wall :empty :empty]
+            {::g/score 10
+             ::g/game-board [[:empty :empty :wall :empty :empty]
                              [:empty :fruit :empty :empty :empty]
                              [:empty :empty :wall :empty :empty]
                              [:empty :empty :empty :empty :empty]

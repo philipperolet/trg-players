@@ -1,16 +1,16 @@
 # Project Management
-- score counter
-
-## Backlog
-- add walls & fruits with clicks
 - nice state generator (continuous walls, fruit dispersion)
 - make it beautiful
 - create game weird board is confined to tests
 
+
+## Backlog
+- add walls & fruits with clicks
 - let tests be pretty-printed
 - convenient way of having tests in emacs
 
 ## Done
+- score counter
 - eat capability
 - instrument functions during testing & dev
 - prevent player from existing on wall on the board in specs

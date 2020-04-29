@@ -76,7 +76,7 @@
 (defn claby []
   [:div
    [:h1 "Claby !"]
-   [:h2 (str (@game-state ::g/player-position))]
+   [:h2 (str "Score : " (@game-state ::g/score))]
    [:div.board (get-html-for-state @game-state)]])
 
 (defn mount [el]
