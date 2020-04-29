@@ -7,6 +7,11 @@
 (def test-size 10)
 (def test-state (g/create-game test-size))
 
+(deftest board-spec-test
+  (testing "Player should not be able to be on a wall"
+    (is (not (s/valid? ::g/game-state
+                       (assoc test-state ::g/player-position [9 9]))))))
+
 (deftest move-player-test
   (testing "Moves correctly up, down, right, left on canonical
     board (see create game)"

@@ -54,7 +54,9 @@
   (s/with-gen (s/and (s/keys :req [::game-board ::player-position])
                      ;; player postion is inside board
                      #(< ((% ::player-position) 0) (count (::game-board %)))
-                     #(< ((% ::player-position) 1) (count (::game-board %))))
+                     #(< ((% ::player-position) 1) (count (::game-board %)))
+                     ;; player is not on a wall
+                     #(not= (-> % ::game-board (get-in (::player-position %))) :wall))
     #(game-state-generator (generate-test-board-size))))
 
 ;;;

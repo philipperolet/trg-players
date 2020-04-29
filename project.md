@@ -1,16 +1,14 @@
 # Project Management
-- prevent player from existing on wall on the board in specs
-	
-- instrument functions during testing & dev
-
-
-## Backlog
 - eat capability
 - score counter
+
+## Backlog
 - add walls & fruits with clicks
 - make it beautiful
 
 ## Done
+- instrument functions during testing & dev
+- prevent player from existing on wall on the board in specs
 - wall capabilities and tests
 - up action
 - l,r,d action
