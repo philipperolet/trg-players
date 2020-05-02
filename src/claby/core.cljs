@@ -9,7 +9,7 @@
    [reagent.core :as reagent :refer [atom]]))
 
 (defonce game-size 30)
-(defonce game-state (atom (g/create-game game-size)))
+(defonce game-state (atom (g/init-game-state game-size)))
 
 ;;;
 ;;; Conversion of game state to HTML
