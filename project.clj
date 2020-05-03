@@ -7,7 +7,7 @@
   :min-lein-version "2.7.1"
 
   :dependencies [[org.clojure/clojure "1.10.0"]
-                 [org.clojure/clojurescript "1.10.748"]
+                 [org.clojure/clojurescript "1.10.597"]
                  [org.clojure/test.check "1.0.0"]
                  [reagent "0.10.0"]]
 
@@ -20,4 +20,7 @@
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.4"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]
-                   }})
+                   }
+             :staging {:dependencies [[com.bhauman/figwheel-main "0.2.4"]
+                                      [com.bhauman/rebel-readline-cljs "0.1.4"]]
+                       }})

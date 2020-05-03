@@ -22,14 +22,16 @@
                             :max-count max-board-size
                             :gen-max max-test-board-size))
 
-(defn- generate-test-board-size []
-  (gen/generate (s/gen (s/int-in min-board-size max-test-board-size))))
+(def test-board-size-generator (gen/choose min-board-size max-test-board-size))
 
 (defn- game-board-generator [size]
   "Returns a board generator favoring empty cells (more than half)"
   (-> (gen/one-of [(s/gen ::game-cell) (gen/return :empty)])
       (gen/vector size)
       (gen/vector size)))
+
+(def test-board-generator
+  (gen/bind test-board-size-generator game-board-generator))
 
 (s/def ::game-board
   (-> (s/every ::game-line
@@ -45,7 +47,7 @@
                ;; relies on ::game-board
                (< 0 (->> gb (reduce into) (filter #(= % :empty)) count))))
       
-      (s/with-gen #(game-board-generator (generate-test-board-size)))))
+      (s/with-gen (fn [] test-board-generator))))
 
 (s/fdef count-cells
   :args (s/cat :board ::game-board :value ::game-cell)
@@ -58,6 +60,16 @@
   [board value]
   (->> board (reduce into) (filter #(= % value)) count))
 
+(s/fdef empty-board
+  :args (-> (s/cat :size ::board-size)
+            (s/with-gen #(gen/vector test-board-size-generator 1)))
+  :ret ::game-board
+  :fn #(= (count-cells (:ret %) :empty) (reduce * (repeat 2 (-> % :args :size)))))
+
+(defn empty-board
+  [size]
+  (vec (repeat size (vec (repeat size :empty)))))
+
 (defn board-stats
   [board]
   (let [fc (count-cells board :fruit)
@@ -65,6 +77,31 @@
     {:fruit-nb fc
      :non-wall-nb (+ ec fc)
      :fruit-density (-> fc (* 100) (/ (+ fc ec)) int)}))
+
+(s/fdef find-in-board
+  :args (-> (s/cat :board ::game-board
+                   :cell-set (s/coll-of ::game-cell :kind set?))
+            (s/with-gen (fn [] (gen/tuple
+                                test-board-generator
+                                (gen/one-of [(gen/return #{:fruit})
+                                             (gen/return #{:wall})
+                                             (gen/return #{:empty})])))))
+  :ret (s/or :pos ::position :nil nil?)
+  :fn #(or nil?
+           (apply (-> % :args :cell-set)
+                  (list (get-in (-> % :args :board) (:ret %))))))
+
+(defn find-in-board
+  "Finds a cell in board whose value is in cell-set, traversing the board from
+  [0 0] line by line. Returns nil if no result."
+  [board cell-set]
+  (first (keep-indexed
+          (fn [ind line] ;; gets the first matching position in this line
+            (->> line
+                 (keep-indexed #(when (cell-set %2) %1))
+                 first
+                 (#(if % (vector ind %)))))
+          board)))
 
 ;; Game state
 ;;;;;;;;;;;;;
@@ -84,24 +121,25 @@
 
 (s/def ::game-state
   (-> (s/keys :req [::game-board ::player-position ::score])
-             ;; player postion is inside board
-      (s/and #(< ((% ::player-position) 0) (count (::game-board %)))
-             #(< ((% ::player-position) 1) (count (::game-board %)))
-             ;; player is on an empty space (not wall or fruit
-             #(= (-> % ::game-board (get-in (::player-position %))) :empty))
-      (s/with-gen #(game-state-generator (generate-test-board-size)))))
+      (s/and (fn [s] (comment "player position should be inside board")
+               (and (< ((s ::player-position) 0) (count (::game-board s)))
+                    (< ((s ::player-position) 1) (count (::game-board s)))))
+             (fn [s] (comment "player should be on empty space, not wall or fruit")
+               (= (-> s ::game-board (get-in (::player-position s))) :empty)))
+      (s/with-gen #(gen/bind test-board-size-generator game-state-generator))))
 
 (s/fdef init-game-state
-  :args (s/cat :size ::board-size)
+  :args (s/cat :board ::game-board)
   :ret ::game-state
-  :fn #(= (-> % :args :size) (-> % :ret ::game-board count)))
+  :fn #(= (-> % :args :board) (-> % :ret ::game-board)))
 
 (defn init-game-state
-  "Initial game with player in upper left corner, empty board and null score."
-  [game-size]
+  "Initializes a game state with given board, player in upper left
+  corner and null score."
+  [board]
   {::score 0
-   ::player-position [0 0]
-   ::game-board (vec (repeat game-size (vec (repeat game-size :empty))))})
+   ::player-position (find-in-board board #{:empty})
+   ::game-board board})
 
 ;;; Movement on board
 ;;;;;;;

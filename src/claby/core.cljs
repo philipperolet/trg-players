@@ -4,12 +4,15 @@
   See game.cljs for more about the game."
   (:require
    [goog.dom :as gdom]
-   [clojure.spec.alpha :as s]
+   [cljs.spec.alpha :as s]
    [claby.game :as g]
-   [reagent.core :as reagent :refer [atom]]))
+   [claby.game.generation :refer [create-nice-board]]
+   [reagent.core :as reagent :refer [atom]]
+   [reagent.dom :refer [render]]))
 
 (defonce game-size 30)
-(defonce game-state (atom (g/init-game-state game-size)))
+
+(defonce game-state (atom (g/init-game-state (create-nice-board game-size))))
 
 ;;;
 ;;; Conversion of game state to HTML
@@ -80,7 +83,7 @@
    [:div.board (get-html-for-state @game-state)]])
 
 (defn mount [el]
-  (reagent/render-component [claby] el))
+  (render [claby] el))
 
 (defn mount-app-element []
   (when-let [el (get-app-element)]

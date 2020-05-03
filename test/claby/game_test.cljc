@@ -3,7 +3,7 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
-            [claby.utils :refer [check-all-specs]]
+            [claby.test.utils :refer [check-all-specs]]
             [claby.game :as g]))
 
 (st/instrument (st/enumerate-namespace 'claby.game))
@@ -12,10 +12,17 @@
 
 (def test-size 10)
 
+(def small-test-board
+  [[:empty :empty :wall :empty :empty]
+   [:empty :fruit :empty :empty :empty]
+   [:empty :empty :wall :empty :empty]
+   [:empty :empty :empty :empty :empty]
+   [:empty :empty :empty :empty :empty]])
+
 (def test-state
   "A game with a test board of size 10, last line wall and before last
   line fruits."
-  (-> (g/init-game-state test-size)
+  (-> (g/init-game-state (g/empty-board test-size))
       (assoc-in [::g/game-board (- test-size 2)]
                 (vec (repeat test-size :fruit)))
       (assoc-in [::g/game-board (- test-size 1)]
@@ -26,6 +33,13 @@
     (is (not (s/valid? ::g/game-state
                        (assoc test-state ::g/player-position [9 9]))))))
 
+(deftest find-in-board-test
+  (testing "Finds the correct positions on a small test board"
+    (are [expected pred] (= expected (g/find-in-board small-test-board pred))
+      [0 0] #{:empty}
+      [1 1] #{:fruit}
+      [0 2] #{:wall}
+      [0 2] #{:fruit :wall})))
 (deftest move-player-basic
   (testing "Moves correctly up, down, right, left on canonical
     board (see create game)"

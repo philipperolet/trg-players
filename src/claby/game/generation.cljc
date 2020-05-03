@@ -1,6 +1,8 @@
 (ns claby.game.generation
   "Tools for generating nice boards."
-  (:require [clojure.spec.alpha :as s]
+  (:require #?@(:cljs [[clojure.test.check]
+                       [clojure.test.check.properties]])
+            [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [claby.game :as g]))
 
@@ -78,7 +80,7 @@
       (recur board))))
 
 (s/fdef sow-fruits
-  :args (-> (s/cat :board ::g/game-board :desired-density (s/int-in 1 50))
+  :args (-> (s/cat :desired-density (s/int-in 1 50) :board ::g/game-board)
             (s/and
              (fn [args]
                (comment "actual fruit density should be less than desired density")
@@ -97,10 +99,34 @@
   the ratio of fruits in cells will be closest to density/100. Density
   should be in [1,50[. Walls are excluded from the count, existing fruits
   on initial board are taken into account in density computation."
-  [board desired-density]
+  [desired-density board]
   {:pre [(< (-> board g/board-stats :fruit-density) desired-density)]}
   (let [{:keys [fruit-nb non-wall-nb]} (g/board-stats board)
         desired-fruit-nb (-> desired-density (* non-wall-nb) (/ 100) int)]
     (-> add-random-fruit
         (iterate board)
         (nth (- desired-fruit-nb fruit-nb)))))
+
+;;; Nice board
+;;;;;;
+
+(s/fdef create-nice-board
+  :args (-> (s/cat :size ::g/board-size)
+            (s/with-gen #(gen/vector g/test-board-size-generator 1)))
+  :ret ::g/game-board)
+
+(defn create-nice-board
+  "Creates a board with walls and fruits that looks well. It adds as much random
+  walls as the size of the board, favoring walls of length ~ size/2 so about half
+  the board is walled."
+  [size]
+  (let [nb-of-walls (int (/ size 2))
+        rand-wall-length ;; generates a length biased towards average-sized walls
+        (fn [] (int (/ (reduce + (repeatedly 5 #(inc (rand-int (dec size))))) 5)))
+        add-random-wall
+        #(add-wall % (generate-wall size (rand-wall-length)))]
+    
+    (->> (::g/game-board (g/init-game-state (g/empty-board size)))
+         (iterate add-random-wall)
+         (#(nth % nb-of-walls))
+         (sow-fruits 5))))

@@ -1,14 +1,25 @@
 # Project Management
-- split game in multiple files
-- nice state generator (continuous walls, fruit dispersion)
+- make it work
 - make it beautiful
 
 ## Backlog
+- sort out staging vs dev builds
 - add walls & fruits with clicks
 - let tests be pretty-printed
 - convenient way of having tests in emacs
+- refactor find-in-board to write it nicely
 
 ## Done
+- wall functions : generate random wall, add wall to board
+- fruit functions : add random fruit, sow fruits accross board
+- added create-nice-board
+- refactoring of initial game state creation (incl. extract empty-board function)
+- upgraded dependencies to later versions of clojure & reagent (req. to fix some issues)
+- made generation.cljc working on cljs env
+- made core.cljs compatible with reagent 0.10.0
+- added find-in-board function 
+- added "staging" build that does not include tests (dev build now not easily usable)
+- split game in multiple files
 - macro to run appropriately all spec checks
 - wall generation & fruit sowing for board
 - create game weird board is confined to tests

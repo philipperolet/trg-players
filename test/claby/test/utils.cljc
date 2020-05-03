@@ -1,5 +1,5 @@
-(ns claby.utils
-  "A few utilities"
+(ns claby.test.utils
+  "A few testing utilities"
   (:require [clojure.spec.test.alpha :as st]
             [clojure.test :refer [is deftest testing]]))
 

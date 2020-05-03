@@ -3,7 +3,7 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
-            [claby.utils :refer [check-all-specs]]
+            [claby.test.utils :refer [check-all-specs]]
             [claby.game-test :refer [test-size test-state]]
             [claby.game :as g]
             [claby.game.generation :as gg]))
