@@ -77,10 +77,11 @@
   (gdom/getElement "app"))
 
 (defn claby []
-  [:div
-   [:h1 "Claby !"]
-   [:h2 (str "Score : " (@game-state ::g/score))]
-   [:div.board (get-html-for-state @game-state)]])
+  [:div#lapyrinthe.row.justify-content-md-center
+   ;;   [:p (str "Score : " (@game-state ::g/score))]
+   [:div.col.col-lg-2]
+   [:div.col-md-auto (get-html-for-state @game-state)]
+   [:div.col.col-lg-2]])
 
 (defn mount [el]
   (render [claby] el))

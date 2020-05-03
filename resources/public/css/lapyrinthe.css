@@ -1,0 +1,32 @@
+#lapyrinthe table, #lapyrinthe table tbody  {
+    border: 5px solid black;
+    border-radius: 10px;
+    padding: 1em;
+}
+
+#lapyrinthe td {
+    width: 25px;
+    height: 25px;
+    background-color: white;
+}
+
+#lapyrinthe td.wall {
+    background-image: url("../img/wall.png");
+    background-size: 25px 25px;
+}
+
+#lapyrinthe td.fruit {
+    background-image: url("../img/strawberry.png");
+    background-size: 25px 25px;
+}
+
+#lapyrinthe td.player {
+    background-image: url("../img/rabbit.png");
+    background-size: 25px 25px;
+}
+
+.board-icon {
+    height: 17px;
+    width: 17px;
+}
+		
