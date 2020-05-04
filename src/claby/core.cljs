@@ -104,7 +104,7 @@
 (.addEventListener js/window "keydown" move-player)
 (.click (jquery "#surprise img")
         (fn []
-          (.play (js/Audio. "neverever2.mp3"))
+          (.play (js/Audio. "neverever.mp3"))
           (.fadeOut (jquery "#surprise") 3000)))
 
 (mount-app-element)
