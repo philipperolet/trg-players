@@ -1,0 +1,22 @@
+#lapyrinthe table {
+    border: none;
+}
+
+#lapyrinthe td {
+    width: 30px;
+    height: 30px;
+    background-color: black;
+}
+
+#lapyrinthe td.wall {
+    background-color: blue;
+}
+
+#lapyrinthe td.fruit {
+    background-color: pink;
+}
+
+#lapyrinthe td.player {
+    background-color: yellow;
+    border: 1px solid yellow;
+}

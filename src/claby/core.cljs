@@ -10,7 +10,9 @@
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :refer [render]]))
 
-(defonce game-size 30)
+(def jquery (js* "$"))
+
+(defonce game-size 27)
 
 (defonce game-state (atom (g/init-game-state (create-nice-board game-size))))
 
@@ -67,7 +69,8 @@
                     ("ArrowRight" "f" "F") :right
                     :no-movement)]
     (if (not= direction :no-movement)
-      (swap! game-state g/move-player direction))))
+      (do (.preventDefault e)
+          (swap! game-state g/move-player direction)))))
 
 ;;;
 ;;; Component & app rendering
@@ -76,11 +79,17 @@
 (defn get-app-element []
   (gdom/getElement "app"))
 
+(defn show-score
+  [score]
+  (if (pos? score) (.play (js/Audio. "coin.wav")))
+  [:div.score [:span (str "Score : " score)]])
+
 (defn claby []
   [:div#lapyrinthe.row.justify-content-md-center
-   ;;   [:p (str "Score : " (@game-state ::g/score))]
    [:div.col.col-lg-2]
-   [:div.col-md-auto (get-html-for-state @game-state)]
+   [:div.col-md-auto
+    [show-score (@game-state ::g/score)]
+    (get-html-for-state @game-state)]
    [:div.col.col-lg-2]])
 
 (defn mount [el]
@@ -93,7 +102,13 @@
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
 (.addEventListener js/window "keydown" move-player)
+(.click (jquery "#surprise img")
+        (fn []
+          (.play (js/Audio. "neverever2.mp3"))
+          (.fadeOut (jquery "#surprise") 3000)))
+
 (mount-app-element)
+
 
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []
