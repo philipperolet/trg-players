@@ -1,6 +1,12 @@
 # Project Management
-- make it work
-- make it beautiful
+- centrer le lapin
+- scroll au bon moment
+- changer l'affichage du score & sa police
+- ajouter un level fromage
+- ajouter l'affichage du level
+- ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
+- ajouter une vérif de l'accessibilité des fruits
+- message de victoire
 
 ## Backlog
 - sort out staging vs dev builds
@@ -10,6 +16,9 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- éviter 2e lancement musique
+- message arrowkeys
+- make it beautiful
 - wall functions : generate random wall, add wall to board
 - fruit functions : add random fruit, sow fruits accross board
 - added create-nice-board

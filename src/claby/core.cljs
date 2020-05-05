@@ -102,10 +102,13 @@
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
 (.addEventListener js/window "keydown" move-player)
+(def gameMusic (js/Audio. "neverever.mp3"))
+(set! (.-loop gameMusic) true)
 (.click (jquery "#surprise img")
         (fn []
-          (.play (js/Audio. "neverever.mp3"))
-          (.fadeOut (jquery "#surprise") 3000)))
+          (-> (.play gameMusic))
+          (.fadeOut (jquery "#surprise") 3000)
+          (.click (jquery "#surprise img") nil)))
 
 (mount-app-element)
 
