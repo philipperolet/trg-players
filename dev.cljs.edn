@@ -1,4 +1,4 @@
 ^{:watch-dirs ["test" "src"]
   :css-dirs ["resources/public/css"]
-  :auto-testing true}
+  :auto-testing {:namespaces [claby.core-test]}}
 {:main claby.core}
