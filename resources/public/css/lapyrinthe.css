@@ -1,3 +1,10 @@
+#lapy-arrows {
+    position: fixed;
+}
+#lapy-arrows img {
+    height: 70px;
+}
+		
 #lapyrinthe table, #lapyrinthe table tbody  {
     border: 5px solid black;
     border-radius: 10px;

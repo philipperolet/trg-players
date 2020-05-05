@@ -3,10 +3,10 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
-            [claby.test.utils :refer [check-all-specs]]
+            [claby.utils #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
             [claby.game :as g]))
 
-(st/instrument (st/enumerate-namespace 'claby.game))
+;;(st/instrument (st/enumerate-namespace 'claby.game))
 
 (check-all-specs claby.game)
 

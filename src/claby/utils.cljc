@@ -1,12 +1,17 @@
-(ns claby.test.utils
+(ns claby.utils
   "A few testing utilities"
-  (:require [clojure.spec.test.alpha :as st]
-            [clojure.test :refer [is deftest testing]]))
+  (:require
+   #?@(:cljs [[cljs.test :refer-macros [deftest is testing]]
+              [clojure.test.check]
+              [clojure.test.check.properties]
+              [cljs.spec.test.alpha :as st]]
+       :clj [[clojure.spec.test.alpha :as st]
+             [clojure.test :refer [is deftest testing]]])))
 
 (defn check-results 
   "Returns a nicer version of test.check results for a namespace"
-  [ns-specs]
-  (->> (st/check ns-specs)
+  [nsspecs]
+  (->> (st/check #?(:cljs 'nsspecs :clj nsspecs))
        (map #(select-keys (st/abbrev-result %) [:failure :sym]))
        (remove #(not (:sym %)))
        ;; if spec conformance test failed, returns failure data 
@@ -17,7 +22,7 @@
   
    If spec conformance test failed, returns failure data, else nil"
   [sym]
-  (-> (st/check sym)
+  (-> (st/check #?(:cljs 'sym :clj sym))
       first
       st/abbrev-result
       (select-keys [:failure :sym])
@@ -25,8 +30,8 @@
 
 (defmacro check-all-specs
   "Tests all specs in namespace ns using test.check"
-  [ns]
-  (let [ns-specs (st/enumerate-namespace ns)]
+  [symbs]
+  (let [ns-specs (st/enumerate-namespace #?(:cljs 'symbs :clj symbs))]
     (-> (map (fn [to-check]
                `(testing ~(str "Testing spec " to-check)
                   (is (not (check-failure (quote ~to-check))))))

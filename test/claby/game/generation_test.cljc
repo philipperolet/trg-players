@@ -3,14 +3,15 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
-            [claby.test.utils :refer [check-all-specs]]
+;;            #?@(:clj [claby.test.utils :refer [check-all-specs]])
             [claby.game-test :refer [test-size test-state]]
             [claby.game :as g]
             [claby.game.generation :as gg]))
+;;  #?(:cljs (:require-macros [claby.test.utils :refer [check-all-specs]])))
 
-(st/instrument (st/enumerate-namespace 'claby.game.generation))
+;;(st/instrument (st/enumerate-namespace 'claby.game.generation))
 
-(check-all-specs claby.game.generation)
+;; (check-all-specs claby.game.generation)
 
 (deftest generate-wall-randomly
   (testing "that walls are generated somewhat randomly")
