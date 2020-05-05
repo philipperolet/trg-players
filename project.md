@@ -1,5 +1,7 @@
 # Project Management
 - centrer le lapin
+
+## Backlog
 - scroll au bon moment
 - changer l'affichage du score & sa police
 - ajouter un level fromage
@@ -7,9 +9,7 @@
 - ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
 - ajouter une vérif de l'accessibilité des fruits
 - message de victoire
-
-## Backlog
-- sort out staging vs dev builds
+- tab should autocomplete
 - add walls & fruits with clicks
 - let tests be pretty-printed
 - convenient way of having tests in emacs

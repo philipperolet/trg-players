@@ -2,13 +2,11 @@
   (:require [clojure.test :refer [testing deftest is are]]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as st]
-            [claby.utils #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
+            [claby.utils
+             #?(:clj :refer :cljs :refer-macros) [instrument-and-check-all]]
             [claby.game :as g]))
 
-;;(st/instrument (st/enumerate-namespace 'claby.game))
-
-(check-all-specs claby.game)
+(instrument-and-check-all claby.game)
 
 (def test-size 10)
 
@@ -21,8 +19,9 @@
 
 (def test-state
   "A game with a test board of size 10, last line wall and before last
-  line fruits."
+  line fruits, player at position [0 0]"
   (-> (g/init-game-state (g/empty-board test-size))
+      (assoc ::g/player-position [0 0])
       (assoc-in [::g/game-board (- test-size 2)]
                 (vec (repeat test-size :fruit)))
       (assoc-in [::g/game-board (- test-size 1)]
@@ -33,13 +32,30 @@
     (is (not (s/valid? ::g/game-state
                        (assoc test-state ::g/player-position [9 9]))))))
 
+(deftest get-closest-test
+  (testing "Rets the closest int or nil"
+    (are [coll i res] (= res (g/get-closest coll i))
+      [7 4 3 8] 2 3
+      [5 10 10 12] 7 5
+      [3 4 5 6] 3 3
+      [3 5 6] 4 5
+      [] 3 nil)))
+       
+      
 (deftest find-in-board-test
-  (testing "Finds the correct positions on a small test board"
+  (testing "Finds the correct positions on a small test board, position [0 0]"
     (are [expected pred] (= expected (g/find-in-board small-test-board pred))
       [0 0] #{:empty}
       [1 1] #{:fruit}
       [0 2] #{:wall}
-      [0 2] #{:fruit :wall})))
+      [0 2] #{:fruit :wall}))
+  (testing "Finds the correct positions on a small test board, position [2 2]"
+    (are [expected pred] (= expected (g/find-in-board small-test-board pred [2 2]))
+      [2 3] #{:empty}
+      [1 1] #{:fruit}
+      [2 2] #{:wall}
+      [2 2] #{:fruit :wall})))
+
 (deftest move-player-basic
   (testing "Moves correctly up, down, right, left on canonical
     board (see create game)"

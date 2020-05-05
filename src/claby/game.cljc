@@ -78,9 +78,38 @@
      :non-wall-nb (+ ec fc)
      :fruit-density (-> fc (* 100) (/ (+ fc ec)) int)}))
 
+;;; For generic version, f should take as arg an element of coll and
+;;; return an int, but specing that makes some valid functions not
+;;; conform, e.g. `(first`. Thus no spec is given and a dummy
+;;; generator is provided)")
+(s/fdef get-closest
+  :args (s/alt :ints (-> (s/cat :coll (s/coll-of int?)
+                                :i int?)
+                         ;; generator provided to avoid integer overflow
+                         (s/with-gen #(gen/tuple (gen/vector (gen/choose -100 100))
+                                                 (gen/choose -100 100))))
+               :generic (s/cat :coll (s/coll-of any?)
+                               :f (-> any? 
+                                      (s/with-gen #(gen/return (fn [x] 0))))
+                               :i int?))
+  :ret any?
+  :fn (fn [sp] (comment "Result actually belongs to collection")
+        (or (nil? (:ret sp))
+            (some #(= (:ret sp) %) (get-in sp [:args 1 :coll])))))
+
+(defn get-closest 
+  "Retrieves the element elt such that f(elt) is closest to i in coll.
+  Returns nil for empty colls."
+  ([coll f i]
+   (when-not (empty? coll)
+     (apply min-key #(- (max (f %) i) (min (f %) i)) coll)))
+  ([coll i]
+   (get-closest coll identity i)))
+
 (s/fdef find-in-board
   :args (-> (s/cat :board ::game-board
-                   :cell-set (s/coll-of ::game-cell :kind set?))
+                   :cell-set (s/coll-of ::game-cell :kind set?)
+                   :position (s/? ::position))
             (s/with-gen (fn [] (gen/tuple
                                 test-board-generator
                                 (gen/one-of [(gen/return #{:fruit})
@@ -92,16 +121,21 @@
                   (list (get-in (-> % :args :board) (:ret %))))))
 
 (defn find-in-board
-  "Finds a cell in board whose value is in cell-set, traversing the board from
-  [0 0] line by line. Returns nil if no result."
-  [board cell-set]
-  (first (keep-indexed
-          (fn [ind line] ;; gets the first matching position in this line
-            (->> line
-                 (keep-indexed #(when (cell-set %2) %1))
-                 first
-                 (#(if % (vector ind %)))))
-          board)))
+  "Finds the closest cell in board whose value is in cell-set,
+  traversing the board from the given position (defaults to [0 0]),
+  line by line. Returns nil if no result."
+  ([board cell-set position]
+   (->> board
+       (keep-indexed
+        (fn [ind line] ;; gets the first matching position in this line
+          (->> line
+               (keep-indexed #(when (cell-set %2) %1))
+               (#(get-closest % (position 1)))
+               (#(if % (vector ind %))))))
+       (#(get-closest % first (position 0)))))
+  
+  ([board cell-set]
+   (find-in-board board cell-set [0 0])))
 
 ;; Game state
 ;;;;;;;;;;;;;
@@ -134,12 +168,13 @@
   :fn #(= (-> % :args :board) (-> % :ret ::game-board)))
 
 (defn init-game-state
-  "Initializes a game state with given board, player in upper left
-  corner and null score."
+  "Initializes a game state with given board, player at top/center of board
+  and null score."
   [board]
-  {::score 0
-   ::player-position (find-in-board board #{:empty})
-   ::game-board board})
+  (let [starting-position (->> board count (* 0.5) int (vector 2))]
+    {::score 0
+     ::player-position (find-in-board board #{:empty} starting-position)
+     ::game-board board}))
 
 ;;; Movement on board
 ;;;;;;;
