@@ -17,7 +17,7 @@
 (defonce game-state (atom (g/init-game-state (create-nice-board game-size))))
 
 ;;;
-;;; Conversion of game state to HTML
+;;; Conversion of game state to Hiccup HTML
 ;;; 
 
 (s/fdef get-html-for-state
@@ -59,6 +59,22 @@
 ;;; Player movement
 ;;;
 
+;;; Scroll if player moves too far up / down
+
+(s/fdef board-scroll
+  :args (s/cat :state ::g/game-state)
+  :ret (s/double-in 0 1))
+
+(defn board-scroll
+  "Returns the value of scroll needed so that player remains visible, as
+  a fraction of the window height. If player is on top third of board,
+  scroll to 0, on bottom-third, scroll to mid-page."
+  [{:keys [::g/player-position ::g/game-board], :as game-state}]
+  (let [size (count game-board)]
+    (cond
+      (< (player-position 0) (* size 0.4)) 0
+      (> (player-position 0) (* size 0.7)) 0.5)))
+
 (defn move-player
   "Moves player on the board by changing player-position"
   [e]
@@ -68,10 +84,13 @@
                     ("ArrowLeft" "s" "S") :left
                     ("ArrowRight" "f" "F") :right
                     :no-movement)]
-    (if (not= direction :no-movement)
-      (do (.preventDefault e)
-          (swap! game-state g/move-player direction)))))
+    (when (not= direction :no-movement)
+      (.preventDefault e)
+      (swap! game-state g/move-player direction)
+      (when-let [scroll-value (board-scroll @game-state)]
+        (.scroll js/window 0 (* scroll-value (.-innerHeight js/window)))))))
 
+  
 ;;;
 ;;; Component & app rendering
 ;;;

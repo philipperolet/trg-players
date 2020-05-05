@@ -1,17 +1,19 @@
 (ns claby.core-test
     (:require
-     [cljs.test :refer-macros [deftest is testing]]
-     [clojure.test.check]
-     [clojure.test.check.properties]
-     [cljs.spec.test.alpha :as st]
+     [cljs.test :refer-macros [deftest is testing run-tests] :refer [run-block]]
+;;     [clojure.test.check]
+;;     [clojure.test.check.properties]
+     #_[cljs.spec.test.alpha
+      :refer-macros [instrument check]
+      :refer [abbrev-result]]
      [claby.game :as g]
      [claby.core :as c]))
 
-(st/instrument)
+;; (instrument)
 
-(deftest test-all-specs
-  (is (= () (->> (st/check)
-                  (map #(select-keys (st/abbrev-result %) [:failure :sym]))
+#_(deftest test-all-specs
+  (is (= () (->> (check)
+                  (map #(select-keys (abbrev-result %) [:failure :sym]))
                   (remove #(not (:sym %)))
                   ;; if spec conformance test failed, returns failure data 
                   (filter #(:failure %))))))

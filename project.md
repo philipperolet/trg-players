@@ -1,5 +1,4 @@
 # Project Management
-- centrer le lapin
 
 ## Backlog
 - scroll au bon moment
@@ -16,6 +15,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- centrer le lapin
 - éviter 2e lancement musique
 - message arrowkeys
 - make it beautiful
