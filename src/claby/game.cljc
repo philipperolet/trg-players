@@ -220,3 +220,41 @@
   [state directions]
   "Moves player repeatedly on the given collection of directions"
   (reduce move-player state directions))
+
+
+;;; Conversion to Hiccup HTML
+;;;;
+
+(s/fdef get-html-for-state
+  :args (s/cat :state ::game-state)
+  :ret  (s/and vector?
+               #(= (first %) :table)))
+
+(defn- get-html-for-cell
+  "Generates html for a game board cell"
+  [cell-index cell player-position]
+  (-> (str "td." (name cell) (if (= player-position cell-index) ".player"))
+      keyword
+      vector
+      (conj {:key (str "claby-" (cell-index 0) "-" (cell-index 1))})))
+
+(defn- get-html-for-line
+  "Generates html for a game board row"
+  [row-index row player-position]
+  (->> row ; for each cell of the row
+       (map-indexed #(get-html-for-cell [row-index %1] %2 player-position))
+       (concat [:tr {:key (str "claby-" row-index)}])
+       vec))
+
+(defn get-html-for-state
+  "Given a game state, generates the hiccup html to render it with reagent.
+
+  E.g. for a game board [[:empty :empty] [:wall :fruit]] with player
+  position [0 1] it should generate
+  [:table [:tr [:td.empty] [:td.empty.player]] [:tr [:td.wall] [:td.fruit]]]"
+  [{:keys [::game-board ::player-position], :as state}]
+  (->> game-board
+       (map-indexed #(get-html-for-line %1 %2 player-position))
+       (concat [:tbody])
+       vec
+       (vector :table)))

@@ -1,5 +1,4 @@
 # Project Management
-
 ## Backlog
 - scroll au bon moment
 - changer l'affichage du score & sa police
@@ -15,6 +14,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- passer le test get-html-for-state de cljs à clj
 - centrer le lapin
 - éviter 2e lancement musique
 - message arrowkeys

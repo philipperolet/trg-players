@@ -4,72 +4,33 @@
   See game.cljs for more about the game."
   (:require
    [goog.dom :as gdom]
+   [clojure.test.check]
+   [clojure.test.check.properties]
    [cljs.spec.alpha :as s]
+   [cljs.spec.gen.alpha :as gen]
    [claby.game :as g]
    [claby.game.generation :refer [create-nice-board]]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :refer [render]]))
 
-(def jquery (js* "$"))
-
 (defonce game-size 27)
 
 (defonce game-state (atom (g/init-game-state (create-nice-board game-size))))
 
-;;;
-;;; Conversion of game state to Hiccup HTML
-;;; 
-
-(s/fdef get-html-for-state
-  :args (s/cat :state ::g/game-state)
-  :ret  (s/and vector?
-               #(= (first %) :table)))
-
-(defn- get-html-for-cell
-  "Generates html for a game board cell"
-  [cell-index cell player-position]
-  (-> (str "td." (name cell) (if (= player-position cell-index) ".player"))
-      keyword
-      vector
-      (conj {:key (str "claby-" (cell-index 0) "-" (cell-index 1))})))
-
-(defn- get-html-for-line
-  "Generates html for a game board row"
-  [row-index row player-position]
-  (->> row ; for each cell of the row
-       (map-indexed #(get-html-for-cell [row-index %1] %2 player-position))
-       (concat [:tr {:key (str "claby-" row-index)}])
-       vec))
-
-(defn get-html-for-state
-  "Given a game state, generates the (reagent) html to render it.
-
-  E.g. for a game board [[:empty :empty] [:wall :fruit]] with player
-  position [0 1] it should generate
-  [:table [:tr [:td.empty] [:td.empty.player]] [:tr [:td.wall] [:td.fruit]]]"
-  [state]
-  (let [{board ::g/game-board position ::g/player-position} state]
-    (->> board
-         (map-indexed #(get-html-for-line %1 %2 position))
-         (concat [:tbody])
-         vec
-         (vector :table))))
-
-;;;
 ;;; Player movement
-;;;
+;;;;;;
 
 ;;; Scroll if player moves too far up / down
 
 (s/fdef board-scroll
   :args (s/cat :state ::g/game-state)
-  :ret (s/double-in 0 1))
+  :ret (s/or :double (s/double-in 0 1) :nil nil?))
 
 (defn board-scroll
   "Returns the value of scroll needed so that player remains visible, as
   a fraction of the window height. If player is on top third of board,
   scroll to 0, on bottom-third, scroll to mid-page."
-  [{:keys [::g/player-position ::g/game-board], :as game-state}]
+  [{:keys [::g/player-position ::g/game-board], :as state}]
   (let [size (count game-board)]
     (cond
       (< (player-position 0) (* size 0.4)) 0
@@ -108,26 +69,27 @@
    [:div.col.col-lg-2]
    [:div.col-md-auto
     [show-score (@game-state ::g/score)]
-    (get-html-for-state @game-state)]
+    (g/get-html-for-state @game-state)]
    [:div.col.col-lg-2]])
 
+(def jq (js* "$"))
 (defn mount [el]
-  (render [claby] el))
+  (let [gameMusic (js/Audio. "neverever.mp3")]
+    (set! (.-loop gameMusic) true)
+    (.addEventListener js/window "keydown" move-player)
+    (.click (jq "#surprise img")
+            (fn []
+              (-> (.play gameMusic))
+              (.fadeOut (jq "#surprise") 3000)
+              (.click (jq "#surprise img") nil)))  
+    (render [claby] el)))
+
+;; conditionally start your application based on the presence of an "app" element
+;; this is particularly helpful for testing this ns without launching the app
 
 (defn mount-app-element []
   (when-let [el (get-app-element)]
     (mount el)))
-
-;; conditionally start your application based on the presence of an "app" element
-;; this is particularly helpful for testing this ns without launching the app
-(.addEventListener js/window "keydown" move-player)
-(def gameMusic (js/Audio. "neverever.mp3"))
-(set! (.-loop gameMusic) true)
-(.click (jquery "#surprise img")
-        (fn []
-          (-> (.play gameMusic))
-          (.fadeOut (jquery "#surprise") 3000)
-          (.click (jquery "#surprise img") nil)))
 
 (mount-app-element)
 
