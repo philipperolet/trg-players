@@ -79,7 +79,7 @@
       (assoc-in board position :fruit)
       (recur board))))
 
-(s/fdef sow-fruits
+(s/fdef sow-fruits-by-density
   :args (-> (s/cat :desired-density (s/int-in 1 50) :board ::g/game-board)
             (s/and
              (fn [args]
@@ -94,7 +94,7 @@
               (/ (-> s :args :desired-density) 100)
               (/ (inc fruit-nb) non-wall-nb)))))          
 
-(defn sow-fruits
+(defn sow-fruits-by-density
   "Sows fruits on the board randomly according to density percentage :
   the ratio of fruits in cells will be closest to density/100. Density
   should be in [1,50[. Walls are excluded from the count, existing fruits
@@ -129,4 +129,4 @@
     (->> (::g/game-board (g/init-game-state (g/empty-board size)))
          (iterate add-random-wall)
          (#(nth % nb-of-walls))
-         (sow-fruits 5))))
+         (sow-fruits-by-density 5))))

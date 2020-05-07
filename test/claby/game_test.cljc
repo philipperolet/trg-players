@@ -14,8 +14,8 @@
   [[:empty :empty :wall :empty :empty]
    [:empty :fruit :empty :empty :empty]
    [:empty :empty :wall :empty :empty]
-   [:empty :empty :empty :empty :empty]
-   [:empty :empty :empty :empty :empty]])
+   [:empty :empty :empty :cheese :empty]
+   [:empty :empty :fruit :cheese :empty]])
 
 (def test-state
   "A game with a test board of size 10, last line wall and before last
@@ -31,6 +31,13 @@
   (testing "Player should not be able to be on a wall"
     (is (not (s/valid? ::g/game-state
                        (assoc test-state ::g/player-position [9 9]))))))
+
+(deftest board-stats-test
+  (testing "Board stats work"
+    (let [{:keys [fruit-nb fruit-density]} (g/board-stats small-test-board)
+          non-wall-cells 23]
+      (is (= 2 fruit-nb))
+      (is (= (-> 2 (* 100) (/ non-wall-cells) int) fruit-density)))))
 
 (deftest get-closest-test
   (testing "Rets the closest int or nil"
@@ -137,8 +144,8 @@
              [:tr {:key "claby-3"}
               [:td.empty {:key "claby-3-0"}]
               [:td.empty {:key "claby-3-1"}]
-              [:td.empty {:key "claby-3-2"}]
-              [:td.empty {:key "claby-3-3"}]
+              [:td.cheese {:key "claby-3-2"}]
+              [:td.cheese {:key "claby-3-3"}]
               [:td.empty {:key "claby-3-4"}]]
              [:tr {:key "claby-4"}
               [:td.empty {:key "claby-4-0"}]
@@ -152,6 +159,6 @@
              ::g/game-board [[:empty :empty :wall :empty :empty]
                              [:empty :fruit :empty :empty :empty]
                              [:empty :empty :wall :empty :empty]
-                             [:empty :empty :empty :empty :empty]
+                             [:empty :empty :cheese :cheese :empty]
                              [:empty :empty :empty :empty :empty]]
              ::g/player-position [1 2]})))))

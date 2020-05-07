@@ -14,7 +14,7 @@
 
 (s/def ::board-size (s/int-in min-board-size max-board-size))
 
-(s/def ::game-cell #{:empty :wall :fruit})
+(s/def ::game-cell #{:empty :wall :fruit :cheese})
 
 (s/def ::game-line (s/every ::game-cell
                             :kind vector?
@@ -73,10 +73,10 @@
 (defn board-stats
   [board]
   (let [fc (count-cells board :fruit)
-        ec (count-cells board :empty)]
+        walls (count-cells board :wall)
+        total-cells (* (count board) (count board))]
     {:fruit-nb fc
-     :non-wall-nb (+ ec fc)
-     :fruit-density (-> fc (* 100) (/ (+ fc ec)) int)}))
+     :fruit-density (-> fc (* 100) (/ (- total-cells fc)) int)}))
 
 ;;; For generic version, f should take as arg an element of coll and
 ;;; return an int, but specing that makes some valid functions not
@@ -158,7 +158,7 @@
       (s/and (fn [s] (comment "player position should be inside board")
                (and (< ((s ::player-position) 0) (count (::game-board s)))
                     (< ((s ::player-position) 1) (count (::game-board s)))))
-             (fn [s] (comment "player should be on empty space, not wall or fruit")
+             (fn [s] (comment "player should be on empty space")
                (= (-> s ::game-board (get-in (::player-position s))) :empty)))
       (s/with-gen #(gen/bind test-board-size-generator game-state-generator))))
 
@@ -206,15 +206,19 @@
   state with updated player-position and board."
   [{:keys [::game-board ::player-position], :as state} direction]
   (let [new-position (move-position player-position direction (count game-board))]
-
-    ;; do not move if wall, move if empty, move & eat if fruit
-    (case (get-in game-board new-position)
-      :wall state
-      :empty (assoc state ::player-position new-position)
-      :fruit (-> state
+    (case (get-in game-board new-position) ;; depending on where player wants to move
+      :wall state ;; move fails
+      
+      :empty (assoc state ::player-position new-position) ;; move occurs
+      
+      :fruit (-> state ;; move occurs and score increases
                  (assoc ::player-position new-position)
                  (update ::score inc)
-                 (assoc-in (into [::game-board] new-position) :empty)))))
+                 (assoc-in (into [::game-board] new-position) :empty))
+      
+      :cheese (-> state ;; player loses game
+                  (assoc ::player-position new-position) 
+                  (assoc-in (into [::game-board] new-position) :empty)))))
 
 (defn move-player-path
   [state directions]

@@ -1,8 +1,17 @@
 # Project Management
+- possibilité de semer du fromage
+- mort si fromage
+- animation si mort
+- victoire si tous fruits mangés
+- animation de victoire
+
+
 ## Backlog
-- scroll au bon moment
-- changer l'affichage du score & sa police
+- ajouter un système de passage de niveaux
 - ajouter un level fromage
+- affichage du level
+- changer l'affichage du score & sa police
+
 - ajouter l'affichage du level
 - ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
 - ajouter une vérif de l'accessibilité des fruits
@@ -14,6 +23,8 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- nouvelle case fromage, dans le html comme dans le compte
+- scroll au bon moment
 - passer le test get-html-for-state de cljs à clj
 - centrer le lapin
 - éviter 2e lancement musique
