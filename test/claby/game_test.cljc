@@ -34,9 +34,9 @@
 
 (deftest board-stats-test
   (testing "Board stats work"
-    (let [{:keys [fruit-nb fruit-density]} (g/board-stats small-test-board)
-          non-wall-cells 23]
-      (is (= 2 fruit-nb))
+    (let [{:keys [fruit-density total-cells non-wall-cells]} (g/board-stats small-test-board)]
+      (is (= 25 total-cells))
+      (is (= 23 non-wall-cells))
       (is (= (-> 2 (* 100) (/ non-wall-cells) int) fruit-density)))))
 
 (deftest get-closest-test

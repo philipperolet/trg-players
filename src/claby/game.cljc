@@ -75,7 +75,8 @@
   (let [fc (count-cells board :fruit)
         walls (count-cells board :wall)
         total-cells (* (count board) (count board))]
-    {:fruit-nb fc
+    {:total-cells total-cells
+     :non-wall-cells (- total-cells walls)
      :fruit-density (-> fc (* 100) (/ (- total-cells fc)) int)}))
 
 ;;; For generic version, f should take as arg an element of coll and
