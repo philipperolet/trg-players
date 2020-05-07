@@ -77,7 +77,7 @@
         total-cells (* (count board) (count board))]
     {:total-cells total-cells
      :non-wall-cells (- total-cells walls)
-     :fruit-density (-> fc (* 100) (/ (- total-cells fc)) int)}))
+     :fruit-density (-> fc (* 100) (/ (- total-cells walls)) int)}))
 
 ;;; For generic version, f should take as arg an element of coll and
 ;;; return an int, but specing that makes some valid functions not
@@ -217,7 +217,7 @@
                  (update ::score inc)
                  (assoc-in (into [::game-board] new-position) :empty))
       
-      :cheese (-> state ;; player loses game
+      :cheese (-> state ;; moves but nothing happens
                   (assoc ::player-position new-position) 
                   (assoc-in (into [::game-board] new-position) :empty)))))
 

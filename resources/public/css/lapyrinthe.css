@@ -27,6 +27,11 @@
     background-size: 25px 25px;
 }
 
+#lapyrinthe td.cheese {
+    background-image: url("../img/cheese.gif");
+    background-size: 25px 25px;
+}
+
 #lapyrinthe td.player {
     background-image: url("../img/rabbit2.png");
     background-size: 25px 25px;

@@ -1,5 +1,4 @@
 # Project Management
-- possibilité de semer du fromage
 - mort si fromage
 - animation si mort
 - victoire si tous fruits mangés
@@ -23,6 +22,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- possibilité de semer du fromage
 - nouvelle case fromage, dans le html comme dans le compte
 - scroll au bon moment
 - passer le test get-html-for-state de cljs à clj

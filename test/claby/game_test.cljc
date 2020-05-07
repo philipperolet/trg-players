@@ -37,7 +37,13 @@
     (let [{:keys [fruit-density total-cells non-wall-cells]} (g/board-stats small-test-board)]
       (is (= 25 total-cells))
       (is (= 23 non-wall-cells))
-      (is (= (-> 2 (* 100) (/ non-wall-cells) int) fruit-density)))))
+      (is (= (-> 2 (* 100) (/ non-wall-cells) int) fruit-density))))
+  (testing "Density only considers non-walls"
+    (is (= 50 (:fruit-density (g/board-stats
+                               [[:wall :fruit :wall :wall]
+                                [:wall :wall :wall :wall]
+                                [:wall :wall :empty :wall]
+                                [:wall :wall :wall :wall]]))))))
 
 (deftest get-closest-test
   (testing "Rets the closest int or nil"

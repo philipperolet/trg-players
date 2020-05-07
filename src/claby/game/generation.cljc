@@ -61,27 +61,30 @@
 ;;; Fruit sowing
 ;;;;;;;;;
 
-(s/fdef add-random-fruit
-  :args (-> (s/cat :board ::g/game-board)
+(s/fdef add-random-element
+  :args (-> (s/cat :board ::g/game-board :element (s/and ::g/game-cell #(not= % :empty)))
             (s/and (fn [args]
                      (comment "At least 2 empty cells so 1 empty cell remain")
                      (>= (g/count-cells (:board args) :empty) 2))))
   :ret ::g/game-board
-  :fn (fn [s] (comment "Exactly one more fruit")
-        (= (-> s :ret (g/count-cells :fruit))
-           (-> s :args :board (g/count-cells :fruit) (+ 1)))))
+  :fn (fn [{:keys [ret] {:keys [board element]} :args}]
+        (comment "Exactly one more element")
+        (= (g/count-cells ret element)
+           (inc (g/count-cells board element)))))
 
-(defn add-random-fruit
-  "Adds one fruit at random on the given board"
-  [board]
+(defn add-random-element
+  "Adds one element at random on the given board"
+  [board element]
   (let [position (repeatedly 2 #(rand-int (count board)))]
     (if (= (get-in board position) :empty)
-      (assoc-in board position :fruit)
-      (recur board))))
+      (assoc-in board position element)
+      (recur board element))))
 
 
-(s/fdef sow-fruits
-  :args (-> (s/cat :board ::g/game-board :quantity nat-int?)
+(s/fdef sow
+  :args (-> (s/cat :board ::g/game-board
+                   :element (s/and ::g/game-cell  #(not= % :empty))
+                   :quantity nat-int?)
             (s/and
              (fn [args]
                (comment "quantity < empty cells so at least an empty cell remains")
@@ -90,19 +93,21 @@
 
   :ret ::g/game-board
   
-  :fn (fn [s] (comment "New fruit count should match quantity + previous fruit count")
-        (= (g/count-cells (:ret s) :fruit)
-           (+ (-> s :args :quantity) (-> s :args :board (g/count-cells :fruit))))))
+  :fn (fn [{:keys [ret] {:keys [element quantity board]} :args}]
+        (comment "New element count should match quantity + previous fruit count")
+        (= (g/count-cells ret element) (+ quantity (g/count-cells board element)))))
 
-(defn sow-fruits
-  "Sows quantity fruits on board randomly. Existing fruits
+(defn sow
+  "Sows element on board randomly, quantity times. Existing fruits
   on initial board are not taken into account: total number
   of fruits is = to quantity + previous fruit nb after the call."
-  [board quantity]
-  {:pre [(<= (+ (g/count-cells board :fruit) quantity) (-> board g/board-stats :non-wall-cells))]}
-  (-> add-random-fruit
-      (iterate board)
-      (nth quantity)))
+  [board element quantity]
+  {:pre [(<= (+ (g/count-cells board element) quantity) (-> board g/board-stats :non-wall-cells))]}
+  (if (= 0 quantity)
+    board
+    (recur (add-random-element board element) element (dec quantity))))
+
+      
 
 (s/fdef sow-fruits-by-density
   :args (-> (s/cat :board ::g/game-board :desired-density (s/int-in 1 50))
@@ -129,7 +134,7 @@
   {:pre [(< (-> board g/board-stats :fruit-density) desired-density)]}
   (let [non-wall-cells ((g/board-stats board) :non-wall-cells)
         desired-fruit-nb (-> desired-density (* non-wall-cells) (/ 100) int)]
-    (sow-fruits board (- desired-fruit-nb (g/count-cells board :fruit)))))
+    (sow board :fruit (- desired-fruit-nb (g/count-cells board :fruit)))))
 
 ;;; Nice board
 ;;;;;;
@@ -153,4 +158,5 @@
     (-> (::g/game-board (g/init-game-state (g/empty-board size)))
         (#(iterate add-random-wall %))
         (nth nb-of-walls)
-        (sow-fruits-by-density 5))))
+        (sow :cheese size)
+        (sow :fruit (* size 2)))))
