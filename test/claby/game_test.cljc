@@ -20,12 +20,11 @@
 (def test-state
   "A game with a test board of size 10, last line wall and before last
   line fruits, player at position [0 0]"
-  (-> (g/init-game-state (g/empty-board test-size))
-      (assoc ::g/player-position [0 0])
-      (assoc-in [::g/game-board (- test-size 2)]
-                (vec (repeat test-size :fruit)))
-      (assoc-in [::g/game-board (- test-size 1)]
-                (vec (repeat test-size :wall)))))
+  (-> (g/empty-board test-size)
+      (assoc (- test-size 2) (vec (repeat test-size :fruit)))
+      (assoc (- test-size 1) (vec (repeat test-size :wall)))
+      (g/init-game-state)
+      (assoc ::g/player-position [0 0])))
 
 (deftest board-spec-test
   (testing "Player should not be able to be on a wall"

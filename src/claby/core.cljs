@@ -58,7 +58,9 @@
 (defonce jq (js* "$"))
 (defonce gameMusic (js/Audio. "neverever.mp3"))
 (defonce scoreSound (js/Audio. "coin.wav"))
-(defonce overSound (js/Audio. "over.wav"))
+(defonce sounds
+  {:over (js/Audio. "over.wav")
+   :won (js/Audio. "won.mp3")})
 
 (set! (.-loop gameMusic) true)
 
@@ -69,11 +71,11 @@
   (.fadeOut (jq ".game-over") 1000))
 
 (defn game-over [status]
-  (when (= :over status)
+  (when (or (= status :over) (= status :won))
     (.removeEventListener js/window "keydown" move-player) ;; freeze player
     (.pause gameMusic)
-    (.play overSound)
-    (.fadeIn (jq ".game-over") 2000))
+    (.play (sounds status))
+    (.fadeIn (jq (str ".game-" (name status))) 2000))
   [:div])
 
 

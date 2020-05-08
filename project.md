@@ -1,13 +1,10 @@
 # Project Management
-- victoire si tous fruits mangés
-- animation de victoire
-
-
-## Backlog
-- mort si fromage & animation si mort
 - ajouter un système de passage de niveaux
 - ajouter un level fromage
 - affichage du level
+
+## Backlog
+
 - changer l'affichage du score & sa police
 
 - ajouter l'affichage du level
@@ -21,6 +18,9 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- victoire si tous fruits mangés
+- animation de victoire
+- mort si fromage & animation si mort
 - possibilité de semer du fromage
 - nouvelle case fromage, dans le html comme dans le compte
 - scroll au bon moment

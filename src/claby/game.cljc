@@ -149,13 +149,24 @@
 
 (s/def ::score nat-int?)
 
-(s/def ::status #{:active :over})
+(s/def ::status #{:active :over :won})
 
+(defn- random-status-generator
+  "Generates a random status that fits board specs, notably won status conditions"
+  [board]
+  (if (zero? (count-cells board :fruit))
+    (gen/return :won)
+    (gen/such-that #(not= % :won) (s/gen ::status))))
+  
 (defn- game-state-generator [size]
-  (gen/hash-map ::game-board (game-board-generator size)
-                ::player-position (gen/vector (gen/choose 0 size) 2)
-                ::score (s/gen ::score)
-                ::status (s/gen ::status)))
+  (gen/bind
+   (game-board-generator size)
+   (fn [board]
+     (gen/hash-map
+      ::game-board (gen/return board)
+      ::player-position (gen/vector (gen/choose 0 size) 2)
+      ::score (s/gen ::score)
+      ::status (random-status-generator board)))))
 
 (s/def ::game-state
   (-> (s/keys :req [::game-board ::player-position ::score ::status])
@@ -163,11 +174,19 @@
                (and (< ((s ::player-position) 0) (count (::game-board s)))
                     (< ((s ::player-position) 1) (count (::game-board s)))))
              (fn [s] (comment "player should be on empty space")
-               (= (-> s ::game-board (get-in (::player-position s))) :empty)))
+               (= (-> s ::game-board (get-in (::player-position s))) :empty))
+             (fn [{:keys [::game-board ::status]}]
+               (comment "Game is won if and only if no fruits are left.")
+               (or (and (= (count-cells game-board :fruit) 0)
+                        (= status :won))
+                   (and (> (count-cells game-board :fruit) 0)
+                        (not= status :won)))))
       (s/with-gen #(gen/bind test-board-size-generator game-state-generator))))
 
 (s/fdef init-game-state
-  :args (s/cat :board ::game-board)
+  :args (-> (s/cat :board ::game-board)
+            (s/and (fn [args] (comment "At least one fruit otherwise no game")
+                     (> (count-cells (:board args) :fruit) 0))))
   :ret ::game-state
   :fn #(= (-> % :args :board) (-> % :ret ::game-board)))
 
@@ -201,9 +220,8 @@
        vec))
 
 (s/fdef move-player
-  :args (s/cat :state ::game-state
-               :direction ::direction)
-
+  :args (-> (s/cat :state ::game-state :direction ::direction)
+            (s/and #(= (-> % :state ::status) :active)))
   :ret ::game-state)
 
 (defn move-player
@@ -216,10 +234,12 @@
       
       :empty (assoc state ::player-position new-position) ;; move occurs
       
-      :fruit (-> state ;; move occurs and score increases
+      :fruit (-> state ;; move occurs and score increases, possibly winning
                  (assoc ::player-position new-position)
                  (update ::score inc)
-                 (assoc-in (into [::game-board] new-position) :empty))
+                 (assoc-in (into [::game-board] new-position) :empty)
+                 (#(if (= (count-cells (% ::game-board) :fruit) 0)
+                     (assoc % ::status :won) %)))
       
       :cheese (-> state ;; game over if eats cheese
                   (assoc ::player-position new-position) 
