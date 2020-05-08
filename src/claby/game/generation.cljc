@@ -83,7 +83,7 @@
 
 (s/fdef sow
   :args (-> (s/cat :board ::g/game-board
-                   :element (s/and ::g/game-cell  #(not= % :empty))
+                   :element (s/and ::g/game-cell (complement #{:empty :wall}))
                    :quantity nat-int?)
             (s/and
              (fn [args]
@@ -109,32 +109,34 @@
 
       
 
-(s/fdef sow-fruits-by-density
-  :args (-> (s/cat :board ::g/game-board :desired-density (s/int-in 1 50))
+(s/fdef sow-by-density
+  :args (-> (s/cat :board ::g/game-board
+                   :element (s/and ::g/game-cell  #(not= % :wall))
+                   :desired-density (s/int-in 1 50))
             (s/and
-             (fn [args]
-               (comment "actual fruit density should be less than desired density")
-               (< (-> args :board g/board-stats :fruit-density)
-                  (-> args :desired-density)))))
+             (fn [{:keys [board element desired-density]}]
+               (comment "actual density should be less than desired density")
+               (< (-> board g/board-stats :density element)
+                  desired-density))))
   :ret ::g/game-board
   
-  :fn (fn [s] (comment "Checks ratio of fruits on board fits density.")
-        (let [fruit-cells (-> s :ret (g/count-cells :fruit))
+  :fn (fn [s] (comment "Checks ratio of element on board fits density.")
+        (let [elt-cells (-> s :ret (g/count-cells (-> s :args :element)))
               non-wall-cells (-> s :ret g/board-stats :non-wall-cells)]
-          (<= (/ fruit-cells non-wall-cells)
+          (<= (/ elt-cells non-wall-cells)
               (/ (-> s :args :desired-density) 100)
-              (/ (inc fruit-cells) non-wall-cells)))))          
+              (/ (inc elt-cells) non-wall-cells)))))          
 
-(defn sow-fruits-by-density
+(defn sow-by-density
   "Sows fruits on the board randomly according to density percentage :
   the ratio of fruits in cells will be closest to density/100. Density
   should be in [1,50[. Walls are excluded from the count, existing fruits
   on initial board are taken into account in density computation."
-  [board desired-density]
-  {:pre [(< (-> board g/board-stats :fruit-density) desired-density)]}
+  [board element desired-density]
+  {:pre [(< (-> board g/board-stats :density element) desired-density)]}
   (let [non-wall-cells ((g/board-stats board) :non-wall-cells)
-        desired-fruit-nb (-> desired-density (* non-wall-cells) (/ 100) int)]
-    (sow board :fruit (- desired-fruit-nb (g/count-cells board :fruit)))))
+        desired-nb (-> desired-density (* non-wall-cells) (/ 100) int)]
+    (sow board element (- desired-nb (g/count-cells board element)))))
 
 ;;; Nice board
 ;;;;;;
@@ -155,8 +157,8 @@
         add-random-wall
         #(add-wall % (generate-wall size (rand-wall-length)))]
     
-    (-> (::g/game-board (g/init-game-state (g/empty-board size)))
+    (-> (g/empty-board size)
         (#(iterate add-random-wall %))
         (nth nb-of-walls)
-        (sow :cheese size)
-        (sow :fruit (* size 2)))))
+        (sow-by-density :cheese 3)
+        (sow-by-density :fruit 6))))

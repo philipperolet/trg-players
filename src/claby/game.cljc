@@ -8,13 +8,14 @@
 ;;; Game board
 ;;;;;;;;;;;;;;
 
-(defonce min-board-size 4)
+(defonce min-board-size 5)
 (defonce max-board-size 100)
 (defonce max-test-board-size 20)
 
 (s/def ::board-size (s/int-in min-board-size max-board-size))
 
-(s/def ::game-cell #{:empty :wall :fruit :cheese})
+(defonce game-cell-values #{:empty :wall :fruit :cheese})
+(s/def ::game-cell game-cell-values)
 
 (s/def ::game-line (s/every ::game-cell
                             :kind vector?
@@ -72,12 +73,17 @@
 
 (defn board-stats
   [board]
-  (let [fc (count-cells board :fruit)
-        walls (count-cells board :wall)
-        total-cells (* (count board) (count board))]
+  (let [walls (count-cells board :wall) total-cells (* (count board) (count board))]
+
     {:total-cells total-cells
+
      :non-wall-cells (- total-cells walls)
-     :fruit-density (-> fc (* 100) (/ (- total-cells walls)) int)}))
+
+     :density ;; map of each element's density on board (except wall)     
+     (let [elts (remove #{:wall} game-cell-values)
+           compute-density
+           #(-> (count-cells board %) (* 100) (/ (- total-cells walls)) int)]
+       (zipmap elts (map compute-density elts)))}))
 
 ;;; For generic version, f should take as arg an element of coll and
 ;;; return an int, but specing that makes some valid functions not

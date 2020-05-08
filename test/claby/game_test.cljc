@@ -33,16 +33,18 @@
 
 (deftest board-stats-test
   (testing "Board stats work"
-    (let [{:keys [fruit-density total-cells non-wall-cells]} (g/board-stats small-test-board)]
+    (let [{:keys [density total-cells non-wall-cells]} (g/board-stats small-test-board)]
       (is (= 25 total-cells))
       (is (= 23 non-wall-cells))
-      (is (= (-> 2 (* 100) (/ non-wall-cells) int) fruit-density))))
+      (is (= (-> 2 (* 100) (/ non-wall-cells) int) (density :fruit)))
+      (is (= (-> 2 (* 100) (/ non-wall-cells) int) (density :cheese)))))
   (testing "Density only considers non-walls"
-    (is (= 50 (:fruit-density (g/board-stats
-                               [[:wall :fruit :wall :wall]
-                                [:wall :wall :wall :wall]
-                                [:wall :wall :empty :wall]
-                                [:wall :wall :wall :wall]]))))))
+    (let [small-board [[:wall :fruit :wall :wall]
+                       [:wall :wall :wall :wall]
+                       [:wall :wall :empty :wall]
+                       [:wall :wall :wall :wall]]]
+      (is (= 50 (-> small-board g/board-stats :density :fruit)))
+      (is (= 0 (-> small-board g/board-stats :density :cheese))))))
 
 (deftest get-closest-test
   (testing "Rets the closest int or nil"
@@ -159,7 +161,8 @@
              [:td.empty {:key "claby-4-4"}]]]
 
            (g/get-html-for-state
-            {::g/score 10
+            {::g/status :active
+             ::g/score 10
              ::g/game-board [[:empty :empty :wall :empty :empty]
                              [:empty :fruit :empty :empty :empty]
                              [:empty :empty :wall :empty :empty]
