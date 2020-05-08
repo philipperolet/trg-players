@@ -1,12 +1,11 @@
 # Project Management
-- ajouter un système de passage de niveaux
-- ajouter un level fromage
+- board a ses éléments en fonction du niveau
+- animation du message de niveaux
 - affichage du level
 
 ## Backlog
-
 - changer l'affichage du score & sa police
-
+- permettre la détection de fruits / lapins bloqués
 - ajouter l'affichage du level
 - ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
 - ajouter une vérif de l'accessibilité des fruits
@@ -18,6 +17,8 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- ajouter un système de passage de niveaux
+- ajouter un level fromage
 - victoire si tous fruits mangés
 - animation de victoire
 - mort si fromage & animation si mort

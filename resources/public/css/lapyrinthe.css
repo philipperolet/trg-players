@@ -91,7 +91,7 @@ body {
 }
 
 			 
-.game-over, .game-won {
+.game-over, .game-won, .game-nextlevel {
     display: none;
     position: fixed;
     top: 0px;
@@ -102,14 +102,17 @@ body {
 }
 
 .game-over { background-color: black; }
-.game-won { background-color: white; }
+.game-won, .game-nextlevel { background-color: white; }
 
-.game-over img, .game-won img {
+.game-over img, .game-won img, .game-nextlevel img {
     position: relative;
     margin-top: 10%;
     width: 33%;
     left: 33%;
     display: block;
+}
+.game-nextlevel img {
+    border-radius: 100%;
 }
 .game-over button {
     margin-top: 1em;

@@ -13,9 +13,18 @@
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :refer [render]]))
 
-(defonce game-size 27)
+(defonce game-size 10)
+
+(defonce levels
+  [{:message "Lapinette enceinte doit manger un maximume de fraises"
+    :fruit-density 5
+    :cheese-density 0}
+   {:message "Attention au fromage non-pasteurisé !"
+    :fruit-density 5
+    :cheese-density 3}])
 
 (defonce game-state (atom {}))
+(defonce level (atom 0))
 
 ;;; Player movement
 ;;;;;;
@@ -60,25 +69,38 @@
 (defonce scoreSound (js/Audio. "coin.wav"))
 (defonce sounds
   {:over (js/Audio. "over.wav")
-   :won (js/Audio. "won.mp3")})
+   :won (js/Audio. "won.mp3")
+   :nextlevel (js/Audio. "nextlevel.wav")})
 
 (set! (.-loop gameMusic) true)
 
-(defn start-game []
+(defn start-game [elt-to-fade]
   (.addEventListener js/window "keydown" move-player)
   (swap! game-state #(g/init-game-state (create-nice-board game-size)))
   (-> (.play gameMusic))
-  (.fadeOut (jq ".game-over") 1000))
+  (.fadeTo (jq "#h") 1000 1)
+  (.fadeOut (jq elt-to-fade) 1000))
 
-(defn game-over [status]
-  (when (or (= status :over) (= status :won))
-    (.removeEventListener js/window "keydown" move-player) ;; freeze player
-    (.pause gameMusic)
-    (.play (sounds status))
-    (.fadeIn (jq (str ".game-" (name status))) 2000))
+(defn animate-game
+  ([status callback]
+   (.scroll js/window 0 0)
+   (.removeEventListener js/window "keydown" move-player) ;; freeze player
+   (.pause gameMusic)
+   (set! (.-onended (sounds status)) callback)
+   (.play (sounds status))
+   (.fadeTo (jq "#h") 2000 0)
+   (.fadeIn (jq (str ".game-" (name status))) 2000))
+
+  ([status] (animate-game status nil)))
+
+(defn game-transition [status]
+  (cond
+    (and (= status :won) (< @level (dec (count levels))))
+    (do (swap! level inc)
+        (animate-game :nextlevel #(start-game ".game-nextlevel")))
+    (some #{status} #{:won :over})
+    (animate-game status))
   [:div])
-
-
 
 (defn get-app-element []
   (gdom/getElement "app"))
@@ -90,21 +112,21 @@
 
 (defn claby []
   [:div#lapyrinthe.row.justify-content-md-center
+   [:h2.subtitle [:span (get-in levels [@level :message])]]
    [:div.col.col-lg-2]
    [:div.col-md-auto
     [show-score (@game-state ::g/score)]
     [:table (g/get-html-for-state @game-state)]]
    [:div.col.col-lg-2]
-   [game-over (@game-state ::g/status)]])
+   [game-transition (@game-state ::g/status)]])
 
 
 (defn mount [el]
-  (.click (jq ".game-over button") start-game)
+  (.click (jq ".game-over button") #(start-game ".game-over"))
   (.click (jq "#surprise img")
           (fn []
-            (start-game)
-            (.fadeOut (jq "#surprise") 3000)
-            (.click (jq "#surprise img") nil)))  
+            (.click (jq "#surprise img") nil)
+            (start-game "#surprise")))
   (render [claby] el))
 
 ;; conditionally start your application based on the presence of an "app" element
