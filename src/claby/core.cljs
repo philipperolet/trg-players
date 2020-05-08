@@ -15,7 +15,7 @@
 
 (defonce game-size 27)
 
-(defonce game-state (atom (g/init-game-state (create-nice-board game-size))))
+(defonce game-state (atom {}))
 
 ;;; Player movement
 ;;;;;;
@@ -55,13 +55,35 @@
 ;;;
 ;;; Component & app rendering
 ;;;
+(defonce jq (js* "$"))
+(defonce gameMusic (js/Audio. "neverever.mp3"))
+(defonce scoreSound (js/Audio. "coin.wav"))
+(defonce overSound (js/Audio. "over.wav"))
+
+(set! (.-loop gameMusic) true)
+
+(defn start-game []
+  (.addEventListener js/window "keydown" move-player)
+  (swap! game-state #(g/init-game-state (create-nice-board game-size)))
+  (-> (.play gameMusic))
+  (.fadeOut (jq ".game-over") 1000))
+
+(defn game-over [status]
+  (when (= :over status)
+    (.removeEventListener js/window "keydown" move-player) ;; freeze player
+    (.pause gameMusic)
+    (.play overSound)
+    (.fadeIn (jq ".game-over") 2000))
+  [:div])
+
+
 
 (defn get-app-element []
   (gdom/getElement "app"))
 
 (defn show-score
   [score]
-  (if (pos? score) (.play (js/Audio. "coin.wav")))
+  (if (pos? score) (.play scoreSound))
   [:div.score [:span (str "Score : " score)]])
 
 (defn claby []
@@ -69,20 +91,19 @@
    [:div.col.col-lg-2]
    [:div.col-md-auto
     [show-score (@game-state ::g/score)]
-    (g/get-html-for-state @game-state)]
-   [:div.col.col-lg-2]])
+    [:table (g/get-html-for-state @game-state)]]
+   [:div.col.col-lg-2]
+   [game-over (@game-state ::g/status)]])
 
-(def jq (js* "$"))
+
 (defn mount [el]
-  (let [gameMusic (js/Audio. "neverever.mp3")]
-    (set! (.-loop gameMusic) true)
-    (.addEventListener js/window "keydown" move-player)
-    (.click (jq "#surprise img")
-            (fn []
-              (-> (.play gameMusic))
-              (.fadeOut (jq "#surprise") 3000)
-              (.click (jq "#surprise img") nil)))  
-    (render [claby] el)))
+  (.click (jq ".game-over button") start-game)
+  (.click (jq "#surprise img")
+          (fn []
+            (start-game)
+            (.fadeOut (jq "#surprise") 3000)
+            (.click (jq "#surprise img") nil)))  
+  (render [claby] el))
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app

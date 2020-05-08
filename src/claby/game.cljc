@@ -149,13 +149,16 @@
 
 (s/def ::score nat-int?)
 
+(s/def ::status #{:active :over})
+
 (defn- game-state-generator [size]
   (gen/hash-map ::game-board (game-board-generator size)
                 ::player-position (gen/vector (gen/choose 0 size) 2)
-                ::score (s/gen ::score)))
+                ::score (s/gen ::score)
+                ::status (s/gen ::status)))
 
 (s/def ::game-state
-  (-> (s/keys :req [::game-board ::player-position ::score])
+  (-> (s/keys :req [::game-board ::player-position ::score ::status])
       (s/and (fn [s] (comment "player position should be inside board")
                (and (< ((s ::player-position) 0) (count (::game-board s)))
                     (< ((s ::player-position) 1) (count (::game-board s)))))
@@ -174,6 +177,7 @@
   [board]
   (let [starting-position (->> board count (* 0.5) int (vector 2))]
     {::score 0
+     ::status :active
      ::player-position (find-in-board board #{:empty} starting-position)
      ::game-board board}))
 
@@ -217,9 +221,10 @@
                  (update ::score inc)
                  (assoc-in (into [::game-board] new-position) :empty))
       
-      :cheese (-> state ;; moves but nothing happens
+      :cheese (-> state ;; game over if eats cheese
                   (assoc ::player-position new-position) 
-                  (assoc-in (into [::game-board] new-position) :empty)))))
+                  (assoc-in (into [::game-board] new-position) :empty)
+                  (assoc ::status :over)))))
 
 (defn move-player-path
   [state directions]
@@ -233,7 +238,7 @@
 (s/fdef get-html-for-state
   :args (s/cat :state ::game-state)
   :ret  (s/and vector?
-               #(= (first %) :table)))
+               #(= (first %) :tbody)))
 
 (defn- get-html-for-cell
   "Generates html for a game board cell"
@@ -261,5 +266,4 @@
   (->> game-board
        (map-indexed #(get-html-for-line %1 %2 player-position))
        (concat [:tbody])
-       vec
-       (vector :table)))
+       vec))

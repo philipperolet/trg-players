@@ -1,11 +1,10 @@
 # Project Management
-- mort si fromage
-- animation si mort
 - victoire si tous fruits mangés
 - animation de victoire
 
 
 ## Backlog
+- mort si fromage & animation si mort
 - ajouter un système de passage de niveaux
 - ajouter un level fromage
 - affichage du level
