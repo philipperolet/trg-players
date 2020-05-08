@@ -1,5 +1,5 @@
 # Project Management
-- board a ses éléments en fonction du niveau
+- cut game in multiple files (same namespace?)
 - animation du message de niveaux
 - affichage du level
 
@@ -17,6 +17,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- board a ses éléments en fonction du niveau
 - ajouter un système de passage de niveaux
 - ajouter un level fromage
 - victoire si tous fruits mangés

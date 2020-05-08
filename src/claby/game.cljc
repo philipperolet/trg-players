@@ -79,8 +79,8 @@
 
      :non-wall-cells (- total-cells walls)
 
-     :density ;; map of each element's density on board (except wall)     
-     (let [elts (remove #{:wall} game-cell-values)
+     :density ;; map of efach element's density on board (except wall)     
+     (let [elts (remove #{:wall :empty} game-cell-values)
            compute-density
            #(-> (count-cells board %) (* 100) (/ (- total-cells walls)) int)]
        (zipmap elts (map compute-density elts)))}))

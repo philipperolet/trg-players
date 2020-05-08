@@ -108,24 +108,43 @@
     (recur (add-random-element board element) element (dec quantity))))
 
       
+(s/def ::element-density (-> (s/int-in 0 99)
+                             (s/with-gen #(gen/choose 0 30))))
 
+(defn valid-density
+  "Checks the density of element is within normal bounds for board"
+  [board element density]
+  (let [elt-cells (g/count-cells board element)
+              non-wall-cells (-> board g/board-stats :non-wall-cells)]
+          (<= (/ elt-cells non-wall-cells)
+              (/ density 100)
+              (/ (inc elt-cells) non-wall-cells))))
+
+(defn sum-of-densities
+  [board]
+  (reduce + (vals (:density (g/board-stats board)))))
+                      
 (s/fdef sow-by-density
   :args (-> (s/cat :board ::g/game-board
-                   :element (s/and ::g/game-cell  #(not= % :wall))
-                   :desired-density (s/int-in 1 50))
+                   :element (s/and ::g/game-cell  (complement #{:wall :empty}))
+                   :desired-density ::element-density)
             (s/and
              (fn [{:keys [board element desired-density]}]
                (comment "actual density should be less than desired density")
                (< (-> board g/board-stats :density element)
-                  desired-density))))
+                  desired-density))
+             (fn [{:keys [board element desired-density]}]
+               (comment "sum of densities should be < 100")
+               (< (-> (sum-of-densities board)
+                      (- (-> board g/board-stats :density element))
+                      (+ desired-density))
+                  100))))
+
   :ret ::g/game-board
   
-  :fn (fn [s] (comment "Checks ratio of element on board fits density.")
-        (let [elt-cells (-> s :ret (g/count-cells (-> s :args :element)))
-              non-wall-cells (-> s :ret g/board-stats :non-wall-cells)]
-          (<= (/ elt-cells non-wall-cells)
-              (/ (-> s :args :desired-density) 100)
-              (/ (inc elt-cells) non-wall-cells)))))          
+  :fn (fn [{ret :ret, {:keys [element desired-density]} :args}]
+        (comment "Checks ratio of element on board fits density.")
+        (valid-density ret element desired-density)))
 
 (defn sow-by-density
   "Sows fruits on the board randomly according to density percentage :
@@ -133,7 +152,7 @@
   should be in [1,50[. Walls are excluded from the count, existing fruits
   on initial board are taken into account in density computation."
   [board element desired-density]
-  {:pre [(< (-> board g/board-stats :density element) desired-density)]}
+  {:pre [(<= (-> board g/board-stats :density element) desired-density)]}
   (let [non-wall-cells ((g/board-stats board) :non-wall-cells)
         desired-nb (-> desired-density (* non-wall-cells) (/ 100) int)]
     (sow board element (- desired-nb (g/count-cells board element)))))
@@ -141,16 +160,24 @@
 ;;; Nice board
 ;;;;;;
 
+;; map of densities for non-walls (and non-empty)
+(s/def ::density-map (s/map-of (s/and ::g/game-cell (complement #{:wall :empty}))
+                               ::element-density
+                               :distinct true))
+
 (s/fdef create-nice-board
-  :args (-> (s/cat :size ::g/board-size)
-            (s/with-gen #(gen/vector g/test-board-size-generator 1)))
+  :args (-> (s/cat :size ::g/board-size
+                   :level (s/keys :req [::density-map]))
+            (s/with-gen #(gen/tuple
+                          g/test-board-size-generator
+                          (gen/hash-map ::density-map (s/gen ::density-map)))))
   :ret ::g/game-board)
 
 (defn create-nice-board
   "Creates a board with walls and fruits that looks well. It adds as much random
   walls as the size of the board, favoring walls of length ~ size/2 so about half
   the board is walled."
-  [size]
+  [size level]
   (let [nb-of-walls (int (/ size 2))
         rand-wall-length ;; generates a length biased towards average-sized walls
         (fn [] (int (/ (reduce + (repeatedly 5 #(inc (rand-int (dec size))))) 5)))
@@ -160,5 +187,4 @@
     (-> (g/empty-board size)
         (#(iterate add-random-wall %))
         (nth nb-of-walls)
-        (sow-by-density :cheese 3)
-        (sow-by-density :fruit 6))))
+        (#(reduce-kv sow-by-density % (-> level ::density-map))))))

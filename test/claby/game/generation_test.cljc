@@ -4,7 +4,7 @@
             [clojure.spec.gen.alpha :as gen]
             [claby.utils
              #?(:clj :refer :cljs :refer-macros) [instrument-and-check-all]]
-            [claby.game-test :refer [test-size test-state]]
+            [claby.game-test :refer [test-size test-state small-test-board]]
             [claby.game :as g]
             [claby.game.generation :as gg]))
 
@@ -27,3 +27,13 @@
     (is (every? #(= (test-board %) (walled-board %)) (range 2 test-size)))
     (is (every? #(= :wall %) (subvec (walled-board 1) 1 5)))
     (is (= :wall (get-in walled-board [0 4])))))
+
+(deftest sum-of-densities-basic-test
+  (is (= 11 (gg/sum-of-densities (test-state ::g/game-board))))
+  (is (= (int (/ 400 23)) (gg/sum-of-densities small-test-board))))
+
+(deftest create-nice-board-test
+  (testing "Appropriate densities in board"
+    (let [board (gg/create-nice-board 5 {::gg/density-map {:fruit 5 :cheese 10}})]
+      (is (gg/valid-density board :fruit 5))
+      (is (gg/valid-density board :cheese 10)))))

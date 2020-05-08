@@ -39,10 +39,11 @@
       (is (= (-> 2 (* 100) (/ non-wall-cells) int) (density :fruit)))
       (is (= (-> 2 (* 100) (/ non-wall-cells) int) (density :cheese)))))
   (testing "Density only considers non-walls"
-    (let [small-board [[:wall :fruit :wall :wall]
-                       [:wall :wall :wall :wall]
-                       [:wall :wall :empty :wall]
-                       [:wall :wall :wall :wall]]]
+    (let [small-board [[:wall :fruit :wall :wall :wall]
+                       [:wall :wall :wall :wall :wall]
+                       [:wall :wall :empty :wall :wall]
+                       [:wall :wall :wall :wall :wall]
+                       [:wall :wall :wall :wall :wall]]]
       (is (= 50 (-> small-board g/board-stats :density :fruit)))
       (is (= 0 (-> small-board g/board-stats :density :cheese))))))
 

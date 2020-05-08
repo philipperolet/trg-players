@@ -9,7 +9,7 @@
    [cljs.spec.alpha :as s]
    [cljs.spec.gen.alpha :as gen]
    [claby.game :as g]
-   [claby.game.generation :refer [create-nice-board]]
+   [claby.game.generation :as gg]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :refer [render]]))
 
@@ -17,11 +17,11 @@
 
 (defonce levels
   [{:message "Lapinette enceinte doit manger un maximume de fraises"
-    :fruit-density 5
-    :cheese-density 0}
+    ::gg/density-map {:fruit 5
+                      :cheese 0}}
    {:message "Attention au fromage non-pasteurisé !"
-    :fruit-density 5
-    :cheese-density 3}])
+    ::gg/density-map {:fruit 5
+                      :cheese 3}}])
 
 (defonce game-state (atom {}))
 (defonce level (atom 0))
@@ -76,7 +76,8 @@
 
 (defn start-game [elt-to-fade]
   (.addEventListener js/window "keydown" move-player)
-  (swap! game-state #(g/init-game-state (create-nice-board game-size)))
+  (swap! game-state #(g/init-game-state
+                      (gg/create-nice-board game-size (levels @level))))
   (-> (.play gameMusic))
   (.fadeTo (jq "#h") 1000 1)
   (.fadeOut (jq elt-to-fade) 1000))
