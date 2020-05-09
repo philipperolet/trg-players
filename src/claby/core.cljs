@@ -15,7 +15,7 @@
    [claby.game.events :as ge]
    [claby.game.generation :as gg]))
 
-(defonce game-size 10)
+(defonce game-size 27)
 
 (defonce levels
   [{:message "Lapinette enceinte doit manger un maximum de fraises"
@@ -61,7 +61,7 @@
     (when (not= direction :no-movement)
       (.preventDefault e)
       (swap! game-state ge/move-player direction)
-      (when-let [scroll-value (board-scroll @game-state)]
+      #_(when-let [scroll-value (board-scroll @game-state)]
         (.scroll js/window 0 (* scroll-value (.-innerHeight js/window)))))))
 
   
@@ -84,8 +84,8 @@
    (swap! game-state #(gs/init-game-state
                        (gg/create-nice-board game-size (levels @level))))
    (-> (.play gameMusic))
-   (.fadeTo (jq "#h") 1000 1)
-   (.fadeOut (jq elt-to-fade) 1000 callback))
+   (.fadeTo (jq "#h") 1000 1 callback)
+   (.fadeOut (jq elt-to-fade) 1000))
   
   ([elt-to-fade]
    (start-game elt-to-fade nil)))
@@ -156,7 +156,7 @@
   (.click (jq "#surprise img")
           (fn []
             (.click (jq "#surprise img") nil)
-            (start-game "#surprise")))
+            (start-game "#surprise" #(.fadeOut (jq "#h h1") 2000))))
   (render [claby] el))
 
 ;; conditionally start your application based on the presence of an "app" element

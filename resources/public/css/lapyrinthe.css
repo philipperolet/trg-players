@@ -7,7 +7,11 @@ body {
 #lapy-arrows img {
     height: 70px;
 }
-		
+
+#lapyrinthe {
+    margin-top: 1em;
+}
+
 #lapyrinthe table {
     border: 5px solid black;
     border-radius: 10px;
@@ -72,12 +76,17 @@ body {
     top: 5em;
 }
 
-#h h2.subtitle span {
+#h h2.subtitle span, #h h1.intro {
     background-color: white;
-    opacity: 0.75;
+    opacity: 0.8;
     border: 1px solid black;
     border-radius: 10px;
     padding: 0.5em;
+}
+#h h1.intro {
+    position: fixed;
+    top: 5em;
+    margin-left: 33%;
 }
 
 #surprise {
@@ -127,4 +136,8 @@ body {
 .game-over button {
     margin-top: 1em;
     color: black;
+}
+
+#copyrights p {
+    margin: 0;
 }

@@ -1,12 +1,10 @@
 # Project Management
-- mettre plein écran
+- message de victoire
+- ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
+- permettre la détection de fruits / lapins bloqués
 
 ## Backlog
-- permettre la détection de fruits / lapins bloqués
-- ajouter l'affichage du level
-- ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
-- ajouter une vérif de l'accessibilité des fruits
-- message de victoire
+- jouer sur mobile
 - tab should autocomplete
 - add walls & fruits with clicks
 - let tests be pretty-printed
@@ -14,6 +12,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- gestion pour être toujours plein écran
 - bloquer sur mobile
 - affichage du level
 - animation du message de niveaux
