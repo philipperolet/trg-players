@@ -79,6 +79,7 @@
 (defn add-n-elements-random
   "Adds n elements at random on the board"
   [board element n]
+  {:pre [(>= (gb/count-cells board :empty) (inc n))]}
   (->> board
        ;; get all empty positions in the board
        (map-indexed (fn [ind line] (keep-indexed #(when (= %2 :empty) [ind %1]) line)))
@@ -89,44 +90,6 @@
        ;; put element at these positions on the board
        (reduce #(assoc-in %1 %2 element) board)))
 
-(defn- sow-args-generator [type]
-  (->>
-   (fn [board]
-     (gen/tuple
-      (gen/return board)
-      (s/gen (cset/difference gb/game-cell-values #{:empty :wall}))
-      (case :density (gen/choose 0 (- 99 (sum-of-densities board)))
-            :quantity (gen/choose 0 (gb/count-cells board :empty)))))
-   (gen/bind (s/gen ::gb/game-board))))
-             
-(s/fdef sow
-  :args (-> (s/cat :board ::gb/game-board
-                   :element (s/and ::gb/game-cell (complement #{:empty :wall}))
-                   :quantity nat-int?)
-            (s/and
-             (fn [args]
-               (comment "quantity < empty cells so at least an empty cell remains")
-               (let [{:keys [total-cells]} (-> args :board gb/board-stats)]
-                 (< (-> args :quantity) (-> args :board (gb/count-cells :empty))))))
-            (s/with-gen #(sow-args-generator :quantity)))
-
-  :ret ::gb/game-board
-  
-  :fn (fn [{:keys [ret] {:keys [element quantity board]} :args}]
-        (comment "New element count should match quantity + previous fruit count")
-        (= (gb/count-cells ret element) (+ quantity (gb/count-cells board element)))))
-
-(defn sow
-  "Sows element on board randomly, quantity times. Existing fruits
-  on initial board are not taken into account: total number
-  of fruits is = to quantity + previous fruit nb after the call."
-  [board element quantity]
-  {:pre [(<= (+ (gb/count-cells board element) quantity) (-> board gb/board-stats :non-wall-cells))]}
-  (if (= 0 quantity)
-    board
-    (add-n-elements-random board element quantity)))
-
-      
 (s/def ::element-density (-> (s/int-in 0 99)
                              (s/with-gen #(gen/choose 0 30))))
 
@@ -157,8 +120,7 @@
                (< (-> (sum-of-densities board)
                       (- (-> board gb/board-stats :density element))
                       (+ desired-density))
-                  99)))
-            (s/with-gen #(sow-args-generator :density)))
+                  99))))
 
   :ret ::gb/game-board
   
@@ -177,7 +139,10 @@
         prior-density (-> board gb/board-stats :density element)
         incremental-density (- desired-density prior-density)
         nb-elts-to-sow (-> incremental-density (* non-wall-cells) (/ 100) int)]
-    (sow board element nb-elts-to-sow)))
+    
+    (if (> nb-elts-to-sow 0)
+      (add-n-elements-random board element nb-elts-to-sow)
+      board)))
 
 ;;; Nice board
 ;;;;;;
