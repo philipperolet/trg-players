@@ -1,5 +1,4 @@
 # Project Management
-- bloquer sur mobile
 - mettre plein écran
 
 ## Backlog
@@ -15,6 +14,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- bloquer sur mobile
 - affichage du level
 - animation du message de niveaux
 - cut game in multiple files (same namespace?)

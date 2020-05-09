@@ -131,17 +131,24 @@
   (if (pos? score) (.play scoreSound))
   [:div.score
    [:span (str "Score: " score)]
+   [:br]
    [:span (str "Level: " (inc @level))]])
 
 (defn claby []
-  [:div#lapyrinthe.row.justify-content-md-center
-   [:h2.subtitle [:span (get-in levels [@level :message])]]
+  (if (re-find #"Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini"
+               (.-userAgent js/navigator))
+    [:h2.subtitle "Le jeu est prévu pour fonctionner sur ordinateur (mac/pc)"]
+
+    [:div#lapyrinthe.row.justify-content-md-center
+     [:h2.subtitle [:span (get-in levels [@level :message])]]
+     [:div.col.col-lg-2]
+     [:div.col-md-auto
+      [show-score (@game-state ::gs/score)]
+      [:table (gs/get-html-for-state @game-state)]]
    [:div.col.col-lg-2]
-   [:div.col-md-auto
-    [show-score (@game-state ::gs/score)]
-    [:table (gs/get-html-for-state @game-state)]]
-   [:div.col.col-lg-2]
-   [game-transition (@game-state ::gs/status)]])
+   [game-transition (@game-state ::gs/status)]]))
+
+
 
 
 (defn mount [el]
