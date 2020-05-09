@@ -35,7 +35,7 @@ body {
 }
 
 #lapyrinthe td.player {
-    background-image: url("../img/rabbit2.png");
+    background-image: url("../img/rabbit3.png");
     background-size: 25px 25px;
 }
 
@@ -61,13 +61,23 @@ body {
 #h h2.subtitle {
     margin-top: 0;
     margin-bottom: 1em;
-    font-size: 18px;
+    font-size: 1.2em;
     color: #bb0000;
     font-weight: 600;
+    position: relative;
 }
+
+#h h2.subtitle.initial {
+    font-size: 2em;
+    top: 5em;
+}
+
 #h h2.subtitle span {
     background-color: white;
-    background-opacity: 0.7;
+    opacity: 0.75;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 0.5em;
 }
 
 #surprise {

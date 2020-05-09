@@ -18,12 +18,14 @@
 (defonce game-size 10)
 
 (defonce levels
-  [{:message "Lapinette enceinte doit manger un maximume de fraises"
+  [{:message "Lapinette enceinte doit manger un maximum de fraises"
     ::gg/density-map {:fruit 5
                       :cheese 0}}
    {:message "Attention au fromage non-pasteurisé !"
     ::gg/density-map {:fruit 5
-                      :cheese 3}}])
+                      :cheese 3}
+    :message-color "darkgoldenrod"}
+   ])
 
 (defonce game-state (atom {}))
 (defonce level (atom 0))
@@ -76,31 +78,47 @@
 
 (set! (.-loop gameMusic) true)
 
-(defn start-game [elt-to-fade]
-  (.addEventListener js/window "keydown" move-player)
-  (swap! game-state #(gs/init-game-state
-                      (gg/create-nice-board game-size (levels @level))))
-  (-> (.play gameMusic))
-  (.fadeTo (jq "#h") 1000 1)
-  (.fadeOut (jq elt-to-fade) 1000))
+(defn start-game
+  ([elt-to-fade callback]
+   (.addEventListener js/window "keydown" move-player)
+   (swap! game-state #(gs/init-game-state
+                       (gg/create-nice-board game-size (levels @level))))
+   (-> (.play gameMusic))
+   (.fadeTo (jq "#h") 1000 1)
+   (.fadeOut (jq elt-to-fade) 1000 callback))
+  
+  ([elt-to-fade]
+   (start-game elt-to-fade nil)))
+  
 
 (defn animate-game
-  ([status callback]
+  ([status callback in-between-callback]
    (.scroll js/window 0 0)
    (.removeEventListener js/window "keydown" move-player) ;; freeze player
    (.pause gameMusic)
    (set! (.-onended (sounds status)) callback)
    (.play (sounds status))
-   (.fadeTo (jq "#h") 2000 0)
-   (.fadeIn (jq (str ".game-" (name status))) 2000))
+   (.fadeTo (jq "#h") 500 0)
+   (.fadeIn (jq (str ".game-" (name status))) 2000 in-between-callback))
 
-  ([status] (animate-game status nil)))
+  ([status]
+   (animate-game status nil nil)))
 
+(defn between-levels []
+  (.addClass (jq "#h h2.subtitle") "initial")
+  (.css (jq "#h h2.subtitle span") "color" (get-in levels [@level :message-color])))
+  
+(defn next-level-callback []
+  (.animate (jq "#h h2.subtitle") (clj->js {:top "0em" :font-size "1.2em"}) 2500))
+  
 (defn game-transition [status]
   (cond
-    (and (= status :won) (< @level (dec (count levels))))
-    (do (swap! level inc)
-        (animate-game :nextlevel #(start-game ".game-nextlevel")))
+    (and (= status :won) (< (inc @level) (count levels)))
+    (do (animate-game :nextlevel
+                      (fn [] (start-game ".game-nextlevel" next-level-callback))
+                      between-levels)
+        (swap! level inc))
+    
     (some #{status} #{:won :over})
     (animate-game status))
   [:div])
