@@ -8,10 +8,12 @@
    [clojure.test.check.properties]
    [cljs.spec.alpha :as s]
    [cljs.spec.gen.alpha :as gen]
-   [claby.game :as g]
-   [claby.game.generation :as gg]
    [reagent.core :as reagent :refer [atom]]
-   [reagent.dom :refer [render]]))
+   [reagent.dom :refer [render]]
+   [claby.game.board :as gb]
+   [claby.game.state :as gs]
+   [claby.game.events :as ge]
+   [claby.game.generation :as gg]))
 
 (defonce game-size 10)
 
@@ -32,14 +34,14 @@
 ;;; Scroll if player moves too far up / down
 
 (s/fdef board-scroll
-  :args (s/cat :state ::g/game-state)
+  :args (s/cat :state ::gs/game-state)
   :ret (s/or :double (s/double-in 0 1) :nil nil?))
 
 (defn board-scroll
   "Returns the value of scroll needed so that player remains visible, as
   a fraction of the window height. If player is on top third of board,
   scroll to 0, on bottom-third, scroll to mid-page."
-  [{:keys [::g/player-position ::g/game-board], :as state}]
+  [{:keys [::gs/player-position ::gb/game-board], :as state}]
   (let [size (count game-board)]
     (cond
       (< (player-position 0) (* size 0.4)) 0
@@ -56,7 +58,7 @@
                     :no-movement)]
     (when (not= direction :no-movement)
       (.preventDefault e)
-      (swap! game-state g/move-player direction)
+      (swap! game-state ge/move-player direction)
       (when-let [scroll-value (board-scroll @game-state)]
         (.scroll js/window 0 (* scroll-value (.-innerHeight js/window)))))))
 
@@ -76,7 +78,7 @@
 
 (defn start-game [elt-to-fade]
   (.addEventListener js/window "keydown" move-player)
-  (swap! game-state #(g/init-game-state
+  (swap! game-state #(gs/init-game-state
                       (gg/create-nice-board game-size (levels @level))))
   (-> (.play gameMusic))
   (.fadeTo (jq "#h") 1000 1)
@@ -116,10 +118,10 @@
    [:h2.subtitle [:span (get-in levels [@level :message])]]
    [:div.col.col-lg-2]
    [:div.col-md-auto
-    [show-score (@game-state ::g/score)]
-    [:table (g/get-html-for-state @game-state)]]
+    [show-score (@game-state ::gs/score)]
+    [:table (gs/get-html-for-state @game-state)]]
    [:div.col.col-lg-2]
-   [game-transition (@game-state ::g/status)]])
+   [game-transition (@game-state ::gs/status)]])
 
 
 (defn mount [el]

@@ -1,5 +1,5 @@
 # Project Management
-- cut game in multiple files (same namespace?)
+
 - animation du message de niveaux
 - affichage du level
 
@@ -17,6 +17,9 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- cut game in multiple files (same namespace?)
+- make tests faster
+- instrument macro instruments only functions of namespace, not others
 - board a ses éléments en fonction du niveau
 - ajouter un système de passage de niveaux
 - ajouter un level fromage

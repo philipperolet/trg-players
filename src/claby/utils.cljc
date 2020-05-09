@@ -28,11 +28,10 @@
       (select-keys [:failure :sym])
       :failure))
 
-(defmacro instrument-and-check-all
+(defmacro check-all-specs
   "Tests all specs in namespace ns using test.check"
   [symbs]
   (let [ns-specs (st/enumerate-namespace #?(:cljs 'symbs :clj symbs))]
-    (st/instrument #?(:cljs 'ns-specs :clj ns-specs))
     (-> (map (fn [to-check]
                `(testing ~(str "Testing spec " to-check)
                   (is (not (check-failure (quote ~to-check))))))

@@ -1,88 +1,30 @@
-(ns claby.game-test
+(ns claby.game.events-test
   (:require [clojure.test :refer [testing deftest is are]]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
+            [clojure.spec.test.alpha :as st]
             [claby.utils
-             #?(:clj :refer :cljs :refer-macros) [instrument-and-check-all]]
-            [claby.game :as g]))
+             #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
+            [claby.game.board :as gb]
+            [claby.game.state :as g]
+            [claby.game.state-test :refer [test-state test-size]]
+            [claby.game.events :as ge]))
 
-(instrument-and-check-all claby.game)
-
-(def test-size 10)
-
-(def small-test-board
-  [[:empty :empty :wall :empty :empty]
-   [:empty :fruit :empty :empty :empty]
-   [:empty :empty :wall :empty :empty]
-   [:empty :empty :empty :cheese :empty]
-   [:empty :empty :fruit :cheese :empty]])
-
-(def test-state
-  "A game with a test board of size 10, last line wall and before last
-  line fruits, player at position [0 0]"
-  (-> (g/empty-board test-size)
-      (assoc (- test-size 2) (vec (repeat test-size :fruit)))
-      (assoc (- test-size 1) (vec (repeat test-size :wall)))
-      (g/init-game-state)
-      (assoc ::g/player-position [0 0])))
-
-(deftest board-spec-test
-  (testing "Player should not be able to be on a wall"
-    (is (not (s/valid? ::g/game-state
-                       (assoc test-state ::g/player-position [9 9]))))))
-
-(deftest board-stats-test
-  (testing "Board stats work"
-    (let [{:keys [density total-cells non-wall-cells]} (g/board-stats small-test-board)]
-      (is (= 25 total-cells))
-      (is (= 23 non-wall-cells))
-      (is (= (-> 2 (* 100) (/ non-wall-cells) int) (density :fruit)))
-      (is (= (-> 2 (* 100) (/ non-wall-cells) int) (density :cheese)))))
-  (testing "Density only considers non-walls"
-    (let [small-board [[:wall :fruit :wall :wall :wall]
-                       [:wall :wall :wall :wall :wall]
-                       [:wall :wall :empty :wall :wall]
-                       [:wall :wall :wall :wall :wall]
-                       [:wall :wall :wall :wall :wall]]]
-      (is (= 50 (-> small-board g/board-stats :density :fruit)))
-      (is (= 0 (-> small-board g/board-stats :density :cheese))))))
-
-(deftest get-closest-test
-  (testing "Rets the closest int or nil"
-    (are [coll i res] (= res (g/get-closest coll i))
-      [7 4 3 8] 2 3
-      [5 10 10 12] 7 5
-      [3 4 5 6] 3 3
-      [3 5 6] 4 5
-      [] 3 nil)))
-       
-      
-(deftest find-in-board-test
-  (testing "Finds the correct positions on a small test board, position [0 0]"
-    (are [expected pred] (= expected (g/find-in-board small-test-board pred))
-      [0 0] #{:empty}
-      [1 1] #{:fruit}
-      [0 2] #{:wall}
-      [0 2] #{:fruit :wall}))
-  (testing "Finds the correct positions on a small test board, position [2 2]"
-    (are [expected pred] (= expected (g/find-in-board small-test-board pred [2 2]))
-      [2 3] #{:empty}
-      [1 1] #{:fruit}
-      [2 2] #{:wall}
-      [2 2] #{:fruit :wall})))
+(st/instrument)
+(check-all-specs claby.game.events)
 
 (deftest move-player-basic
   (testing "Moves correctly up, down, right, left on canonical
     board (see create game)"
     (let [test-state (assoc test-state ::g/player-position [1 0])]
-      (are [x y] (= x (::g/player-position (g/move-player test-state y)))
+      (are [x y] (= x (::g/player-position (ge/move-player test-state y)))
         [0 0] :up
         [1 1] :right
         [2 0] :down
         [1 (dec test-size)] :left)))
 
   (testing "Multiple movement tests"
-    (are [x y] (= x (::g/player-position (g/move-player-path test-state y)))
+    (are [x y] (= x (::g/player-position (ge/move-player-path test-state y)))
       [0 (- test-size 3)] [:left :left :left]
       [2 2] [:right :down :right :down]
       [0 0] [:left :down :up :right])))
@@ -91,23 +33,23 @@
   (testing "Moves correctly when blocked by wall. Here (canonical
   board, position [0 0]) it means up is not possible, all other
   directions are, down then twice up blocks back to initial position."
-    (are [x y] (= x (::g/player-position (g/move-player test-state y)))
+    (are [x y] (= x (::g/player-position (ge/move-player test-state y)))
       [0 0] :up ;; blocked by wall on other side
       [0 1] :right
       [1 0] :down
       [0 (dec test-size)] :left)
     (is (= [0 0]
-           (::g/player-position (g/move-player-path test-state [:down :up :up])))))
+           (::g/player-position (ge/move-player-path test-state [:down :up :up])))))
 
   (testing "If encircled by walls, can't move"
     (let [test-state
           ;; creating test game with player encircled
           (-> test-state
-              (assoc-in [::g/game-board 0 1] :wall)
-              (assoc-in [::g/game-board 0 (dec test-size)] :wall)
-              (assoc-in [::g/game-board 1 0] :wall))]
+              (assoc-in [::gb/game-board 0 1] :wall)
+              (assoc-in [::gb/game-board 0 (dec test-size)] :wall)
+              (assoc-in [::gb/game-board 1 0] :wall))]
       ;; blocked everywhere
-      (are [x y] (= x (::g/player-position (g/move-player test-state y)))
+      (are [x y] (= x (::g/player-position (ge/move-player test-state y)))
         [0 0] :up 
         [0 0] :right
         [0 0] :down
@@ -117,11 +59,11 @@
   (testing "If player moves on fruits, fruit disappears and score goes
   up. Player goes all the way down, is blocked by wall, then eats 2
   fruits left and 3 right (6 total)"
-    (is (every? #(= % :fruit) (get-in test-state [::g/game-board 8])))
+    (is (every? #(= % :fruit) (get-in test-state [::gb/game-board 8])))
     
     (let [player-path (concat (repeat 10 :down) (repeat 2 :right) (repeat 5 :left))
-          fruits-eaten-state (g/move-player-path test-state player-path)
-          fruit-row (get-in fruits-eaten-state [::g/game-board 8])]
+          fruits-eaten-state (ge/move-player-path test-state player-path)
+          fruit-row (get-in fruits-eaten-state [::gb/game-board 8])]
       (is (every? #(= % :fruit) (subvec fruit-row 3 7)))
       (is (every? #(= % :empty) (subvec fruit-row 7)))
       (is (every? #(= % :empty) (subvec fruit-row 0 3)))
@@ -164,7 +106,7 @@
            (g/get-html-for-state
             {::g/status :active
              ::g/score 10
-             ::g/game-board [[:empty :empty :wall :empty :empty]
+             ::gb/game-board [[:empty :empty :wall :empty :empty]
                              [:empty :fruit :empty :empty :empty]
                              [:empty :empty :wall :empty :empty]
                              [:empty :empty :cheese :cheese :empty]
