@@ -1,10 +1,8 @@
 # Project Management
-
-- affichage du level
-
-## Backlog
 - bloquer sur mobile
 - mettre plein écran
+
+## Backlog
 - permettre la détection de fruits / lapins bloqués
 - ajouter l'affichage du level
 - ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
@@ -17,6 +15,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- affichage du level
 - animation du message de niveaux
 - cut game in multiple files (same namespace?)
 - make tests faster

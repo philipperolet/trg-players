@@ -129,7 +129,9 @@
 (defn show-score
   [score]
   (if (pos? score) (.play scoreSound))
-  [:div.score [:span (str "Score : " score)]])
+  [:div.score
+   [:span (str "Score: " score)]
+   [:span (str "Level: " (inc @level))]])
 
 (defn claby []
   [:div#lapyrinthe.row.justify-content-md-center

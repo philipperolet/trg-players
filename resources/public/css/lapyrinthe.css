@@ -46,8 +46,8 @@ body {
 		
 #lapyrinthe .score {
     position: relative;
-    height: 33px;
-    top: -28px;
+    height: 3.3em;
+    top: -3em;
     float: right;
     right: 874px;
     width: 6em;
