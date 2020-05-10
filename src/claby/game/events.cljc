@@ -29,27 +29,35 @@
             (s/and #(= (-> % :state ::gs/status) :active)))
   :ret ::gs/game-state)
 
+(defn- game-over [state new-position]
+  (-> state 
+      (assoc ::gs/player-position new-position) 
+      (assoc-in (into [::gb/game-board] new-position) :empty)
+      (assoc ::gs/status :over)))
+
 (defn move-player
   "Moves player according to provided direction on given state: returns
   state with updated player-position and board."
-  [{:keys [::gb/game-board ::gs/player-position], :as state} direction]
+  [{:as state, :keys [::gb/game-board ::gs/player-position ::gs/enemy-positions]}
+   direction]
   (let [new-position (move-position player-position direction (count game-board))]
-    (case (get-in game-board new-position) ;; depending on where player wants to move
-      :wall state ;; move fails
+    (if (some #{new-position} enemy-positions) ;; game over if moves on enemy
+      (game-over state new-position)
+
+      ;; depending on where player wants to move
+      (case (get-in game-board new-position) 
+        :wall state ;; move fails
       
-      :empty (assoc state ::gs/player-position new-position) ;; move occurs
+        :empty (assoc state ::gs/player-position new-position) ;; move occurs
       
-      :fruit (-> state ;; move occurs and score increases, possibly winning
-                 (assoc ::gs/player-position new-position)
-                 (update ::gs/score inc)
-                 (assoc-in (into [::gb/game-board] new-position) :empty)
-                 (#(if (= (gb/count-cells (% ::gb/game-board) :fruit) 0)
-                     (assoc % ::gs/status :won) %)))
+        :fruit (-> state ;; move occurs and score increases, possibly winning
+                   (assoc ::gs/player-position new-position)
+                   (update ::gs/score inc)
+                   (assoc-in (into [::gb/game-board] new-position) :empty)
+                   (#(if (= (gb/count-cells (% ::gb/game-board) :fruit) 0)
+                       (assoc % ::gs/status :won) %)))
       
-      :cheese (-> state ;; game over if eats cheese
-                  (assoc ::gs/player-position new-position) 
-                  (assoc-in (into [::gb/game-board] new-position) :empty)
-                  (assoc ::gs/status :over)))))
+        :cheese (game-over state new-position))))) ;; game over
 
 (defn move-player-path
   [state directions]

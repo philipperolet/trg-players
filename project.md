@@ -1,4 +1,5 @@
 # Project Management
+- faire bouger les ennemis
 - ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
 - permettre la détection de fruits / lapins bloqués
 
@@ -11,6 +12,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- ajouter des ennemis statiques
 - message de victoire
 - gestion pour être toujours plein écran
 - bloquer sur mobile

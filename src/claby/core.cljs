@@ -20,7 +20,8 @@
 (defonce levels
   [{:message "Lapinette enceinte doit manger un maximum de fraises"
     ::gg/density-map {:fruit 5
-                      :cheese 0}}
+                      :cheese 0}
+    :enemies [:mouse :drink :virus]}
    {:message "Attention au fromage non-pasteurisé !"
     ::gg/density-map {:fruit 5
                       :cheese 3}
@@ -78,14 +79,27 @@
 
 (set! (.-loop gameMusic) true)
 
+(defn add-enemies-style
+  [enemies]
+  (.remove (jq "#app style"))
+  (doall (map-indexed  
+          #(.append (jq "#app")
+                    (str "<style>td.enemy-" %1
+                         " {background-image: url(../img/" (name %2)
+                         ".gif)}</style>"))
+          enemies)))
+
 (defn start-game
   ([elt-to-fade callback]
    (.addEventListener js/window "keydown" move-player)
+   (add-enemies-style (get-in levels [@level :enemies]))
    (swap! game-state #(gs/init-game-state
-                       (gg/create-nice-board game-size (levels @level))))
+                       (gg/create-nice-board game-size (levels @level))
+                       (count (get-in levels [@level :enemies]))))
    (-> (.play gameMusic))
    (.fadeTo (jq "#h") 1000 1 callback)
    (.fadeOut (jq elt-to-fade) 1000))
+   
   
   ([elt-to-fade]
    (start-game elt-to-fade nil)))

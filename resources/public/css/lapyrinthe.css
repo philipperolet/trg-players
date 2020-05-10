@@ -40,6 +40,14 @@ body {
 
 #lapyrinthe td.player {
     background-image: url("../img/rabbit3.png");
+}
+
+#lapyrinthe td.player,
+#lapyrinthe td.enemy-0,
+#lapyrinthe td.enemy-1,
+#lapyrinthe td.enemy-2,
+#lapyrinthe td.enemy-3,
+#lapyrinthe td.enemy-4 {
     background-size: 25px 25px;
 }
 

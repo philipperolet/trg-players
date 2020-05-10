@@ -39,11 +39,11 @@
 
       (s/and (fn [gb] (comment "lines and rows have same size")
                (every? #(= (count %) (count gb)) gb))
-             (fn [gb] (comment "At least 1 empty cell")
+             (fn [gb] (comment "At least 2 empty cells")
                ;; counts cells without using  the funcion count-cells
                ;; to avoid cyclic reference since count-cells spec
                ;; relies on ::game-board
-               (< 0 (->> gb (reduce into) (filter #(= % :empty)) count))))
+               (< 1 (->> gb (reduce into) (filter #(= % :empty)) count))))
       
       (s/with-gen (fn [] test-board-generator))))
 

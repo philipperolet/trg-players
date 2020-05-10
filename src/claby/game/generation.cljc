@@ -68,8 +68,8 @@
                    :element (s/and ::gb/game-cell #(not= % :empty))
                    :n pos-int?)
             (s/and (fn [args]
-                     (comment "At least n+1 empty cells so 1 empty cell remain")
-                     (>= (gb/count-cells (:board args) :empty) (inc (:n args))))))
+                     (comment "At least n+2 empty cells so 2 empty cells remain")
+                     (>= (gb/count-cells (:board args) :empty) (+ 2 (:n args))))))
   :ret ::gb/game-board
   :fn (fn [{:keys [ret] {:keys [board element n]} :args}]
         (comment "Exactly n more element")
@@ -157,7 +157,7 @@
                    :level (s/keys :req [::density-map]))
             (s/with-gen #(gen/tuple
                           gb/test-board-size-generator
-                          (gen/hash-map ::density-map (s/gen ::density-map)))))
+                          (s/gen (s/keys :req [::density-map])))))
   :ret ::gb/game-board)
 
 (defn create-nice-board
