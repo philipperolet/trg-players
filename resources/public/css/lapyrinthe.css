@@ -123,16 +123,32 @@ body {
 .game-over { background-color: black; }
 .game-won, .game-nextlevel { background-color: white; }
 
-.game-over img, .game-won img, .game-nextlevel img {
+.game-over img, .game-won img, .game-nextlevel img, .game-won span {
     position: relative;
     margin-top: 10%;
     width: 33%;
     left: 33%;
     display: block;
-}
-.game-nextlevel img {
     border-radius: 100%;
 }
+
+.game-won p {
+    font-family: "Courier New";
+    font-weight: 900;
+}
+.game-won p br {
+    padding-top: 0.3em;
+}
+.game-won p.slide9 {
+    position: relative;
+    top: -2em;
+    background-color: white;
+    color: white;
+}
+
+.game-nextlevel img {
+}
+
 .game-over button {
     margin-top: 1em;
     color: black;

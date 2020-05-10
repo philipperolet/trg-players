@@ -1,5 +1,4 @@
 # Project Management
-- message de victoire
 - ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
 - permettre la détection de fruits / lapins bloqués
 
@@ -12,6 +11,7 @@
 - refactor find-in-board to write it nicely
 
 ## Done
+- message de victoire
 - gestion pour être toujours plein écran
 - bloquer sur mobile
 - affichage du level

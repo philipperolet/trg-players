@@ -99,7 +99,7 @@
    (set! (.-onended (sounds status)) callback)
    (.play (sounds status))
    (.fadeTo (jq "#h") 500 0)
-   (.fadeIn (jq (str ".game-" (name status))) 2000 in-between-callback))
+   (.fadeIn (jq (str ".game-" (name status))) 1000 in-between-callback))
 
   ([status]
    (animate-game status nil nil)))
@@ -110,7 +110,48 @@
   
 (defn next-level-callback []
   (.animate (jq "#h h2.subtitle") (clj->js {:top "0em" :font-size "1.2em"}) 2500))
-  
+
+(defn final-animation [i]
+  (cond
+
+    (< i 6)
+    (do (.remove (jq ".game-won img"))
+        (.append (jq ".game-won") (str "<img src=\"img/ending/" i ".gif\">"))
+        (-> (jq ".game-won img")
+            (.hide)
+            (.fadeIn 500)
+            (.delay 4300)
+            (.fadeOut 500 #(final-animation (inc i)))))
+
+    (= i 6)
+    (do (.remove (jq ".game-won img"))
+        (.append (jq ".game-won") "<span><p>BIEN<br/>OUEJ!</p></span>")
+        (-> (jq ".game-won span p")
+            (.css "font-size" "0.1em")
+            (.animate
+             (clj->js {:font-size "3em"})
+             (clj->js
+              {:duration 1000
+               :step (fn [now fx]
+                       (this-as this
+                         (.css (jq this) "transform" (str "rotate(" (* now 360) "deg)"))))}))
+            (.delay 2000)
+            (.fadeOut 500 #(final-animation 7))))
+
+    (= i 7)
+    (do (.append (jq ".game-won") (str "<img src=\"img/ending/6.gif\">"))
+        (.append (jq ".game-won") "<p>The end.</p>")
+        (.append (jq ".game-won") "<p class=\"slide9\">Hiding text</p>")
+        (-> (jq ".game-won img")
+            (.hide)
+            (.fadeIn 500 #(final-animation 8))))
+
+    (= i 8)
+    (do (.animate (jq ".game-won p.slide9") (clj->js {:left "30em"}) 2000))))
+    
+
+
+
 (defn game-transition [status]
   (cond
     (and (= status :won) (< (inc @level) (count levels)))
@@ -119,7 +160,10 @@
                       between-levels)
         (swap! level inc))
     
-    (some #{status} #{:won :over})
+    (= status :won)
+    (animate-game status nil #(final-animation 0))
+  
+    (= status :over)
     (animate-game status))
   [:div])
 
@@ -153,6 +197,10 @@
 
 (defn mount [el]
   (.click (jq ".game-over button") #(start-game ".game-over"))
+  #_(do (comment "Test ending")
+      (.hide (jq "#surprise"))
+      (.show (jq ".game-won"))
+      (final-animation 6))
   (.click (jq "#surprise img")
           (fn []
             (.click (jq "#surprise img") nil)
