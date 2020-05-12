@@ -4,9 +4,18 @@ body {
 #lapy-arrows {
     position: fixed;
 }
-#lapy-arrows img {
+#lapy-arrows > img {
     height: 70px;
 }
+#lapy-arrows button {
+    margin: 1em;
+    display: block;
+    border: 1px solid black;
+}
+#lapy-arrows button img {
+    height: 45px;
+}
+		
 
 #lapyrinthe {
     margin-top: 1em;

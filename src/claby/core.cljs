@@ -4,6 +4,7 @@
   See game.cljs for more about the game."
   (:require
    [goog.dom :as gdom]
+   [clojure.string :as cstr]
    [clojure.test.check]
    [clojure.test.check.properties]
    [cljs.spec.alpha :as s]
@@ -16,6 +17,9 @@
    [claby.game.generation :as gg]))
 
 (defonce game-size 27)
+
+(defonce enemies-css-selector
+  (cstr/join ", " (map #(str "#lapyrinthe table td.enemy-" %) (range 10))))
 
 (defonce levels
   [{:message "Lapinette enceinte doit manger un maximum de fraises"
@@ -35,16 +39,16 @@
                       :cheese 3}
     :message-color "darkmagenta"
     :enemies [:drink :mouse :mouse]}
-   {:message "Le covid ça fait peur"
+   {:message "Le covid ça fait peur!"
     ::gg/density-map {:fruit 5
                       :cheese 3}
     :message-color "darkcyan"
     :enemies [:mouse :virus :virus]}
-   {:message "Allez on passe aux choses sérieuses."
+   {:message "Allez on arrête de déconner."
     ::gg/density-map {:fruit 5
-                      :cheese 3}
+                      :cheese 5}
     :message-color "darkgreen"
-    :enemies [:drink :virus :virus :mouse :mouse]}])
+    :enemies [:drink :drink :virus :virus :mouse :mouse]}])
 
 (defonce game-state (atom {}))
 (defonce level (atom 0))
@@ -115,13 +119,18 @@
                        (gg/create-nice-board game-size (levels @level))
                        (count (get-in levels [@level :enemies]))))
    (-> (.play gameMusic))
-   (.fadeTo (jq "#h") 1000 1 callback)
+   
+   (.fadeTo (jq "#h") 1000 1
+            (fn []
+              (swap! game-state #(assoc % ::gs/status :active))
+              (when callback (callback))))
    (.fadeOut (jq elt-to-fade) 1000))
    
   
   ([elt-to-fade]
    (start-game elt-to-fade nil)))
   
+(defonce volume-on (atom true))
 
 (defn animate-game
   ([status callback in-between-callback]
@@ -129,20 +138,26 @@
    (.removeEventListener js/window "keydown" move-player) ;; freeze player
    (.pause gameMusic)
    (set! (.-onended (sounds status)) callback)
-   (.play (sounds status))
-   (.fadeTo (jq "#h") 500 0)
-   (.fadeIn (jq (str ".game-" (name status))) 1000 in-between-callback))
+   
+   (if (@volume-on) (.play (sounds status)))
+   (.setTimeout js/window
+                (fn []
+                  (.fadeTo (jq "#h") 500 0)
+                  (.fadeIn (jq (str ".game-" (name status))) 1000 in-between-callback))
+                1000))
 
   ([status]
    (animate-game status nil nil)))
 
 (defn between-levels []
+  (.css (jq "#h h2.subtitle") (clj->js {:top "" :font-size ""}))
   (.addClass (jq "#h h2.subtitle") "initial")
   (.css (jq "#h h2.subtitle span") "color" (get-in levels [@level :message-color])))
   
 (defn next-level-callback []
   (.animate (jq "#h h2.subtitle") (clj->js {:top "0em" :font-size "1.2em"}) 2500
-            #(.removeClass (jq "#h h2.subtitle") "initial")))
+            (fn []
+              (.removeClass (jq "#h h2.subtitle") "initial"))))
 
 (defn final-animation [i]
   (cond
@@ -188,7 +203,7 @@
   #_"Defines possible game transitions & callbacks"
   {:init nil
    :active nil})
-                              
+
 (defn game-transition [status]
   (cond
     (and (= status :won) (< (inc @level) (count levels)))
@@ -209,7 +224,9 @@
 
 (defn show-score
   [score]
-  (if (pos? score) (.play scoreSound))
+  (when (pos? score)
+    (.load scoreSound)
+    (.play scoreSound))
   [:div.score
    [:span (str "Score: " score)]
    [:br]
@@ -239,10 +256,22 @@
          (keep-indexed #(if (= 0 (mod @game-step (enemy-move-interval %2))) %1))
          (reduce ge/move-enemy-random @game-state)
          (reset! game-state))))
-  
-(defn mount [el]
-  (.click (jq ".game-over button") #(start-game ".game-over"))
 
+(defn- volume-toggle []
+  (if @volume-on
+    (do (.pause gameMusic)
+        (.remove (jq "#lapy-arrows button img"))
+        (.append (jq "#lapy-arrows button") "<img src=\"img/mute.png\">"))
+    (do (.play gameMusic)
+        (.remove (jq "#lapy-arrows button img"))
+        (.append (jq "#lapy-arrows button") "<img src=\"img/volume.png\">")))
+  (swap! volume-on not))
+
+(defn mount [el]
+  (.click (jq ".game-over button")
+          (fn []
+            (start-game ".game-over")))
+  (.click (jq "#lapy-arrows button") volume-toggle)
   #_(do (comment "Test ending")
       (.hide (jq "#surprise"))
       (.show (jq ".game-won"))
