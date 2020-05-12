@@ -20,13 +20,31 @@
 (defonce levels
   [{:message "Lapinette enceinte doit manger un maximum de fraises"
     ::gg/density-map {:fruit 5
-                      :cheese 0}
-    :enemies [:mouse :drink :virus]}
+                      :cheese 0}}
    {:message "Attention au fromage non-pasteurisé !"
     ::gg/density-map {:fruit 5
                       :cheese 3}
     :message-color "darkgoldenrod"}
-   ])
+   {:message "Evite les apéros alcoolisés"
+    ::gg/density-map {:fruit 5
+                      :cheese 3}
+    :message-color "darkblue"
+    :enemies [:drink :drink]}
+   {:message "Les souris ont infesté la maison!"
+    ::gg/density-map {:fruit 5
+                      :cheese 3}
+    :message-color "darkmagenta"
+    :enemies [:drink :mouse :mouse]}
+   {:message "Le covid ça fait peur"
+    ::gg/density-map {:fruit 5
+                      :cheese 3}
+    :message-color "darkcyan"
+    :enemies [:mouse :virus :virus]}
+   {:message "Allez on passe aux choses sérieuses."
+    ::gg/density-map {:fruit 5
+                      :cheese 3}
+    :message-color "darkgreen"
+    :enemies [:drink :virus :virus :mouse :mouse]}])
 
 (defonce game-state (atom {}))
 (defonce level (atom 0))
@@ -84,7 +102,7 @@
   (.remove (jq "#app style"))
   (doall (map-indexed  
           #(.append (jq "#app")
-                    (str "<style>td.enemy-" %1
+                    (str "<style>#lapyrinthe table td.enemy-" %1
                          " {background-image: url(../img/" (name %2)
                          ".gif)}</style>"))
           enemies)))
@@ -123,7 +141,8 @@
   (.css (jq "#h h2.subtitle span") "color" (get-in levels [@level :message-color])))
   
 (defn next-level-callback []
-  (.animate (jq "#h h2.subtitle") (clj->js {:top "0em" :font-size "1.2em"}) 2500))
+  (.animate (jq "#h h2.subtitle") (clj->js {:top "0em" :font-size "1.2em"}) 2500
+            #(.removeClass (jq "#h h2.subtitle") "initial")))
 
 (defn final-animation [i]
   (cond
@@ -165,7 +184,11 @@
     
 
 
-
+(defonce transitions
+  #_"Defines possible game transitions & callbacks"
+  {:init nil
+   :active nil})
+                              
 (defn game-transition [status]
   (cond
     (and (= status :won) (< (inc @level) (count levels)))
@@ -206,17 +229,28 @@
    [:div.col.col-lg-2]
    [game-transition (@game-state ::gs/status)]]))
 
+(defonce game-step (atom 0))
+(defonce enemy-move-interval {:drink 4 :mouse 2 :virus 1})
 
-
-
+(defn move-enemies []
+  (swap! game-step inc)
+  (when (= :active (@game-state ::gs/status))
+    (->> (get-in levels [@level :enemies])
+         (keep-indexed #(if (= 0 (mod @game-step (enemy-move-interval %2))) %1))
+         (reduce ge/move-enemy-random @game-state)
+         (reset! game-state))))
+  
 (defn mount [el]
   (.click (jq ".game-over button") #(start-game ".game-over"))
+
   #_(do (comment "Test ending")
       (.hide (jq "#surprise"))
       (.show (jq ".game-won"))
       (final-animation 6))
+  (.setInterval js/window move-enemies 100)
   (.click (jq "#surprise img")
           (fn []
+            (.requestFullscreen (.-documentElement js/document))
             (.click (jq "#surprise img") nil)
             (start-game "#surprise" #(.fadeOut (jq "#h h1") 2000))))
   (render [claby] el))

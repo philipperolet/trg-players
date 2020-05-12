@@ -7,11 +7,14 @@
              #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
             [claby.game.board :as gb]
             [claby.game.state :as g]
-            [claby.game.state-test :refer [test-state test-size]]
-            [claby.game.events :as ge]))
+            [claby.game.events :as ge]
+            [claby.game.state-test :as gst]))
+
 
 (st/instrument)
-(check-all-specs claby.game.events)
+;; (check-all-specs claby.game.events)
+
+(defonce test-state (assoc gst/test-state ::g/status :active))
 
 (deftest move-player-basic
   (testing "Moves correctly up, down, right, left on canonical
@@ -21,11 +24,11 @@
         [0 0] :up
         [1 1] :right
         [2 0] :down
-        [1 (dec test-size)] :left)))
+        [1 (dec gst/test-size)] :left)))
 
   (testing "Multiple movement tests"
     (are [x y] (= x (::g/player-position (ge/move-player-path test-state y)))
-      [0 (- test-size 3)] [:left :left :left]
+      [0 (- gst/test-size 3)] [:left :left :left]
       [2 2] [:right :down :right :down]
       [0 0] [:left :down :up :right])))
 
@@ -37,7 +40,7 @@
       [0 0] :up ;; blocked by wall on other side
       [0 1] :right
       [1 0] :down
-      [0 (dec test-size)] :left)
+      [0 (dec gst/test-size)] :left)
     (is (= [0 0]
            (::g/player-position (ge/move-player-path test-state [:down :up :up])))))
 
@@ -46,7 +49,7 @@
           ;; creating test game with player encircled
           (-> test-state
               (assoc-in [::gb/game-board 0 1] :wall)
-              (assoc-in [::gb/game-board 0 (dec test-size)] :wall)
+              (assoc-in [::gb/game-board 0 (dec gst/test-size)] :wall)
               (assoc-in [::gb/game-board 1 0] :wall))]
       ;; blocked everywhere
       (are [x y] (= x (::g/player-position (ge/move-player test-state y)))

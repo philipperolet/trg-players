@@ -19,23 +19,21 @@ body {
 }
 
 #lapyrinthe td {
-    width: 25px;
-    height: 25px;
+    width: 23px;
+    height: 23px;
+    background-size: 23px 23px;
 }
 
 #lapyrinthe td.wall {
     background-image: url("../img/wall.png");
-    background-size: 25px 25px;
 }
 
 #lapyrinthe td.fruit {
     background-image: url("../img/strawberry.gif");
-    background-size: 25px 25px;
 }
 
 #lapyrinthe td.cheese {
     background-image: url("../img/cheese.gif");
-    background-size: 25px 25px;
 }
 
 #lapyrinthe td.player {
@@ -48,7 +46,6 @@ body {
 #lapyrinthe td.enemy-2,
 #lapyrinthe td.enemy-3,
 #lapyrinthe td.enemy-4 {
-    background-size: 25px 25px;
 }
 
 .board-icon {
@@ -86,7 +83,8 @@ body {
 
 #h h2.subtitle span, #h h1.intro {
     background-color: white;
-    opacity: 0.8;
+    opacity: 0.85;
+    font-weight: 900;
     border: 1px solid black;
     border-radius: 10px;
     padding: 0.5em;

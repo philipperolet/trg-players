@@ -23,8 +23,8 @@
 (def test-board-size-generator (gen/choose min-board-size max-test-board-size))
 
 (defn game-board-generator [size]
-  "Returns a board generator favoring empty cells (more than half)"
-  (-> (gen/one-of [(s/gen ::game-cell) (gen/return :empty)])
+  "Returns a board generator favoring empty cells (more than 2/3)"
+  (-> (gen/one-of [(s/gen ::game-cell) (gen/return :empty) (gen/return :empty)])
       (gen/vector size)
       (gen/vector size)))
 

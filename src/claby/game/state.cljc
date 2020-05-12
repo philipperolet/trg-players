@@ -1,8 +1,13 @@
 (ns claby.game.state
-  "Defines game state--a board, the player's position, a score, a game
-  status--and provide utilities to work on it"
+  "Defines game state--a board, the player's position, enemy positions,
+  a score and a status. Status can be:
+  - initial
+  - active: player and enemies can move
+  - over: player has lost
+  - won: player has won"
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
+            [clojure.set :as cset]
             [claby.game.board :as gb]))
 
 
@@ -13,22 +18,25 @@
 
 (s/def ::player-position ::gb/position)
 
-(s/def ::enemy-positions (s/coll-of ::gb/position :max-count max-enemies))
+(s/def ::enemy-positions (s/coll-of ::gb/position :kind vector? :max-count max-enemies))
 
 (s/def ::score nat-int?)
 
-(s/def ::status #{:active :over :won})
+(defonce game-statuses #{:initial :active :over :won})
+
+(s/def ::status game-statuses)
 
 (defn- random-status-generator
   "Generates a random status that fits board specs, notably won status conditions"
   [board]
   (if (zero? (gb/count-cells board :fruit))
     (gen/return :won)
-    (gen/such-that #(not= % :won) (s/gen ::status))))
+    (s/gen (cset/difference game-statuses #{:won}))))
   
 (defn- game-state-generator [size]
   (gen/bind
-   (gb/game-board-generator size)
+   (->> (gb/game-board-generator size)
+        (gen/such-that #(s/valid? ::gb/game-board %)))
    (fn [board]
      (gen/hash-map
       ::gb/game-board (gen/return board)
@@ -56,8 +64,9 @@
            (every? #(not= (get-in game-board %) :wall) enemy-positions))
 
          (fn [{:keys [::player-position ::enemy-positions ::status]}]
-           (comment "Game over if player and enemy on same position")
+           (comment "Game over if player and enemy on same position, except if game is won")
            (or (= status :over)
+               (= status :won)
                (every? #(not= % player-position) enemy-positions)))
          
          (fn [{:keys [::gb/game-board ::status]}]
@@ -79,7 +88,10 @@
                      (> (gb/count-cells (:board args) :fruit) 0))))
   :ret ::game-state
   :fn (s/and
-       #(= (-> % :args :board) (-> % :ret ::gb/game-board))
+       (fn [{{:keys [::gb/game-board ::status]} :ret, {:keys [board]} :args}]
+         (comment "Board and status correctly set")
+         (and (identical? game-board board)
+              (= status :initial)))
        (fn [{{:keys [::enemy-positions]} :ret,  {:keys [enemy-nb]} :args}]
          (comment "Enough enemies have been added")
          (= (count enemy-positions) enemy-nb))))
@@ -100,7 +112,8 @@
         (map #(gb/find-in-board board #{:empty} %))
         (keep #(if (not= starting-position %) %))
         (cycle)
-        (take enemy-nb))))
+        (take enemy-nb)
+        vec)))
 
 (defn init-game-state
   "Initializes a game state with given board, player at top/center of board
@@ -109,7 +122,7 @@
   (let [size (count board)
         starting-position (gb/find-in-board board #{:empty} (->> size (* 0.5) int (vector 5)))]
     {::score 0
-     ::status :active
+     ::status :initial
      ::enemy-positions (add-enemy-positions enemy-nb board starting-position)
      ::player-position starting-position
      ::gb/game-board board}))
