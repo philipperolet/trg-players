@@ -43,7 +43,7 @@
     ::gg/density-map {:fruit 5
                       :cheese 3}
     :message-color "darkcyan"
-    :enemies [:mouse :virus :virus]}
+    :enemies [:mouse :virus]}
    {:message "Allez on arrête de déconner."
     ::gg/density-map {:fruit 5
                       :cheese 5}
@@ -139,7 +139,7 @@
    (.pause gameMusic)
    (set! (.-onended (sounds status)) callback)
    
-   (if (@volume-on) (.play (sounds status)))
+   (if @volume-on (.play (sounds status)))
    (.setTimeout js/window
                 (fn []
                   (.fadeTo (jq "#h") 500 0)
@@ -150,7 +150,7 @@
    (animate-game status nil nil)))
 
 (defn between-levels []
-  (.css (jq "#h h2.subtitle") (clj->js {:top "" :font-size ""}))
+  (.css (jq "#h h2.subtitle") (clj->js {:top "" :font-size "" :opacity 1}))
   (.addClass (jq "#h h2.subtitle") "initial")
   (.css (jq "#h h2.subtitle span") "color" (get-in levels [@level :message-color])))
   
@@ -210,6 +210,7 @@
     (do (animate-game :nextlevel
                       (fn [] (start-game ".game-nextlevel" next-level-callback))
                       between-levels)
+        (.fadeTo (jq "#h h2.subtitle") 100 0)
         (swap! level inc))
     
     (= status :won)
@@ -276,7 +277,7 @@
       (.hide (jq "#surprise"))
       (.show (jq ".game-won"))
       (final-animation 6))
-  (.setInterval js/window move-enemies 100)
+  (.setInterval js/window move-enemies 130)
   (.click (jq "#surprise img")
           (fn []
             (.requestFullscreen (.-documentElement js/document))

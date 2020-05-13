@@ -28,9 +28,9 @@ body {
 }
 
 #lapyrinthe td {
-    width: 23px;
-    height: 23px;
-    background-size: 23px 23px;
+    width: 22px;
+    height: 22px;
+    background-size: 22px 22px;
 }
 
 #lapyrinthe td.wall {
