@@ -2,7 +2,8 @@
   "Defines game board as a matrix of game cells, and provides utilities
   to work on it"
   (:require [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]))
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.test.check.generators]))
 
 (defonce min-board-size 5)
 (defonce max-board-size 100)
@@ -144,3 +145,4 @@
   
   ([board cell-set]
    (find-in-board board cell-set [0 0])))
+

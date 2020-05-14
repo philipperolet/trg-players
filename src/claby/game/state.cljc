@@ -169,3 +169,54 @@
        (map-indexed #(get-html-for-line %1 %2 state))
        (concat [:tbody])
        vec))
+
+;; too expensive to check
+#_(s/fdef enjoyable-game?
+  :args (s/cat :state ::game-state)
+  :ret boolean?)
+
+(defn- explore-cell
+  [board size i value]
+  (let [row (int (/ i size))
+        positions-to-check
+        [(-> row (* size) (+ (mod (inc i) size)))
+         (-> row (* size) (+ (mod (dec i) size)))
+         (-> i (- size) (mod (* size size)))
+         (-> i (+ size) (mod (* size size)))]]
+  (cond 
+    (and (or (= value :empty) (= value :fruit))
+         (some #(or (= (nth board %) :mark) (= (nth board %) :marked)) positions-to-check))
+    :mark
+
+    (= value :mark)
+    :marked
+
+    true
+    value)))
+    
+  
+(defn enjoyable-game?
+  "Returns true if no fruit, player or enemy is locked inside
+  walls apart from the rest of the board. Does so by converting
+  enemy positions to fruit and checking if all fruits can be
+  reached from player position"
+  [{:as state, :keys [::gb/game-board ::player-position ::enemy-positions]}]
+
+  (let [size (count game-board)
+        explorable-board
+        (->> ;; turn all enemy positions to fruit
+         (reduce #(assoc-in %1 %2 :fruit) game-board enemy-positions) 
+         ;; start explo from player pos
+         (#(assoc-in % player-position :mark))
+         ;; flatten
+         (reduce into))]
+    
+    (loop [board explorable-board]
+      ;; if no more exploration return true iff no fruit left
+      (if (not (some #{:mark} board))
+        (= ;;#dbg ^{:break/when (= player-position [0 0])}
+           ((frequencies board) :fruit) nil)
+        
+        ;; else go on exploring, marking new elements according 
+        (recur (map-indexed #(explore-cell board size %1 %2) board))))))
+   

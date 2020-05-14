@@ -10,8 +10,8 @@
             [claby.game.board :as gb]
             [claby.game.generation :as gg]))
 
-(st/instrument)
-(check-all-specs claby.game.generation)
+;;(st/instrument)
+;;(check-all-specs claby.game.generation)
 
 (deftest generate-wall-randomly
   (testing "that walls are generated somewhat randomly")

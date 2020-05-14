@@ -7,8 +7,8 @@
              #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
             [claby.game.board :as g]))
 
-(st/instrument)
-(check-all-specs claby.game.board)
+;;(st/instrument)
+;;(check-all-specs claby.game.board)
 
 (def small-test-board
   [[:empty :empty :wall :empty :empty]
@@ -56,4 +56,3 @@
       [1 1] #{:fruit}
       [2 2] #{:wall}
       [2 2] #{:fruit :wall})))
-

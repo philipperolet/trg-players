@@ -11,6 +11,7 @@
    [cljs.spec.gen.alpha :as gen]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :refer [render]]
+   [reagent.dom.server :refer [render-to-static-markup]]
    [claby.game.board :as gb]
    [claby.game.state :as gs]
    [claby.game.events :as ge]
@@ -43,7 +44,7 @@
     ::gg/density-map {:fruit 5
                       :cheese 3}
     :message-color "darkcyan"
-    :enemies [:mouse :virus]}
+    :enemies [:virus :virus]}
    {:message "Allez on arrête de déconner."
     ::gg/density-map {:fruit 5
                       :cheese 5}
@@ -99,6 +100,8 @@
    :won (js/Audio. "won.mp3")
    :nextlevel (js/Audio. "nextlevel.wav")})
 
+(defonce music-on (atom true))
+
 (set! (.-loop gameMusic) true)
 
 (defn add-enemies-style
@@ -115,22 +118,23 @@
   ([elt-to-fade callback]
    (.addEventListener js/window "keydown" move-player)
    (add-enemies-style (get-in levels [@level :enemies]))
-   (swap! game-state #(gs/init-game-state
-                       (gg/create-nice-board game-size (levels @level))
-                       (count (get-in levels [@level :enemies]))))
-   (-> (.play gameMusic))
-   
-   (.fadeTo (jq "#h") 1000 1
-            (fn []
-              (swap! game-state #(assoc % ::gs/status :active))
-              (when callback (callback))))
-   (.fadeOut (jq elt-to-fade) 1000))
+   (.show (jq "#loading") 200
+          (fn [] 
+            (swap! game-state #(gg/create-nice-game
+                                game-size
+                                (levels @level)))
+            (.hide (jq "#loading"))
+            (if @music-on (-> (.play gameMusic)))
+            
+            (.fadeTo (jq "#h") 1000 1
+                     (fn []
+                       (swap! game-state #(assoc % ::gs/status :active))
+                       (when callback (callback))))
+            (.fadeOut (jq elt-to-fade) 1000))))
    
   
   ([elt-to-fade]
    (start-game elt-to-fade nil)))
-  
-(defonce volume-on (atom true))
 
 (defn animate-game
   ([status callback in-between-callback]
@@ -139,7 +143,7 @@
    (.pause gameMusic)
    (set! (.-onended (sounds status)) callback)
    
-   (if @volume-on (.play (sounds status)))
+   (.play (sounds status))
    (.setTimeout js/window
                 (fn []
                   (.fadeTo (jq "#h") 500 0)
@@ -173,11 +177,12 @@
 
     (= i 6)
     (do (.remove (jq ".game-won img"))
-        (.append (jq ".game-won") "<span><p>BIEN<br/>OUEJ!</p></span>")
-        (-> (jq ".game-won span p")
-            (.css "font-size" "0.1em")
+        (.append (jq ".game-won") "<img src=\"img/ouej.png\">")
+        (-> (jq ".game-won img")
+            (.css "height" "0.1em")
+            (.css "width" "0.1em")
             (.animate
-             (clj->js {:font-size "3em"})
+             (clj->js {:height "33%" :width "33%"})
              (clj->js
               {:duration 1000
                :step (fn [now fx]
@@ -187,15 +192,21 @@
             (.fadeOut 500 #(final-animation 7))))
 
     (= i 7)
-    (do (.append (jq ".game-won") (str "<img src=\"img/ending/6.gif\">"))
-        (.append (jq ".game-won") "<p>The end.</p>")
-        (.append (jq ".game-won") "<p class=\"slide9\">Hiding text</p>")
-        (-> (jq ".game-won img")
-            (.hide)
-            (.fadeIn 500 #(final-animation 8))))
+    (do (.remove (jq ".game-won img"))
+        (.append (jq ".game-won") (str "<img src=\"img/ending/6.gif\">"))
+        (let [end-par [:p.end [:span "The end."] [:br] [:span.slide "__The end__"]]
+              ps-par [:p.ps [:span "P.S. : C'est un garçon."][:br][:span.slide "__P.S. : C'est un garçon.__"]]]
+          (.append (jq ".game-won") (render-to-static-markup end-par))
+          (.append (jq ".game-won") (render-to-static-markup ps-par))
+          (-> (jq ".game-won img")
+              (.hide)
+              (.fadeIn 500 #(final-animation 8)))))
 
     (= i 8)
-    (do (.animate (jq ".game-won p.slide9") (clj->js {:left "30em"}) 2000))))
+    (.animate (jq ".game-won p.end span.slide") (clj->js {:left "5em"}) 2000
+              (fn []
+                (.setTimeout js/window
+                             #(.animate (jq ".game-won p.ps span.slide") (clj->js {:left "10em"}) 2000) 1000)))))
     
 
 
@@ -259,14 +270,14 @@
          (reset! game-state))))
 
 (defn- volume-toggle []
-  (if @volume-on
+  (if @music-on
     (do (.pause gameMusic)
         (.remove (jq "#lapy-arrows button img"))
         (.append (jq "#lapy-arrows button") "<img src=\"img/mute.png\">"))
     (do (.play gameMusic)
         (.remove (jq "#lapy-arrows button img"))
         (.append (jq "#lapy-arrows button") "<img src=\"img/volume.png\">")))
-  (swap! volume-on not))
+  (swap! music-on not))
 
 (defn mount [el]
   (.click (jq ".game-over button")
@@ -274,9 +285,9 @@
             (start-game ".game-over")))
   (.click (jq "#lapy-arrows button") volume-toggle)
   #_(do (comment "Test ending")
-      (.hide (jq "#surprise"))
-      (.show (jq ".game-won"))
-      (final-animation 6))
+       (.hide (jq "#surprise"))
+       (.show (jq ".game-won"))
+       (final-animation 6))
   (.setInterval js/window move-enemies 130)
   (.click (jq "#surprise img")
           (fn []

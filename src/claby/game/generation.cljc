@@ -6,6 +6,7 @@
             [clojure.spec.gen.alpha :as gen]
             [clojure.set :as cset]
             [claby.game.board :as gb]
+            [claby.game.state :as gs]
             [claby.game.events :as ge]))
 
 ;; Wall generation
@@ -175,3 +176,11 @@
         (#(iterate add-random-wall %))
         (nth nb-of-walls)
         (#(reduce-kv sow-by-density % (-> level ::density-map))))))
+
+(defn create-nice-game
+  "Creates a game state that is 'enjoyable', see state/enjoyable-game?"
+  [size level]
+  (->> #(gs/init-game-state (create-nice-board size level) (-> level (:enemies []) count))
+       repeatedly
+       (filter gs/enjoyable-game?)
+       first))

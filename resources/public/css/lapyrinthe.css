@@ -104,27 +104,39 @@ body {
     margin-left: 33%;
 }
 
-#surprise {
-    background-image: url("../img/rabbit-wallp.jpg");
-    background-repeat: repeat;
+#surprise, #loading {
     position: fixed;
     width: 100%;
     height: 100%;
-    z-index: 99;
+    z-index: 90;
+}
+#surprise {
+    background-image: url("../img/rabbit-wallp.jpg");
+    background-repeat: repeat;
 }
 
-#surprise img {
+#loading {
+    z-index: 99;
+    display: none;
+}
+
+#surprise img, #loading img {
     width: 25%;
     margin-left: 37.5%;
     margin-top: 5%;
     opacity: 0.7;
 }
 
+#loading img {
+    border-radius: 20px;
+    border: 5px solid black;
+}
+
 #surprise img:hover {
     opacity: 1;
 }
 
-			 
+
 .game-over, .game-won, .game-nextlevel {
     display: none;
     position: fixed;
@@ -138,7 +150,7 @@ body {
 .game-over { background-color: black; }
 .game-won, .game-nextlevel { background-color: white; }
 
-.game-over img, .game-won img, .game-nextlevel img, .game-won span {
+.game-over img, .game-won img, .game-nextlevel img {
     position: relative;
     margin-top: 10%;
     width: 33%;
@@ -154,11 +166,13 @@ body {
 .game-won p br {
     padding-top: 0.3em;
 }
-.game-won p.slide9 {
+.game-won p span.slide {
     position: relative;
-    top: -2em;
+    top: -1em;
+    font-size: 1.5em;
     background-color: white;
     color: white;
+    z-index: 10;
 }
 
 .game-nextlevel img {
