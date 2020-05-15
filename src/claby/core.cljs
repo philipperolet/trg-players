@@ -4,7 +4,7 @@
   See game.cljs for more about the game."
   (:require
    [goog.dom :as gdom]
-   [clojure.string :as cstr]
+   [clojure.string :as cstr :refer [split]]
    [clojure.test.check]
    [clojure.test.check.properties]
    [cljs.spec.alpha :as s]
@@ -113,6 +113,13 @@
                          " {background-image: url(../img/" (name %2)
                          ".gif)}</style>"))
           enemies)))
+
+(defn parse-params
+  "Parse URL parameters into a hashmap"
+  []
+  (let [param-strs (-> (.-location js/window) (split #"\?") last (split #"\&"))]
+    (into {} (for [[k v] (map #(split % #"=") param-strs)]
+               [(keyword k) v]))))
 
 (defn start-game
   ([elt-to-fade callback]
@@ -284,11 +291,14 @@
           (fn []
             (start-game ".game-over")))
   (.click (jq "#lapy-arrows button") volume-toggle)
+
   #_(do (comment "Test ending")
        (.hide (jq "#surprise"))
        (.show (jq ".game-won"))
        (final-animation 6))
-  (.setInterval js/window move-enemies 130)
+  (.setInterval js/window move-enemies
+                (int (get (parse-params) :tick "130")))
+  (reset! level (int (get (parse-params) :cheatlev "0")))
   (.click (jq "#surprise img")
           (fn []
             (.requestFullscreen (.-documentElement js/document))
