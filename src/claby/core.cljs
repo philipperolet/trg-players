@@ -296,11 +296,11 @@
        (.hide (jq "#surprise"))
        (.show (jq ".game-won"))
        (final-animation 6))
-  (.setInterval js/window move-enemies
-                (int (get (parse-params) :tick "130")))
   (reset! level (int (get (parse-params) :cheatlev "0")))
   (.click (jq "#surprise img")
           (fn []
+            (.setInterval js/window move-enemies
+                          (int (get (parse-params) :tick "130")))
             (.requestFullscreen (.-documentElement js/document))
             (.click (jq "#surprise img") nil)
             (start-game "#surprise" #(.fadeOut (jq "#h h1") 2000))))

@@ -1,17 +1,21 @@
 # Project Management
-- faire bouger les ennemis
-- ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
-- permettre la détection de fruits / lapins bloqués
+- séparer les codes de jeu humain vs jeu machine
+- create a random player on a smaller board and a way to run it accordingly
+
+
 
 ## Backlog
-- jouer sur mobile
+
 - tab should autocomplete
 - add walls & fruits with clicks
 - let tests be pretty-printed
 - convenient way of having tests in emacs
-- refactor find-in-board to write it nicely
 
 ## Done
+- test whether board creation is faster in java or clojure
+- faire bouger les ennemis
+- ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid
+- permettre la détection de fruits / lapins bloqués
 - ajouter des ennemis statiques
 - message de victoire
 - gestion pour être toujours plein écran
