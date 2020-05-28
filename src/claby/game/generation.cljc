@@ -180,7 +180,8 @@
 (defn create-nice-game
   "Creates a game state that is 'enjoyable', see state/enjoyable-game?"
   [size level]
-  (->> #(gs/init-game-state (create-nice-board size level) (-> level (:enemies []) count))
+  (->> #(gs/init-game-state (create-nice-board size level)
+                            (count (:enemies level [])))
        repeatedly
        (filter gs/enjoyable-game?)
        first))

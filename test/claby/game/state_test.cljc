@@ -8,8 +8,8 @@
             [claby.game.board :as gb]
             [claby.game.state :as g]))
 
-;;(st/instrument)
-;;(check-all-specs claby.game.state)
+(st/instrument)
+(check-all-specs claby.game.state)
 
 (def test-size 10)
 

@@ -11,8 +11,8 @@
             [claby.game.state-test :as gst]))
 
 
-;;(st/instrument)
-;;(check-all-specs claby.game.events)
+(st/instrument)
+(check-all-specs claby.game.events)
 
 (defonce test-state (assoc gst/test-state ::g/status :active))
 
