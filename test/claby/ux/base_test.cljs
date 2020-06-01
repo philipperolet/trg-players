@@ -7,7 +7,7 @@
     :refer-macros [instrument check]
     :refer [abbrev-result]]
    #_[claby.utils :refer-macros [check-all-specs]]
-   [claby.core :as c]))
+   [claby.ux.base :as c]))
 
 ;; (instrument)
 

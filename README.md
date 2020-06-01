@@ -1,6 +1,6 @@
 # Claby
 
-A simple game of eating fruits in a maze.
+A simple game of eating fruits in a maze. 
 
 ## Overview
 
@@ -9,14 +9,22 @@ The project uses Leiningen. See project.clj for requirements / dependencies and 
 
 ### Use ###
 - Install by cloning this rep.
-- Run with ``lein fig:build``
+- Run game intended for human, with lapy skin, with ``lein fig:build-lapy``
+- Run game intended for AI, with minimal skin with ``lein fig:build-mini``
+
 Move the player with arrow keys, or e - d - s - f keys
 
 ## Development
 
+### Project structure
+UX tools and entry points are in ``claby.ux``
+
+Game models and actions are in ``claby.game``
+
+### Use
 To get an interactive development environment run:
 
-    lein fig:build
+    lein fig:build-{mini|lapy}
 
 This will auto compile and send all changes to the browser without the
 need to reload. After the compilation process is complete, you will
@@ -33,7 +41,7 @@ To clean all compiled files:
 To create a production build run:
 
 	lein clean
-	lein fig:min
+	lein fig:prod
 
 
 ## License

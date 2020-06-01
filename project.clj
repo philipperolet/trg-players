@@ -14,8 +14,9 @@
   :source-paths ["src"]
 
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
-            "fig:build" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
-            "fig:min"   ["run" "-m" "figwheel.main" "-O" "none" "-bo" "dev"]
+            "fig:build-lapy" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
+            "fig:build-mini" ["trampoline" "run" "-m" "figwheel.main" "-b" "mini" "-r"]
+            "fig:prod"   ["run" "-m" "figwheel.main" "-O" "none" "-bo" "mini"]
             "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "claby.test-runner"]}
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.4"]

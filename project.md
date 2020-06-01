@@ -1,6 +1,7 @@
 # Project Management
-- séparer les codes de jeu humain vs jeu machine
-- create a random player on a smaller board and a way to run it accordingly
+## séparer les codes de jeu humain vs jeu machine
+
+## create a random player on a smaller board and a way to run it accordingly
 
 
 
@@ -12,6 +13,7 @@
 - convenient way of having tests in emacs
 
 ## Done
+- ajouter env d'exec mini
 - test whether board creation is faster in java or clojure
 - faire bouger les ennemis
 - ajouter un level apéro, 1 apéro + fromage, 1 2* apéro + covid

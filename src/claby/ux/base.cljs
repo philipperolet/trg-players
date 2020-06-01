@@ -1,7 +1,5 @@
-(ns ^:figwheel-hooks claby.core
-  "Entry point to run the Claby game.
-
-  See game.cljs for more about the game."
+(ns ^:figwheel-hooks claby.ux.base
+  "Main UX components to run the Claby game."
   (:require
    [goog.dom :as gdom]
    [clojure.string :as cstr :refer [split]]
@@ -18,9 +16,6 @@
    [claby.game.generation :as gg]))
 
 (defonce game-size 27)
-
-(defonce enemies-css-selector
-  (cstr/join ", " (map #(str "#lapyrinthe table td.enemy-" %) (range 10))))
 
 (defonce levels
   [{:message "Lapinette enceinte doit manger un maximum de fraises"
@@ -59,20 +54,6 @@
 
 ;;; Scroll if player moves too far up / down
 
-(s/fdef board-scroll
-  :args (s/cat :state ::gs/game-state)
-  :ret (s/or :double (s/double-in 0 1) :nil nil?))
-
-(defn board-scroll
-  "Returns the value of scroll needed so that player remains visible, as
-  a fraction of the window height. If player is on top third of board,
-  scroll to 0, on bottom-third, scroll to mid-page."
-  [{:keys [::gs/player-position ::gb/game-board], :as state}]
-  (let [size (count game-board)]
-    (cond
-      (< (player-position 0) (* size 0.4)) 0
-      (> (player-position 0) (* size 0.7)) 0.5)))
-
 (defn move-player
   "Moves player on the board by changing player-position"
   [e]
@@ -84,10 +65,7 @@
                     :no-movement)]
     (when (not= direction :no-movement)
       (.preventDefault e)
-      (swap! game-state ge/move-player direction)
-      #_(when-let [scroll-value (board-scroll @game-state)]
-        (.scroll js/window 0 (* scroll-value (.-innerHeight js/window)))))))
-
+      (swap! game-state ge/move-player direction))))
   
 ;;;
 ;;; Component & app rendering
@@ -238,9 +216,6 @@
     (animate-game status))
   [:div])
 
-(defn get-app-element []
-  (gdom/getElement "app"))
-
 (defn show-score
   [score]
   (when (pos? score)
@@ -291,11 +266,6 @@
           (fn []
             (start-game ".game-over")))
   (.click (jq "#lapy-arrows button") volume-toggle)
-
-  #_(do (comment "Test ending")
-       (.hide (jq "#surprise"))
-       (.show (jq ".game-won"))
-       (final-animation 6))
   (reset! level (int (get (parse-params) :cheatlev "0")))
   (.click (jq "#surprise img")
           (fn []
@@ -310,11 +280,8 @@
 ;; this is particularly helpful for testing this ns without launching the app
 
 (defn mount-app-element []
-  (when-let [el (get-app-element)]
+  (when-let [el (gdom/getElement "app")]             
     (mount el)))
-
-(mount-app-element)
-
 
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []
