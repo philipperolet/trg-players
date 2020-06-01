@@ -9,7 +9,6 @@
    [cljs.spec.gen.alpha :as gen]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :refer [render]]
-   [reagent.dom.server :refer [render-to-static-markup]]
    [claby.game.board :as gb]
    [claby.game.state :as gs]
    [claby.game.events :as ge]
@@ -49,10 +48,16 @@
 (defonce game-state (atom {}))
 (defonce level (atom 0))
 
+(defn parse-params
+  "Parse URL parameters into a hashmap"
+  []
+  (let [param-strs (-> (.-location js/window) (split #"\?") last (split #"\&"))]
+    (into {} (for [[k v] (map #(split % #"=") param-strs)]
+               [(keyword k) v]))))
+
+
 ;;; Player movement
 ;;;;;;
-
-;;; Scroll if player moves too far up / down
 
 (defn move-player
   "Moves player on the board by changing player-position"
@@ -70,179 +75,40 @@
 ;;;
 ;;; Component & app rendering
 ;;;
+
+(defprotocol ClapyUX
+  "Required UX functions to run Lapyrinthe."
+
+  (init [this] "Setup at the very beginning")
+  
+  (start-level [this] "Every time a level begins")
+  
+  (animate-transition [this transition-type]
+    "Animation when the game status changes. 3 possible transitions may occur:
+   - nextlevel (when level is won but there are next levels);
+   - over (when game is lost);
+   - won (when the last level is won).")
+
+  (score-update [this score] "Every time the score updates :)")
+  
+  (enemy-style [this type]
+    "How to style enemies (string with css style for the enemy type)"))
+
 (defonce jq (js* "$"))
-(defonce gameMusic (js/Audio. "neverever.mp3"))
-(defonce scoreSound (js/Audio. "coin.wav"))
-(defonce sounds
-  {:over (js/Audio. "over.wav")
-   :won (js/Audio. "won.mp3")
-   :nextlevel (js/Audio. "nextlevel.wav")})
-
-(defonce music-on (atom true))
-
-(set! (.-loop gameMusic) true)
 
 (defn add-enemies-style
-  [enemies]
+  [ux enemies]
   (.remove (jq "#app style"))
   (doall (map-indexed  
           #(.append (jq "#app")
-                    (str "<style>#lapyrinthe table td.enemy-" %1
-                         " {background-image: url(../img/" (name %2)
-                         ".gif)}</style>"))
+                    (str "<style>#lapyrinthe table td.enemy-" %1 " "
+                         (enemy-style ux (name %2))
+                         "</style>"))
           enemies)))
 
-(defn parse-params
-  "Parse URL parameters into a hashmap"
-  []
-  (let [param-strs (-> (.-location js/window) (split #"\?") last (split #"\&"))]
-    (into {} (for [[k v] (map #(split % #"=") param-strs)]
-               [(keyword k) v]))))
-
-(defn start-game
-  ([elt-to-fade callback]
-   (.addEventListener js/window "keydown" move-player)
-   (add-enemies-style (get-in levels [@level :enemies]))
-   (.show (jq "#loading") 200
-          (fn [] 
-            (swap! game-state #(gg/create-nice-game
-                                game-size
-                                (levels @level)))
-            (.hide (jq "#loading"))
-            (if @music-on (-> (.play gameMusic)))
-            
-            (.fadeTo (jq "#h") 1000 1
-                     (fn []
-                       (swap! game-state #(assoc % ::gs/status :active))
-                       (when callback (callback))))
-            (.fadeOut (jq elt-to-fade) 1000))))
-   
-  
-  ([elt-to-fade]
-   (start-game elt-to-fade nil)))
-
-(defn animate-game
-  ([status callback in-between-callback]
-   (.scroll js/window 0 0)
-   (.removeEventListener js/window "keydown" move-player) ;; freeze player
-   (.pause gameMusic)
-   (set! (.-onended (sounds status)) callback)
-   
-   (.play (sounds status))
-   (.setTimeout js/window
-                (fn []
-                  (.fadeTo (jq "#h") 500 0)
-                  (.fadeIn (jq (str ".game-" (name status))) 1000 in-between-callback))
-                1000))
-
-  ([status]
-   (animate-game status nil nil)))
-
-(defn between-levels []
-  (.css (jq "#h h2.subtitle") (clj->js {:top "" :font-size "" :opacity 1}))
-  (.addClass (jq "#h h2.subtitle") "initial")
-  (.css (jq "#h h2.subtitle span") "color" (get-in levels [@level :message-color])))
-  
-(defn next-level-callback []
-  (.animate (jq "#h h2.subtitle") (clj->js {:top "0em" :font-size "1.2em"}) 2500
-            (fn []
-              (.removeClass (jq "#h h2.subtitle") "initial"))))
-
-(defn final-animation [i]
-  (cond
-
-    (< i 6)
-    (do (.remove (jq ".game-won img"))
-        (.append (jq ".game-won") (str "<img src=\"img/ending/" i ".gif\">"))
-        (-> (jq ".game-won img")
-            (.hide)
-            (.fadeIn 500)
-            (.delay 4300)
-            (.fadeOut 500 #(final-animation (inc i)))))
-
-    (= i 6)
-    (do (.remove (jq ".game-won img"))
-        (.append (jq ".game-won") "<img src=\"img/ouej.png\">")
-        (-> (jq ".game-won img")
-            (.css "height" "0.1em")
-            (.css "width" "0.1em")
-            (.animate
-             (clj->js {:height "33%" :width "33%"})
-             (clj->js
-              {:duration 1000
-               :step (fn [now fx]
-                       (this-as this
-                         (.css (jq this) "transform" (str "rotate(" (* now 360) "deg)"))))}))
-            (.delay 2000)
-            (.fadeOut 500 #(final-animation 7))))
-
-    (= i 7)
-    (do (.remove (jq ".game-won img"))
-        (.append (jq ".game-won") (str "<img src=\"img/ending/6.gif\">"))
-        (let [end-par [:p.end [:span "The end."] [:br] [:span.slide "__The end__"]]
-              ps-par [:p.ps [:span "P.S. : C'est un garçon."][:br][:span.slide "__P.S. : C'est un garçon.__"]]]
-          (.append (jq ".game-won") (render-to-static-markup end-par))
-          (.append (jq ".game-won") (render-to-static-markup ps-par))
-          (-> (jq ".game-won img")
-              (.hide)
-              (.fadeIn 500 #(final-animation 8)))))
-
-    (= i 8)
-    (.animate (jq ".game-won p.end span.slide") (clj->js {:left "5em"}) 2000
-              (fn []
-                (.setTimeout js/window
-                             #(.animate (jq ".game-won p.ps span.slide") (clj->js {:left "10em"}) 2000) 1000)))))
-    
-
-
-(defonce transitions
-  #_"Defines possible game transitions & callbacks"
-  {:init nil
-   :active nil})
-
-(defn game-transition [status]
-  (cond
-    (and (= status :won) (< (inc @level) (count levels)))
-    (do (animate-game :nextlevel
-                      (fn [] (start-game ".game-nextlevel" next-level-callback))
-                      between-levels)
-        (.fadeTo (jq "#h h2.subtitle") 100 0)
-        (swap! level inc))
-    
-    (= status :won)
-    (animate-game status nil #(final-animation 0))
-  
-    (= status :over)
-    (animate-game status))
-  [:div])
-
-(defn show-score
-  [score]
-  (when (pos? score)
-    (.load scoreSound)
-    (.play scoreSound))
-  [:div.score
-   [:span (str "Score: " score)]
-   [:br]
-   [:span (str "Level: " (inc @level))]])
-
-(defn claby []
-  (if (re-find #"Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini"
-               (.-userAgent js/navigator))
-    [:h2.subtitle "Le jeu est prévu pour fonctionner sur ordinateur (mac/pc)"]
-
-    [:div#lapyrinthe.row.justify-content-md-center
-     [:h2.subtitle [:span (get-in levels [@level :message])]]
-     [:div.col.col-lg-2]
-     [:div.col-md-auto
-      [show-score (@game-state ::gs/score)]
-      [:table (gs/get-html-for-state @game-state)]]
-   [:div.col.col-lg-2]
-   [game-transition (@game-state ::gs/status)]]))
 
 (defonce game-step (atom 0))
 (defonce enemy-move-interval {:drink 4 :mouse 2 :virus 1})
-
 (defn move-enemies []
   (swap! game-step inc)
   (when (= :active (@game-state ::gs/status))
@@ -251,37 +117,81 @@
          (reduce ge/move-enemy-random @game-state)
          (reset! game-state))))
 
-(defn- volume-toggle []
-  (if @music-on
-    (do (.pause gameMusic)
-        (.remove (jq "#lapy-arrows button img"))
-        (.append (jq "#lapy-arrows button") "<img src=\"img/mute.png\">"))
-    (do (.play gameMusic)
-        (.remove (jq "#lapy-arrows button img"))
-        (.append (jq "#lapy-arrows button") "<img src=\"img/volume.png\">")))
-  (swap! music-on not))
+(defn start-game
+  [ux]
+  (.addEventListener js/window "keydown" move-player)
+  (add-enemies-style ux (get-in levels [@level :enemies]))
+  (.show
+   (jq "#loading")
+   200
+   (fn []
+     (swap! game-state #(gg/create-nice-game
+                         game-size
+                         (levels @level)))
+     (.hide (jq "#loading") 200)
+     (.setInterval js/window move-enemies
+                   (int (get (parse-params) :tick "130")))
+     (start-level ux))))
 
-(defn mount [el]
-  (.click (jq ".game-over button")
-          (fn []
-            (start-game ".game-over")))
-  (.click (jq "#lapy-arrows button") volume-toggle)
-  (reset! level (int (get (parse-params) :cheatlev "0")))
-  (.click (jq "#surprise img")
-          (fn []
-            (.setInterval js/window move-enemies
-                          (int (get (parse-params) :tick "130")))
-            (.requestFullscreen (.-documentElement js/document))
-            (.click (jq "#surprise img") nil)
-            (start-game "#surprise" #(.fadeOut (jq "#h h1") 2000))))
-  (render [claby] el))
+(defn game-transition
+  "Component rendering a change in game status. 3 possible transitions may occur:
+   - nextlevel (when level is won but there are next levels);
+   - over (when game is lost);
+   - won (when the last level is won)."
+  [ux status]
+  
+  ;; Get transition type from game status
+  (when-let [transition-type
+             (case status
+               :won (if (< (inc @level) (count levels))
+                      :nextlevel
+                      :won)
+               :over :over
+               nil)]
+
+    ;; render animation and component
+    (.removeEventListener js/window "keydown" move-player)
+    (if (= transition-type :nextlevel)
+      (swap! level inc))
+    (animate-transition ux transition-type)
+    [:div]))
+
+(defn show-score
+  [ux score]
+  (score-update ux score)
+  [:div.score
+   [:span (str "Score: " score)]
+   [:br]
+   [:span (str "Level: " (inc @level))]])
+
+(defn claby [ux]
+  (if (re-find #"Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini"
+               (.-userAgent js/navigator))
+    [:h2.subtitle "Le jeu est prévu pour fonctionner sur ordinateur (mac/pc)"]
+
+    [:div#lapyrinthe.row.justify-content-md-center
+     [:h2.subtitle [:span (get-in levels [@level :message])]]
+     [:div.col.col-lg-2]
+     [:div.col-md-auto
+      [show-score ux (@game-state ::gs/score)]
+      [:table (gs/get-html-for-state @game-state)]]
+   [:div.col.col-lg-2]
+   [game-transition ux (@game-state ::gs/status)]]))
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]             
-    (mount el)))
+    (render [claby] el)))
+
+(defn run-game
+  "Runs the Lapyrinthe game with the specified UX. There must be an 'app' element in the html page."
+  [ux]
+  {:pre [(gdom/getElement "app")]}
+  (reset! level (int (get (parse-params) :cheatlev "0")))
+  (init ux)
+  (render [claby ux] (gdom/getElement "app")))
 
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []

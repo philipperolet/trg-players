@@ -1,12 +1,14 @@
 # Project Management
-## séparer les codes de jeu humain vs jeu machine
 
-## create a random player on a smaller board and a way to run it accordingly
+#### séparer les codes de jeu humain vs jeu machine
 
+#### create a random player on a smaller board and a way to run it accordingly
+
+#### backend java pour aller plus vite sur les trucs?
 
 
 ## Backlog
-
+- remove libs from vcs to avoid useless commits / searchs?
 - tab should autocomplete
 - add walls & fruits with clicks
 - let tests be pretty-printed

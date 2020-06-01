@@ -3,20 +3,35 @@
 }
 
 #lapyrinthe td {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     background-color: black;
 }
 
 #lapyrinthe td.wall {
-    background-color: blue;
+    background-color: brown;
 }
 
 #lapyrinthe td.fruit {
     background-color: pink;
 }
 
+#lapyrinthe td.cheese {
+    background-color: blue;
+}
+
 #lapyrinthe td.player {
     background-color: yellow;
     border: 1px solid yellow;
+}
+
+#loading {
+    position: fixed;
+    top: 3em;
+    left: 3em;
+    font-size: 3em;
+    border: 2px solid black;
+    border-radius: 5px;
+    z-index: 10;
+    background-color: white;
 }
