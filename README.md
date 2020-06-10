@@ -4,17 +4,20 @@ A simple game of eating fruits in a maze and avoiding enemies, with 6 levels to 
 - by humans in a browser (**Lapyrinthe**);
 - by computers using CLI (**AI game**).
 
-## Overview
+## Setup
 
 ### Requirements ###
 - Clojure & clojurescript
 - Leiningen (who will take care of installing all other reqs)
 For more info on requirements / dependencies and which version of what you need to install, see `project.clj`
 
-### Use ###
+### Installation
 - Install by cloning this rep.
 
-#### Lapyrinthe ####
+## Usage
+
+### Lapyrinthe ###
+
 - Start game with niceties (sound, rabbits everywhere, animations) with ``lein fig:build-lapy``
 - Start game with minimal skin with ``lein fig:build-mini`` (intended for AI Game visualisation)
 
@@ -22,15 +25,22 @@ Move the player with arrow keys, or e - d - s - f keys. Game starts at level 1, 
 
 Cheat codes allow to start directly at a given level, or to slow down the enemies, by adding the query string `?cheatlev=X&tick=Y`
 
-#### AI game ####
+### AI game ###
+
 WIP
 
 ## Development
 
 ### Project structure
-UX tools and entry points are in ``claby.ux``
-
 Game models and actions are in ``claby.game``
+
+UX tools and entry points for **lapyrinthe** are in ``claby.ux``
+
+Code for **AI Game** is in ``claby.ai``
+
+### Architecture for AI Game
+
+![Architecture image](https://docs.google.com/drawings/d/e/2PACX-1vT1ogu40fw8SG1oWGnR4WCJE3kmnCFcYzwMuLwiAuGbJ1vb8V2M8JzLFYiwczdS6D6cYqsMLmmyFO-_/pub?w=960&h=720)
 
 ### Use
 To get an interactive development environment run:
