@@ -14,7 +14,7 @@
    [claby.game.events :as ge]
    [claby.game.generation :as gg]))
 
-(defonce game-size 27)
+(defonce game-size 15)
 
 (defonce levels
   [{:message "Lapinette enceinte doit manger un maximum de fraises"
