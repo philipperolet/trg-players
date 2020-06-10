@@ -1,11 +1,11 @@
 # Project Management
 
-#### séparer les codes de jeu humain vs jeu machine
+## Todo
+### AI Game (AIG) v0.1
+- Document what it should do in README.md
 
-#### create a random player on a smaller board and a way to run it accordingly
-
-#### backend java pour aller plus vite sur les trucs?
-
+### Lapyrinthe v1
+- Fix bug on level 3
 
 ## Backlog
 - remove libs from vcs to avoid useless commits / searchs?
@@ -15,6 +15,10 @@
 - convenient way of having tests in emacs
 
 ## Done
+### AI Game v1
+
+### General
+- séparer les codes de jeu humain vs jeu machine
 - ajouter env d'exec mini
 - test whether board creation is faster in java or clojure
 - faire bouger les ennemis

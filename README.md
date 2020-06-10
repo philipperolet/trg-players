@@ -1,18 +1,29 @@
 # Claby
 
-A simple game of eating fruits in a maze. 
+A simple game of eating fruits in a maze and avoiding enemies, with 6 levels to clear. The game can be played :
+- by humans in a browser (**Lapyrinthe**);
+- by computers using CLI (**AI game**).
 
 ## Overview
 
 ### Requirements ###
-The project uses Leiningen. See project.clj for requirements / dependencies and which version of what you need to install.
+- Clojure & clojurescript
+- Leiningen (who will take care of installing all other reqs)
+For more info on requirements / dependencies and which version of what you need to install, see `project.clj`
 
 ### Use ###
 - Install by cloning this rep.
-- Run game intended for human, with lapy skin, with ``lein fig:build-lapy``
-- Run game intended for AI, with minimal skin with ``lein fig:build-mini``
 
-Move the player with arrow keys, or e - d - s - f keys
+#### Lapyrinthe ####
+- Start game with niceties (sound, rabbits everywhere, animations) with ``lein fig:build-lapy``
+- Start game with minimal skin with ``lein fig:build-mini`` (intended for AI Game visualisation)
+
+Move the player with arrow keys, or e - d - s - f keys. Game starts at level 1, and if the player clears all levels 6 you will see the ending.
+
+Cheat codes allow to start directly at a given level, or to slow down the enemies, by adding the query string `?cheatlev=X&tick=Y`
+
+#### AI game ####
+WIP
 
 ## Development
 
