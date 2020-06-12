@@ -4,6 +4,7 @@
 ### AI Game (AIG) v0.1
 #### version 0.1.0: 
 1 game thread  qui loggue l'état initial, les actions, les player senses sur la sortie standard, et qui s'arrête quand le jeu finit; routine qui fait bouger aléatoirement le player toutes les 200 steps
+- jeu possible avec player aléatoire qui bouge toutes les secondes
 - ajouter le concept de steps, faire afficher le message toutes les 20 steps (de 100ms)
 
 #### v0.1.1 ####
@@ -24,6 +25,9 @@
 
 ## Done
 ### AI Game v0.1
+#### v0.1.0
+- visualisation logguée clean du jeu
+#### base
 - Document what it should do in README.md
 - commande lein qui démarre le main thread
 - démarre le game thread qui loggue l'état initial et affiche un message toutes les secondes
