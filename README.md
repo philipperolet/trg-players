@@ -9,6 +9,7 @@ A simple game of eating fruits in a maze and avoiding enemies, with 6 levels to 
 ### Requirements ###
 - Clojure & clojurescript
 - Leiningen (who will take care of installing all other reqs)
+
 For more info on requirements / dependencies and which version of what you need to install, see `project.clj`
 
 ### Installation
