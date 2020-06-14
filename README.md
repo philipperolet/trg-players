@@ -1,6 +1,6 @@
 # Claby
 
-A simple game of eating fruits in a maze and avoiding enemies, with 6 levels to clear. The game can be played :
+A simple game of eating fruits in a maze, avoiding unpasteurized cheese and moving enemies, with 6 levels to clear. The game can be played :
 - by humans in a browser (**Lapyrinthe**);
 - by computers using CLI (**AI game**).
 

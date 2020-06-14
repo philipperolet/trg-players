@@ -40,5 +40,5 @@
     (swap! game-state #(ge/move-player % (gen/generate (s/gen ::ge/direction))))
     (println "2 more secs")))
 
-(s/fdef run-step
-  :args (s/cat :state ::gs/game-state :movements
+#_(s/fdef run-step
+  :args (s/cat :state ::gs/game-state :movements))
