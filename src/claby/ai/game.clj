@@ -3,9 +3,9 @@
   the game, updating game state, providing player senses, executing
   player and enemies movement requests.
 
-  The game runs in discretized time, with a specified `step-duration`.
+  The game runs in discretized time, with a specified `game-step-duration`.
   At every `game-step`, the game checks whether movements are requested via the
-  `required-movements`, executes them and updates the `game-state`.
+  `requested-movements`, executes them and updates the `game-state`.
 
   The game makes no explicit attempt to synchronize movement requests
   reading and execution, meaning the player may see that a movement
@@ -22,28 +22,28 @@
             [claby.game.generation :as gg]
             [claby.utils :as u]))
 
-(def step-duration "length of a game step in miliseconds" 100)
-
 ;;; Game data spec & function
 ;;;;;;;
 
 (s/def ::game-step int?)
 
-(s/def ::required-movements (s/map-of ::ge/being ::ge/direction))
+(s/def ::requested-movements (s/map-of ::ge/being ::ge/direction))
 
 (s/def ::game-data
-  (-> (s/keys :req [::gs/game-state ::game-step ::required-movements])
+  (-> (s/keys :req [::gs/game-state ::game-step ::requested-movements])
       
-      (s/and (fn [{:keys [::required-movements]
+      (s/and (fn [{:keys [::requested-movements]
                    {:keys [::gs/enemy-positions]} ::gs/game-state}]
                (comment "for all movements,  enemy index < enemy count")
                (every? #(or (= % :player) (< % (count enemy-positions)))
-                       (keys required-movements))))))
+                       (keys requested-movements))))))
                        
 
-(def game-data (atom {::game-state {}
-                      ::game-step 0
-                      ::required-movements {}}))
+(defn create-game-with-state [game-state]
+  {::gs/game-state game-state
+   ::game-step 0
+   ::requested-movements {}})
+
 
 (defn data->string
   "Converts game data to nice string"
@@ -54,21 +54,11 @@
 ;;; Running the game
 ;;;;;;
 
-(add-watch game-data
+#_(add-watch game-data
            :display-data-after-change
            (fn [_ _ old-data new-data]
-             (when-not (empty? (::required-movements old-data))
+             (when-not (empty? (::requested-movements old-data))
                (println (data->string new-data)))))
-
-#_(defn run-game
-  "Main game loop"
-  []
-  (println "The game begins.")
-  (reset! game-data (gg/create-nice-game 10 {::gg/density-map {:fruit 5}}))
-  (while true
-    (Thread/sleep 2000)
-    (swap! game-data #(ge/move-player % (gen/generate (s/gen ::ge/direction))))
-    (println "2 more secs")))
 
 (s/fdef run-step
   :args (-> (s/cat :game-data ::game-data)
@@ -80,20 +70,32 @@
          (= (::game-step ret) (inc (::game-step game-data))))
        (fn [{:keys [:ret]}]
          (comment "Movements cleared")
-         (empty? (::required-movements ret)))))
-
+         (empty? (::requested-movements ret)))))
 
 (defn run-step
-  "Runs a step of the game : execute movements, clear required-movements,
+  "Runs a step of the game : execute movements, clear requested-movements,
   increase step."
-  [{:as game-data, :keys [::required-movements]}]
+  [{:as game-data, :keys [::requested-movements]}]
   (-> game-data
       
       ;; execute movements, stop if ever game ends
       (update 
        ::gs/game-state
        (partial u/reduce-until #(not= (::gs/status %) :active) ge/move-being)
-       required-movements)
+       requested-movements)
       
-      (assoc ::required-movements {})
+      (assoc ::requested-movements {})
       (update ::game-step inc)))
+
+(defn active?
+  [game-data]
+  (= :active (-> game-data ::gs/game-state ::gs/status)))
+
+(defn run-game
+  "Main game loop"
+  [game-data-atom game-step-time]
+  (println "The game begins.")
+  (while (active? @game-data-atom)
+    (Thread/sleep game-step-time)
+    (swap! game-data-atom run-step))
+  @game-data-atom)
