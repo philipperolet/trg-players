@@ -3,7 +3,7 @@
 ## Todo
 ### AI Game (AIG) v0.1
 #### version 0.1.0: 
-- lancer interactivement avec par défaut un affichage toutes les 2s
+- régler le pb des tests
 - permettre l'ajustement de la quantité de murs
 - possibilité de pauser / reprendre la partie, et de faire du step-by-step
 - documenter et passer à la version suivante
@@ -29,6 +29,7 @@
 ## Done
 ### AI Game v0.1
 #### v0.1.0
+- lancer interactivement avec par défaut un affichage toutes les 2s
 - mettre un log de début & un de fin
 - passer l'affichage en log
 - rationnaliser les args

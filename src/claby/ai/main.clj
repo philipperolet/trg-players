@@ -26,19 +26,38 @@
     :default 12
     :parse-fn #(Integer/parseInt %)]
    ["-i" "--interactive"
-    "Flag to run the game in interactive mode (see README.md)"]
+    "Run the game in interactive mode (see README.md)"]
+   ["-n" "--number-of-steps STEPS"
+    "Number of steps in-between interaction. Only used in interactive mode."
+    :default 100
+    :parse-fn #(Integer/parseInt %)]
    ["-h" "--help"]])
+
+(defn- do-interactive-actions [game-data]
+  (println (aig/data->string game-data)))
+
+(defn- setup-interactivity [game-data-atom number-of-steps]
+  (add-watch game-data-atom :setup-interactivity
+             (fn [_ _ old-data {:as new-data, :keys [::aig/game-step]}]
+               (when (and (< (old-data ::aig/game-step) game-step)
+                          (= (mod game-step number-of-steps) 0))
+                 (do-interactive-actions new-data)))))
 
 (defn run
   "Runs a game with `initial-data` matching game-data spec (see game.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
   ([opts initial-state]
    (log/info "Running game with the following options:\n" opts)
+
+   ;; setup game
    (let [game-data (atom (aig/create-game-with-state initial-state))]
      (swap! game-data assoc-in [::gs/game-state ::gs/status] :active)
+     (if (opts :interactive)
+       (setup-interactivity game-data (opts :number-of-steps)))
+     
+     ;; run game & player threads & return game thread result
      (let [game-result (future (aig/run-game game-data (opts :game-step-duration)))]
        (future (aip/run-player game-data (opts :player-step-duration)))
-       (shutdown-agents)
        @game-result)))
    
   ([opts]
@@ -49,6 +68,12 @@
 (defn -main [& args]
   (let [opts (ctc/parse-opts args cli-options)]
     (cond
-      (-> opts :options :help) (println (opts :summary))
-      (opts :errors) (println (str/join "\n" (opts :error)))
-      :else (run (opts :options)))))
+      (-> opts :options :help)
+      (println (opts :summary))
+      
+      (opts :errors)
+      (println (str/join "\n" (opts :error)))
+      
+      :else
+      ((run (opts :options))
+       (shutdown-agents)))))

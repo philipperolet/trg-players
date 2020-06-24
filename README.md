@@ -36,9 +36,9 @@ Run `lein run -h` to print CLI arguments. They are also described in `cli-option
 ### TODO : Programmatic mode - interactive mode ###
 In programmatic mode, game only displays initial and end states.
 
-Game can be run interactively using the `-i` flag. In that case:
-- user can pause with p, continue with c, quit with q;
-- state is displayed every 2s.
+Game can be run interactively using the `--interactive` flag. In that case, every X (optionally specified) steps:
+- user can step with s, continue with c, finish with f, abort with q;
+- game state is displayed.
 
 ## Development
 

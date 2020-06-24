@@ -53,12 +53,6 @@
 ;;; Running the game
 ;;;;;;
 
-#_(add-watch game-data
-           :display-data-after-change
-           (fn [_ _ old-data new-data]
-             (when-not (empty? (::requested-movements old-data))
-               (println (data->string new-data)))))
-
 (s/fdef run-step
   :args (-> (s/cat :game-data ::game-data)
             (s/and #(= (-> % :game-data ::gs/game-state ::gs/status) :active)))
