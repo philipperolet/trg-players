@@ -3,19 +3,20 @@
 ## Todo
 ### AI Game (AIG) v0.1
 #### version 0.1.0: 
-1 game thread  qui loggue l'état initial, les actions, les player senses sur la sortie standard, et qui s'arrête quand le jeu finit; routine qui fait bouger aléatoirement le player toutes les 200 steps
-- remettre la watch
-- interruption avec une frappe
-  
+- mettre un log de début & un de fin
+- passer l'affichage en log
+- lancer interactivement avec par défaut un affichage toutes les 2s
+- permettre l'ajustement de la quantité de murs
+- possibilité de pauser / reprendre la partie, et de faire du step-by-step
+- documenter et passer à la version suivante
+
+#### v0.1.1 ####
+- gestion des débordements de timing
 - Step de la partie à 10ms
 - ajouter player senses
 - Step de la partie à 1ms
-
-#### v0.1.1 ####
-- remplacer la routine par un player thread qui prend l'entrée standard et transmet au game thread
-
-- puis une autre qui joue aléatoirement
 - ajouter le paramétrage de niveau et de taille
+
 #### ajouter le stockage
 #### ajouter le thread de visu
 #### Créer un joueur pas trop débile
@@ -30,6 +31,7 @@
 ## Done
 ### AI Game v0.1
 #### v0.1.0
+- rationnaliser les args
 - test & code d'une partie
 - visualisation logguée clean du jeu
 - jeu possible avec player aléatoire qui bouge toutes les 2 secondes

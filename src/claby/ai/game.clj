@@ -1,18 +1,13 @@
 (ns claby.ai.game
-  "Game thread with main game loop, responsible for starting/ending
+  "Game thread with main game loop, responsible for setting up/ending
   the game, updating game state, providing player senses, executing
   player and enemies movement requests.
 
   The game runs in discretized time, with a specified `game-step-duration`.
-  At every `game-step`, the game checks whether movements are requested via the
+  At every `game-step`, the game checks whether movements are requested via
   `requested-movements`, executes them and updates the `game-state`.
 
-  The game makes no explicit attempt to synchronize movement requests
-  reading and execution, meaning the player may see that a movement
-  request has been read, but the player senses may not have been
-  updated.
-
-  However, an execution that takes longer than the duration of a step
+  *TODO*: An execution that takes longer than the duration of a step
   will be considered an exception."
   
   (:require [clojure.spec.alpha :as s]
@@ -24,6 +19,9 @@
 
 ;;; Game data spec & function
 ;;;;;;;
+
+;; Time interval (ms) between each game step (see claby.ai.game)
+(s/def ::game-step-duration (s/int-in 1 1000))
 
 (s/def ::game-step int?)
 
@@ -92,10 +90,11 @@
   (= :active (-> game-data ::gs/game-state ::gs/status)))
 
 (defn run-game
-  "Main game loop"
-  [game-data-atom game-step-time]
+  "Main game loop."
+  [game-data-atom game-step-duration]
+  {:pre [(s/valid? ::game-step-duration game-step-duration)]}
   (println "The game begins.")
   (while (active? @game-data-atom)
-    (Thread/sleep game-step-time)
+    (Thread/sleep game-step-duration)
     (swap! game-data-atom run-step))
   @game-data-atom)

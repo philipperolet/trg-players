@@ -12,16 +12,17 @@
 (check-all-specs claby.ai.main)
 
 (deftest run-game-test
-  (testing "Runs a basic game (removing cheese & enemies), expects the game to finish well"
+  (testing "Runs a basic game (removing cheese & enemies), expects the
+  game to finish well"
     (let [test-state (-> gst/test-state-2
                          (assoc-in [::gb/game-board 3 2] :fruit)
                          (assoc-in [::gb/game-board 3 3] :fruit)
                          (assoc ::gs/enemy-positions []))
-          initial-data (gga/create-game-with-state test-state)
-          game-result (aim/start-game initial-data
-                                      {:game-step-duration 50
-                                       :player-step-duration 100})]
-      (is (#{:won} (-> game-result ::gs/game-state ::gs/status)))
+          game-result (aim/run
+                        {:game-step-duration 50
+                         :player-step-duration 100}
+                        test-state)]
+      (is (= :won (-> game-result ::gs/game-state ::gs/status)))
       
       (is (< 5 (-> game-result ::gga/game-step)))
       

@@ -10,6 +10,9 @@
             [claby.game.events :as ge]
             [claby.game.state :as gs]))
 
+;; Time interval (ms) between each move request from player
+(s/def ::player-step-duration (s/int-in 1 1000))
+
 (defn request-movement []
   (gen/generate (s/gen ::ge/direction)))
 
@@ -17,6 +20,7 @@
   "Basic player loop. `player-step-duration` is the inverse frequency of
   player move requests."
   [game-data-atom player-step-duration]
+  {:pre [(s/valid? ::player-step-duration player-step-duration)]}
   (while (gga/active? @game-data-atom)
     (Thread/sleep player-step-duration)
     (swap! game-data-atom assoc-in [::gga/requested-movements :player] (request-movement))))

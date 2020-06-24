@@ -11,6 +11,7 @@ in a browser (**Lapyrinthe**), or by computers using CLI (**AI game**)."
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.758"]
                  [org.clojure/test.check "1.0.0"]
+                 [org.clojure/tools.cli "1.0.194"]
                  [reagent "0.10.0"]]
 
   :source-paths ["src"]

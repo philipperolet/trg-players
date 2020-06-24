@@ -1,6 +1,7 @@
 # Claby
 
 A simple game of eating fruits in a maze, avoiding unpasteurized cheese and moving enemies, with 6 levels to clear. The game can be played :
+
 - by humans in a browser (**Lapyrinthe**);
 - by computers using CLI (**AI game**).
 
@@ -15,9 +16,7 @@ For more info on requirements / dependencies and which version of what you need 
 ### Installation
 - Install by cloning this rep.
 
-## Usage
-
-### Lapyrinthe ###
+## Usage : Lapyrinthe ###
 
 - Start game with niceties (sound, rabbits everywhere, animations) with ``lein fig:build-lapy``
 - Start game with minimal skin with ``lein fig:build-mini`` (intended for AI Game visualisation)
@@ -26,9 +25,20 @@ Move the player with arrow keys, or e - d - s - f keys. Game starts at level 1, 
 
 Cheat codes allow to start directly at a given level, or to slow down the enemies, by adding the query string `?cheatlev=X&tick=Y`
 
-### AI game ###
+## Usage : AI game ##
 
-WIP
+Start game
+- in CLI with `lein run args`
+- in REPL by getting to the `claby.ai.main` namespace and typing `(run args)`
+
+Run `lein run -h` to print CLI arguments. They are also described in `cli-options` at [claby.ai.main](src/claby/ai/main.clj).
+
+### TODO : Programmatic mode - interactive mode ###
+In programmatic mode, game only displays initial and end states.
+
+Game can be run interactively using the `-i` flag. In that case:
+- user can pause with p, continue with c, quit with q;
+- state is displayed every 2s.
 
 ## Development
 
@@ -43,7 +53,7 @@ Code for **AI Game** is in ``claby.ai``
 
 ![Architecture image](https://docs.google.com/drawings/d/e/2PACX-1vT1ogu40fw8SG1oWGnR4WCJE3kmnCFcYzwMuLwiAuGbJ1vb8V2M8JzLFYiwczdS6D6cYqsMLmmyFO-_/pub?w=960&h=720)
 
-### Use
+### Lapyrinthe : use
 To get an interactive development environment run:
 
     lein fig:build-{mini|lapy}
