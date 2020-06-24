@@ -5,6 +5,7 @@
             [clojure.spec.gen.alpha :as gen]
             [clojure.string :as str]
             [clojure.tools.cli :as ctc]
+            [clojure.tools.logging :as log]
             [claby.ai.game :as aig]
             [claby.game.state :as gs]
             [claby.ai.player :as aip]
@@ -14,11 +15,11 @@
 (def cli-options
   [["-g" "--game-step-duration GST"
     "Time interval (ms) between each game step (see claby.ai.game)."
-    :default 100
+    :default 50
     :parse-fn #(Integer/parseInt %)]
    ["-p" "--player-step-duration PST"
     "Time interval (ms) between each move request from player."
-    :default 500
+    :default 100
     :parse-fn #(Integer/parseInt %)]
    ["-s" "--board-size SIZE"
     "Board size for the game"
@@ -32,6 +33,7 @@
   "Runs a game with `initial-data` matching game-data spec (see game.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
   ([opts initial-state]
+   (log/info "Running game with the following options:\n" opts)
    (let [game-data (atom (aig/create-game-with-state initial-state))]
      (swap! game-data assoc-in [::gs/game-state ::gs/status] :active)
      (let [game-result (future (aig/run-game game-data (opts :game-step-duration)))]
@@ -46,7 +48,6 @@
 
 (defn -main [& args]
   (let [opts (ctc/parse-opts args cli-options)]
-    (println "Running game with the following options:\n" (opts :options))
     (cond
       (-> opts :options :help) (println (opts :summary))
       (opts :errors) (println (str/join "\n" (opts :error)))

@@ -12,6 +12,7 @@ in a browser (**Lapyrinthe**), or by computers using CLI (**AI game**)."
                  [org.clojure/clojurescript "1.10.758"]
                  [org.clojure/test.check "1.0.0"]
                  [org.clojure/tools.cli "1.0.194"]
+                 [org.clojure/tools.logging "1.1.0"]
                  [reagent "0.10.0"]]
 
   :source-paths ["src"]

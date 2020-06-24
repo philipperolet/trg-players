@@ -15,7 +15,8 @@
             [claby.game.state :as gs]
             [claby.game.events :as ge]
             [claby.game.generation :as gg]
-            [claby.utils :as u]))
+            [claby.utils :as u]
+            [clojure.tools.logging :as log]))
 
 ;;; Game data spec & function
 ;;;;;;;
@@ -93,8 +94,11 @@
   "Main game loop."
   [game-data-atom game-step-duration]
   {:pre [(s/valid? ::game-step-duration game-step-duration)]}
-  (println "The game begins.")
+  (log/info "The game begins.\n" (data->string @game-data-atom))
+  
   (while (active? @game-data-atom)
     (Thread/sleep game-step-duration)
     (swap! game-data-atom run-step))
+
+  (log/info "The game ends.\n" (data->string  @game-data-atom))
   @game-data-atom)
