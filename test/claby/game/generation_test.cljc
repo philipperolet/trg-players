@@ -8,7 +8,8 @@
             [claby.game.state-test :refer [test-size test-state]]
             [claby.game.board-test :refer [small-test-board]]
             [claby.game.board :as gb]
-            [claby.game.generation :as gg]))
+            [claby.game.generation :as gg]
+            [claby.utils :as u]))
 
 (st/instrument)
 (check-all-specs claby.game.generation)
@@ -37,9 +38,23 @@
 
 (deftest create-nice-board-test
   (testing "Appropriate densities in board"
-    (let [board (gg/create-nice-board 5 {::gg/density-map {:fruit 5 :cheese 10}})]
-      (is (gg/valid-density board :fruit 5))
-      (is (gg/valid-density board :cheese 10)))))
+    (with-redefs [gg/add-wall (u/count-calls gg/add-wall)]
+      (let [board (gg/create-nice-board 6 {::gg/density-map {:fruit 5 :cheese 10}})]
+        (is (gg/valid-density board :fruit 5))
+        (is (gg/valid-density board :cheese 10))
+        (is (= 3 ((:call-count (meta gg/add-wall))))))
+      
+      (let [board (gg/create-nice-board 8 {::gg/density-map {:fruit 5 :cheese 10}
+                                           ::gg/wall-density 0})]
+        (is (gg/valid-density board :fruit 5))
+        (is (gg/valid-density board :cheese 10))
+        (is (= 0 ((:call-count (meta gg/add-wall))))))
+      
+      (let [board (gg/create-nice-board 13 {::gg/density-map {:fruit 7 :cheese 4}
+                                            ::gg/wall-density 25})]
+        (is (gg/valid-density board :fruit 7))
+        (is (gg/valid-density board :cheese 4))
+        (is (= 3 ((:call-count (meta gg/add-wall)))))))))
 
 (deftest valid-density-issue
   (let [board
