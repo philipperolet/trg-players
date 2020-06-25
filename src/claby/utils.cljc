@@ -48,3 +48,15 @@
    (reduce #(if (pred %1) (reduced %1) (f %1 %2)) coll))
   ([pred f val coll]
    (reduce #(if (pred %1) (reduced %1) (f %1 %2)) val coll)))
+
+(defn count-calls
+  "Used in with-redefs to count function calls during testing.
+
+  Returns a new function that mimics `f` but counts the number of
+  calls and stores it as metadata.
+  Resets count when call count is checked."
+  [f]
+  (let [n (atom 0)]
+    (with-meta
+      (comp (fn [x] (swap! n inc) x) f)
+      {:call-count (fn [] (first (reset-vals! n 0)))})))
