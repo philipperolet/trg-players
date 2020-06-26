@@ -2,10 +2,17 @@
 
 ## Todo
 ### AI Game (AIG) v0.1
-- Document what it should do in README.md
+#### v0.1.1 ####
+- régler le pb des tests
+- gestion des débordements de timing
+- Step de la partie à 10ms
+- ajouter player senses
+- Step de la partie à 1ms
+- ajouter le paramétrage de niveau et de taille
 
-### Lapyrinthe v1
-- Fix bug on level 3
+#### ajouter le stockage
+#### ajouter le thread de visu
+#### Créer un joueur pas trop débile
 
 ## Backlog
 - remove libs from vcs to avoid useless commits / searchs?
@@ -15,7 +22,30 @@
 - convenient way of having tests in emacs
 
 ## Done
-### AI Game v1
+### AI Game v0.1
+
+#### v0.1.0 - DONE
+- possibilité de pauser / reprendre la partie, et de faire du step-by-step
+- documenter et passer à la version suivante
+- permettre l'ajustement de la quantité de murs
+- lancer interactivement avec par défaut un affichage toutes les 2s
+- mettre un log de début & un de fin
+- passer l'affichage en log
+- rationnaliser les args
+- test & code d'une partie
+- visualisation logguée clean du jeu
+- jeu possible avec player aléatoire qui bouge toutes les 2 secondes
+- créer la spec movement
+- test & code d'une itération de jeu
+- test & code d'une itération de joueur
+
+#### base
+- Document what it should do in README.md
+- commande lein qui démarre le main thread
+- démarre le game thread qui loggue l'état initial et affiche un message toutes les secondes
+
+### Lapyrinthe v1
+- Fix bug on level 3
 
 ### General
 - séparer les codes de jeu humain vs jeu machine

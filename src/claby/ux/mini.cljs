@@ -29,7 +29,7 @@
     (score-update [this score])
     
     (enemy-style [this type]
-      (let [color (case type :drink "red" :mouse "purple" :covid "green")]
+      (let [color (case type "drink" "red" "mouse" "purple" "virus" "green")]
         (str "{background-color: " color ";}")))))
 
 (ux/run-game minimal-ux)

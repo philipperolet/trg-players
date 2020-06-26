@@ -71,3 +71,14 @@
       (is (every? #(= % :empty) (subvec fruit-row 7)))
       (is (every? #(= % :empty) (subvec fruit-row 0 3)))
       (is (= 6 (fruits-eaten-state ::g/score))))))
+
+(deftest move-being-test
+  (are [direction] (and (= (ge/move-being gst/test-state-2 [:player direction])
+                           (ge/move-player gst/test-state-2 direction))
+                        (= (ge/move-being gst/test-state-2 [1 direction])
+                           (ge/move-enemy gst/test-state-2 direction 1)))
+    :up
+    :down
+    :left
+    :right))
+    

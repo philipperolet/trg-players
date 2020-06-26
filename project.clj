@@ -1,6 +1,8 @@
 (defproject claby "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
+  :description "A simple game of eating fruits in a maze and avoiding
+enemies, with 6 levels to clear. The game can be played by humans
+in a browser (**Lapyrinthe**), or by computers using CLI (**AI game**)."
+  :url "https://github.com/sittingbull/claby"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
@@ -9,10 +11,12 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.758"]
                  [org.clojure/test.check "1.0.0"]
+                 [org.clojure/tools.cli "1.0.194"]
+                 [org.clojure/tools.logging "1.1.0"]
                  [reagent "0.10.0"]]
 
   :source-paths ["src"]
-
+  :main claby.ai.main
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
             "fig:build-lapy" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
             "fig:build-mini" ["trampoline" "run" "-m" "figwheel.main" "-b" "mini" "-r"]

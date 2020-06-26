@@ -22,6 +22,26 @@
       (g/init-game-state 0)
       (assoc ::g/player-position [0 0])))
 
+(def test-state-2
+  {::g/status :active
+   ::g/score 10
+   ::g/enemy-positions [[0 0] [1 4]]
+   ::gb/game-board [[:empty :empty :wall :empty :empty]
+                    [:empty :fruit :empty :empty :empty]
+                    [:empty :empty :wall :empty :empty]
+                    [:empty :empty :cheese :cheese :empty]
+                    [:empty :empty :empty :empty :empty]]
+   ::g/player-position [1 2]})
+
+(def test-state-2-string
+  (str "-------" \newline
+       "|& #  |" \newline
+       "| o@ &|" \newline
+       "|  #  |" \newline
+       "|  xx |" \newline
+       "|     |" \newline
+       "-------" \newline))
+
 (deftest board-spec-test
   (testing "Player should not be able to be on a wall"
     (is (not (s/valid? ::g/game-state
@@ -61,16 +81,7 @@
              [:td.empty {:key "claby-4-3"}]
              [:td.empty {:key "claby-4-4"}]]]
 
-           (g/get-html-for-state
-            {::g/status :active
-             ::g/score 10
-             ::g/enemy-positions [[0 0] [1 4]]
-             ::gb/game-board [[:empty :empty :wall :empty :empty]
-                             [:empty :fruit :empty :empty :empty]
-                             [:empty :empty :wall :empty :empty]
-                             [:empty :empty :cheese :cheese :empty]
-                             [:empty :empty :empty :empty :empty]]
-             ::g/player-position [1 2]})))))
+           (g/get-html-for-state test-state-2)))))
 
 (deftest enjoyable-game-test
   (let [fully-accessible-board-1                     
@@ -126,3 +137,5 @@
                                board-with-locked-fruit
                                [[0 0] [0 1] [1 0]]))))))    
     
+(deftest state->string-test
+  (is (= test-state-2-string (g/state->string test-state-2))))

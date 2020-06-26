@@ -127,6 +127,52 @@
      ::player-position starting-position
      ::gb/game-board board}))
 
+(defn- explore-cell
+  [board size i value]
+  (let [row (int (/ i size))
+        positions-to-check
+        [(-> row (* size) (+ (mod (inc i) size)))
+         (-> row (* size) (+ (mod (dec i) size)))
+         (-> i (- size) (mod (* size size)))
+         (-> i (+ size) (mod (* size size)))]]
+  (cond 
+    (and (or (= value :empty) (= value :fruit))
+         (some #(or (= (nth board %) :mark) (= (nth board %) :marked)) positions-to-check))
+    :mark
+
+    (= value :mark)
+    :marked
+
+    true
+    value)))
+    
+;; No specs because generative testing is too expensive (and doesn't add much to case-based)
+  
+(defn enjoyable-game?
+  "Returns true if no fruit, player or enemy is locked inside
+  walls apart from the rest of the board. Does so by converting
+  enemy positions to fruit and checking if all fruits can be
+  reached from player position"
+  [{:as state, :keys [::gb/game-board ::player-position ::enemy-positions]}]
+
+  (let [size (count game-board)
+        explorable-board
+        (->> ;; turn all enemy positions to fruit
+         (reduce #(assoc-in %1 %2 :fruit) game-board enemy-positions) 
+         ;; start explo from player pos
+         (#(assoc-in % player-position :mark))
+         ;; flatten
+         (reduce into))]
+    
+    (loop [board explorable-board]
+      ;; if no more exploration return true iff no fruit left
+      (if (not (some #{:mark} board))
+        (= ;;#dbg ^{:break/when (= player-position [0 0])}
+           ((frequencies board) :fruit) nil)
+        
+        ;; else go on exploring, marking new elements according 
+        (recur (map-indexed #(explore-cell board size %1 %2) board))))))
+
 ;;; Conversion of state to Hiccup HTML
 ;;;;
 
@@ -170,53 +216,43 @@
        (concat [:tbody])
        vec))
 
-;; too expensive to check
-#_(s/fdef enjoyable-game?
+;;; Conversion of state to nice string display
+;;;;;;;;;
+
+(s/fdef state->string
   :args (s/cat :state ::game-state)
-  :ret boolean?)
+  :ret string?)
 
-(defn- explore-cell
-  [board size i value]
-  (let [row (int (/ i size))
-        positions-to-check
-        [(-> row (* size) (+ (mod (inc i) size)))
-         (-> row (* size) (+ (mod (dec i) size)))
-         (-> i (- size) (mod (* size size)))
-         (-> i (+ size) (mod (* size size)))]]
-  (cond 
-    (and (or (= value :empty) (= value :fruit))
-         (some #(or (= (nth board %) :mark) (= (nth board %) :marked)) positions-to-check))
-    :mark
+(def cell->char
+  {:player \@
+   :enemy \&
+   :hborder \-
+   :vborder \|
+   :empty \space
+   :fruit \o
+   :cheese \x
+   :wall \#
+   :newline \newline})
 
-    (= value :mark)
-    :marked
+(defn state->string
+  "Returns a nice string representation of the game state"
+  [{:keys [::gb/game-board ::player-position ::enemy-positions], :as state}]
+  (->> game-board
 
-    true
-    value)))
-    
-  
-(defn enjoyable-game?
-  "Returns true if no fruit, player or enemy is locked inside
-  walls apart from the rest of the board. Does so by converting
-  enemy positions to fruit and checking if all fruits can be
-  reached from player position"
-  [{:as state, :keys [::gb/game-board ::player-position ::enemy-positions]}]
+       ;; put player (resp. enemy) keyword in cell at its position
+       (#(assoc-in % player-position :player))
+       (#(reduce (fn [val pos] (assoc-in val pos :enemy)) % enemy-positions))
 
-  (let [size (count game-board)
-        explorable-board
-        (->> ;; turn all enemy positions to fruit
-         (reduce #(assoc-in %1 %2 :fruit) game-board enemy-positions) 
-         ;; start explo from player pos
-         (#(assoc-in % player-position :mark))
-         ;; flatten
-         (reduce into))]
-    
-    (loop [board explorable-board]
-      ;; if no more exploration return true iff no fruit left
-      (if (not (some #{:mark} board))
-        (= ;;#dbg ^{:break/when (= player-position [0 0])}
-           ((frequencies board) :fruit) nil)
-        
-        ;; else go on exploring, marking new elements according 
-        (recur (map-indexed #(explore-cell board size %1 %2) board))))))
-   
+       ;; add vertical border keywords on each row, with newlines
+       (map #(into [:vborder] (conj % :vborder :newline)))
+
+       ;; add horizontal border as rows before and after
+       ((let [horizontal-border
+              (conj (vec (repeat (+ (count game-board) 2) :hborder)) :newline)]
+          #(into [horizontal-border] (conj (vec %) horizontal-border))))
+
+       ;; convert to string
+       (reduce into)
+       (map cell->char)
+       (apply str)))
+       

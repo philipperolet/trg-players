@@ -1,5 +1,9 @@
 (ns claby.game.events
-  "Defines game events such as player movement."
+  "Defines game events such as player movement.
+
+  A being represents either the player or an enemy (10 enemies max).
+
+  A movement is then a being choosing a direction to move."
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [claby.game.board :as gb]
@@ -9,6 +13,11 @@
 ;;;;;;;
 
 (s/def ::direction #{:up :right :down :left})
+
+(s/def ::being (s/or :player #{:player}
+                     :enemy (s/int-in 0 10)))
+
+(s/def ::movement (s/tuple ::being ::direction))
 
 (s/fdef move-position
   :args (s/cat :position ::gb/position
@@ -94,6 +103,17 @@
 
       (= 1 1) ;; move occurs
       (assoc-in state [::gs/enemy-positions enemy-index] new-position))))
+
+;; no spec for move-being since specs of move-player / move-enemy are already there
+(defn move-being
+  "Moves being according to provided movement (being type + direction)
+  on given state: returns updated game state"
+  [{:keys [::gb/game-board ::gs/player-position ::gs/enemy-positions], :as state}
+   [being direction, :as movement]]
+  (if (= being :player)
+    (move-player state direction)
+    (move-enemy state direction being)))
+  
 
 (defn compute-distance [x y size]
   (let [diff (- x y)]

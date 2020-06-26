@@ -1,5 +1,5 @@
 (ns claby.utils
-  "A few testing utilities"
+  "A few utilities."
   (:require
    #?@(:cljs [[cljs.test :refer-macros [deftest is testing]]
               [clojure.test.check]
@@ -38,3 +38,26 @@
              ns-specs)
         (conj 'check-namespace-specs)
         (conj 'deftest))))
+
+(defn reduce-until
+  "Like clojure.core/reduce, but stops reduction when `pred` is
+  true. `pred` takes one argument, the current reduction value, before
+  applying another step of reduce. If `pred` does not become true,
+  returns the result of reduce"
+  ([pred f coll]
+   (reduce #(if (pred %1) (reduced %1) (f %1 %2)) coll))
+  ([pred f val coll]
+   (reduce #(if (pred %1) (reduced %1) (f %1 %2)) val coll)))
+
+(defn count-calls
+  "Used in with-redefs to count function calls during testing.
+
+  Returns a new function that mimics `f` but counts the number of
+  calls and stores it as metadata.
+  Resets count when call count is checked."
+  [f]
+  (let [n (atom 0)]
+    (with-meta
+      (comp (fn [x] (swap! n inc) x) f)
+      {:call-count (fn [] (first (reset-vals! n 0)))
+       :private false})))

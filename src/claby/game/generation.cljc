@@ -153,20 +153,33 @@
                                ::element-density
                                :distinct true))
 
+;; density for walls, see create-nice-board documentation
+(s/def ::wall-density (-> (s/int-in 0 66)
+                          (s/with-gen #(gen/choose 0 50))))
+
 (s/fdef create-nice-board
   :args (-> (s/cat :size ::gb/board-size
-                   :level (s/keys :req [::density-map]))
+                   :level (s/keys :req [::density-map] :opt [::wall-density]))
             (s/with-gen #(gen/tuple
                           gb/test-board-size-generator
                           (s/gen (s/keys :req [::density-map])))))
   :ret ::gb/game-board)
 
 (defn create-nice-board
-  "Creates a board with walls and fruits that looks well. It adds as much random
-  walls as the size of the board, favoring walls of length ~ size/2 so about half
-  the board is walled."
+  "Creates a board with randomly generated walls, fruit, cheese, etc. as
+  specified by the level's density map and wall-density.
+
+  While most elements are generated using sow-by-density (with a
+  default value of 0), wall generation is handled differently--thus
+  the separate map key in levels. Custom generation is done via
+  add-random-wall, favoring walls of length ~board size (looking
+  better). The default is to add as much random walls as the size of
+  the board, so about half the board is walled--corresponding to a
+  density of 50. Max density is set to 66, since too much walls
+  prevent an enjoyable game. The density is not exact, since it is
+  converted in a finite number of randomly-sized walls."
   [size level]
-  (let [nb-of-walls (int (/ size 2))
+  (let [nb-of-walls (int (/ (* size (level ::wall-density 50)) 100))
         rand-wall-length ;; generates a length biased towards average-sized walls
         (fn [] (int (/ (reduce + (repeatedly 5 #(inc (rand-int (dec size))))) 5)))
         add-random-wall
