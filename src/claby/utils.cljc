@@ -59,4 +59,5 @@
   (let [n (atom 0)]
     (with-meta
       (comp (fn [x] (swap! n inc) x) f)
-      {:call-count (fn [] (first (reset-vals! n 0)))})))
+      {:call-count (fn [] (first (reset-vals! n 0)))
+       :private false})))

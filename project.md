@@ -2,12 +2,8 @@
 
 ## Todo
 ### AI Game (AIG) v0.1
-#### version 0.1.0: 
-- régler le pb des tests
-- possibilité de pauser / reprendre la partie, et de faire du step-by-step
-- documenter et passer à la version suivante
-
 #### v0.1.1 ####
+- régler le pb des tests
 - gestion des débordements de timing
 - Step de la partie à 10ms
 - ajouter player senses
@@ -27,7 +23,10 @@
 
 ## Done
 ### AI Game v0.1
-#### v0.1.0
+
+#### v0.1.0 - DONE
+- possibilité de pauser / reprendre la partie, et de faire du step-by-step
+- documenter et passer à la version suivante
 - permettre l'ajustement de la quantité de murs
 - lancer interactivement avec par défaut un affichage toutes les 2s
 - mettre un log de début & un de fin

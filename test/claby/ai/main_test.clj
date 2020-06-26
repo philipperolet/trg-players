@@ -6,7 +6,8 @@
             [claby.game.state-test :as gst]
             [claby.utils :refer [check-all-specs]]
             [clojure.spec.test.alpha :as st]
-            [clojure.test :refer [deftest is testing]]))
+            [clojure.test :refer [deftest is testing]]
+            [claby.utils :as u]))
 
 (st/instrument)
 (check-all-specs claby.ai.main)
@@ -32,12 +33,24 @@
              (-> game-result ::gs/game-state ::gb/game-board))))))
   
 (deftest run-game-test-interactive
-  (testing "Interactive mode should act n times if there were N steps."
-    (let [counter (atom 0)]
-      (with-redefs [aim/do-interactive-actions (fn [x] (swap! counter inc))]
+  (testing "Interactive mode should require r as input to run, and
+ act n times if there were N steps."
+    (let [counting-function (u/count-calls (constantly 0))]
+      (with-redefs [aim/run-interactive-mode counting-function]
         (let [game-result (aim/run {:game-step-duration 20
                                     :player-step-duration 40
                                     :interactive true
                                     :number-of-steps 15
                                     :board-size 8})]
-          (is (= @counter (int (/ (game-result ::gga/game-step) 15)))))))))
+          (with-in-str "r\n"
+            (is (= ((:call-count (meta counting-function)))
+                   (int (/ (game-result ::gga/game-step) 15))))))))))
+
+(deftest run-game-test-quit
+  (with-in-str "q\n"
+    (let [game-result (aim/run {:game-step-duration 20
+                                :player-step-duration 40
+                                :interactive true
+                                :number-of-steps 15
+                                :board-size 8})]
+      (is (= (game-result ::gga/game-step) 0)))))

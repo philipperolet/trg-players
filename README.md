@@ -33,12 +33,14 @@ Start game
 
 Run `lein run -h` to print CLI arguments. They are also described in `cli-options` at [claby.ai.main](src/claby/ai/main.clj).
 
-### TODO : Programmatic mode - interactive mode ###
+### Programmatic mode - interactive mode ###
 In programmatic mode, game only displays initial and end states.
 
-Game can be run interactively using the `--interactive` flag. In that case, every X (optionally specified) steps:
-- user can step with s, continue with c, finish with f, abort with q;
-- game state is displayed.
+Game can be run interactively using the `--interactive/-i` flag. In that case:
+- user can pause/step with [enter], run with r, quit wit q;
+- game state is displayed every X (optionally specified) steps.
+
+See main.clj for more details.
 
 ## Development
 
