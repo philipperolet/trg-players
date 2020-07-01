@@ -7,7 +7,7 @@
   At every `game-step`, the game checks whether movements are requested via
   `requested-movements`, executes them and updates the `game-state`.
 
-  *TODO*: An execution that takes longer than the duration of a step
+  An execution that takes longer than the duration of a step
   will be considered an exception."
   
   (:require [clojure.spec.alpha :as s]
@@ -28,7 +28,7 @@
 
 (s/def ::requested-movements (s/map-of ::ge/being ::ge/direction))
 
-(s/def ::game-data
+(s/def ::full-state
   (-> (s/keys :req [::gs/game-state ::game-step ::requested-movements])
       
       (s/and (fn [{:keys [::requested-movements]
@@ -46,7 +46,7 @@
 
 (defn data->string
   "Converts game data to nice string"
-  [{:keys [::gs/game-state ::game-step], :as game-data}]
+  [{:keys [::gs/game-state ::game-step], :as full-state}]
   (str (format "Step %d\n" game-step)
        (gs/state->string game-state)))
 
@@ -54,13 +54,13 @@
 ;;;;;;
 
 (s/fdef run-step
-  :args (-> (s/cat :game-data ::game-data)
-            (s/and #(= (-> % :game-data ::gs/game-state ::gs/status) :active)))
-  :ret ::game-data
+  :args (-> (s/cat :full-state ::full-state)
+            (s/and #(= (-> % :full-state ::gs/game-state ::gs/status) :active)))
+  :ret ::full-state
   :fn (s/and
-       (fn [{{:keys [game-data]} :args, :keys [ret]}]
+       (fn [{{:keys [full-state]} :args, :keys [ret]}]
          (comment "Step increases")
-         (= (::game-step ret) (inc (::game-step game-data))))
+         (= (::game-step ret) (inc (::game-step full-state))))
        (fn [{:keys [:ret]}]
          (comment "Movements cleared")
          (empty? (::requested-movements ret)))))
@@ -68,8 +68,8 @@
 (defn run-step
   "Runs a step of the game : execute movements, clear requested-movements,
   increase step."
-  [{:as game-data, :keys [::requested-movements]}]
-  (-> game-data
+  [{:as full-state, :keys [::requested-movements]}]
+  (-> full-state
       
       ;; execute movements, stop if ever game ends
       (update 
@@ -81,18 +81,18 @@
       (update ::game-step inc)))
 
 (defn active?
-  [game-data]
-  (= :active (-> game-data ::gs/game-state ::gs/status)))
+  [full-state]
+  (= :active (-> full-state ::gs/game-state ::gs/status)))
 
 (defn run-game
   "Main game loop."
-  [game-data-atom game-step-duration]
+  [full-state-atom game-step-duration]
   {:pre [(s/valid? ::game-step-duration game-step-duration)]}
-  (log/info "The game begins.\n" (data->string @game-data-atom))
+  (log/info "The game begins.\n" (data->string @full-state-atom))
   
-  (while (active? @game-data-atom)
+  (while (active? @full-state-atom)
     (Thread/sleep game-step-duration)
-    (swap! game-data-atom run-step))
+    (swap! full-state-atom run-step))
 
-  (log/info "The game ends.\n" (data->string  @game-data-atom))
-  @game-data-atom)
+  (log/info "The game ends.\n" (data->string  @full-state-atom))
+  @full-state-atom)

@@ -19,11 +19,11 @@
 (defn run-player
   "Basic player loop. `player-step-duration` is the inverse frequency of
   player move requests."
-  [game-data-atom player-step-duration]
+  [full-state-atom player-step-duration]
   {:pre [(s/valid? ::player-step-duration player-step-duration)]}
-  (while (gga/active? @game-data-atom)
+  (while (gga/active? @full-state-atom)
     (Thread/sleep player-step-duration)
-    (swap! game-data-atom assoc-in [::gga/requested-movements :player] (request-movement))))
+    (swap! full-state-atom assoc-in [::gga/requested-movements :player] (request-movement))))
 
 
     

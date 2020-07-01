@@ -1,5 +1,5 @@
 (ns claby.ai.main-integration-test
-  (:require [claby.ai.game :as gga]
+  (:require [claby.ai.game :as aig]
             [claby.ai.main :as aim]
             [claby.game.board :as gb]
             [claby.game.state :as gs]
@@ -24,7 +24,7 @@
                         test-state)] 
       (is (= :won (-> game-result ::gs/game-state ::gs/status)))
       
-      (is (< 5 (-> game-result ::gga/game-step)))
+      (is (< 5 (-> game-result ::aig/game-step)))
       
       (is (= (reduce #(assoc-in %1 %2 :empty)
                      (test-state ::gb/game-board)
@@ -43,7 +43,7 @@
                                     :board-size 8})]
           (with-in-str "r\n"
             (is (= ((:call-count (meta counting-function)))
-                   (int (/ (game-result ::gga/game-step) 15))))))))))
+                   (int (/ (game-result ::aig/game-step) 15))))))))))
 
 (deftest run-game-test-quit
   (with-in-str "q\n"
@@ -52,4 +52,13 @@
                                 :interactive true
                                 :number-of-steps 15
                                 :board-size 8})]
-      (is (= (game-result ::gga/game-step) 0)))))
+      (is (= (game-result ::aig/game-step) 0)))))
+
+(deftest run-game-test-timing-steps
+  (testing "When running a step takes less time to run than game
+  step duration, it waits for the remaining time (at 1ms resolution)"
+    ;; init-game {params}
+    ;; run 5 steps and for each check the above
+    )
+  (testing "When running a step takes more time to run than game step
+  duration, it throws"))

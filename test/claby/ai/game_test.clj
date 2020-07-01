@@ -17,13 +17,13 @@
   only eating 1 fruit"
   (assoc-in gst/test-state-2 [::gb/game-board 4 4] :fruit))
 
-(def game-data (gga/create-game-with-state test-state))
+(def full-state (gga/create-game-with-state test-state))
 
 (deftest run-step-test
   (testing "Basic behaviour"
-    (is (= test-state (-> game-data gga/run-step ::gs/game-state)))
+    (is (= test-state (-> full-state gga/run-step ::gs/game-state)))
     
-    (is (= (-> game-data
+    (is (= (-> full-state
                (assoc ::gga/requested-movements {0 :up :player :left})
                gga/run-step
                (assoc ::gga/requested-movements {:player :down 0 :up 1 :right})
@@ -38,27 +38,28 @@
   
   (testing "Game lost or won during step should not err even when
         some movements remain"
-    (let [game-data (assoc game-data ::gs/game-state gst/test-state-2)]
-      (is (= (-> game-data
+    (let [full-state (assoc full-state ::gs/game-state gst/test-state-2)]
+      (is (= (-> full-state
                  (assoc ::gga/requested-movements {0 :up 1 :down :player :left})
                  gga/run-step
                  (get-in [::gs/game-state ::gs/status]))
              :won))
       
-      (is (= (-> game-data
+      (is (= (-> full-state
                  (assoc ::gga/requested-movements {:player :left 0 :up 1 :down})
                  gga/run-step
                  (get-in [::gs/game-state ::gs/status]))
              :won))
 
-      (is (= (-> game-data
+      (is (= (-> full-state
                  (assoc ::gga/requested-movements {:player :right 1 :left 0 :up})
                  gga/run-step
                  (get-in [::gs/game-state ::gs/status]))
              :over))
 
-      (is (= (-> game-data
+      (is (= (-> full-state
                  (assoc ::gga/requested-movements {1 :left 0 :up :player :right})
                  gga/run-step
                  (get-in [::gs/game-state ::gs/status]))
              :over)))))
+

@@ -46,15 +46,15 @@
   - (Enter while running) pause will pause the game
   - (Enter while paused) step will run the next number-of-steps and pause
   - (r)un/(r)esume will proceed with running the game."
-  [game-data interactivity-atom]
-  (println (aig/data->string game-data))
+  [full-state interactivity-atom]
+  (println (aig/data->string full-state))
   (swap! interactivity-atom #(if (= % :step) :pause %))
   (while (= :pause @interactivity-atom)
     (Thread/sleep 100)))
 
 (defn- setup-interactivity
-  [game-data-atom interactivity-atom number-of-steps]
-  (add-watch game-data-atom :setup-interactivity
+  [full-state-atom interactivity-atom number-of-steps]
+  (add-watch full-state-atom :setup-interactivity
              (fn [_ _ old-data {:as new-data, :keys [::aig/game-step]}]
                (when (and (< (old-data ::aig/game-step) game-step)
                           (= (mod game-step number-of-steps) 0))
@@ -63,7 +63,7 @@
   (add-watch interactivity-atom :abort-game-if-quit
              (fn [_ _ _ val]
                (if (= :quit val)
-                 (swap! game-data-atom
+                 (swap! full-state-atom
                         assoc-in [::gs/game-state ::gs/status] :over)))))
 
 (s/fdef get-interactivity-value
@@ -85,23 +85,23 @@
 ;;;;;;
 
 (defn run
-  "Runs a game with `initial-data` matching game-data spec (see game.clj).
+  "Runs a game with `initial-data` matching full-state spec (see game.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
   ([opts initial-state]
    (log/info "Running game with the following options:\n" opts)
 
    ;; setup game
-   (let [game-data (atom (aig/create-game-with-state initial-state))]
-     (swap! game-data assoc-in [::gs/game-state ::gs/status] :active)
+   (let [full-state (atom (aig/create-game-with-state initial-state))]
+     (swap! full-state assoc-in [::gs/game-state ::gs/status] :active)
      
      ;; run game and player threads 
-     (let [game-result (future (aig/run-game game-data (opts :game-step-duration)))]
-       (future (aip/run-player game-data (opts :player-step-duration)))
+     (let [game-result (future (aig/run-game full-state (opts :game-step-duration)))]
+       (future (aip/run-player full-state (opts :player-step-duration)))
 
        ;; setup interactive mode if needed
        (when (opts :interactive)
          (let [interactivity-atom (atom :pause)]
-           (setup-interactivity game-data interactivity-atom (opts :number-of-steps))
+           (setup-interactivity full-state interactivity-atom (opts :number-of-steps))
            (future (process-user-input interactivity-atom))))
        
        ;; return game thread result
