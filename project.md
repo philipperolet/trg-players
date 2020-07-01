@@ -3,7 +3,6 @@
 ## Todo
 ### AI Game (AIG) v0.1
 #### v0.1.1 ####
-- régler le pb des tests
 - gestion des débordements de timing
 - Step de la partie à 10ms
 - ajouter player senses
@@ -23,6 +22,8 @@
 
 ## Done
 ### AI Game v0.1
+#### v0.1.1 ####
+- régler le pb des tests
 
 #### v0.1.0 - DONE
 - possibilité de pauser / reprendre la partie, et de faire du step-by-step
