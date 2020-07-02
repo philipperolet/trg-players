@@ -11,7 +11,7 @@
 
 (st/instrument)
 
-(deftest run-game-test-basic
+(deftest run-test-basic
   (testing "Runs a basic game (removing cheese & enemies), expects the
   game to finish well"
     (let [test-state (-> gst/test-state-2
@@ -31,7 +31,7 @@
                      '([1 1] [3 2] [3 3]))
              (-> game-result ::gs/game-state ::gb/game-board))))))
   
-(deftest run-game-test-interactive
+(deftest run-test-interactive
   (testing "Interactive mode should require r as input to run, and
  act n times if there were N steps."
     (let [counting-function (u/count-calls (constantly 0))]
@@ -45,16 +45,16 @@
             (is (= ((:call-count (meta counting-function)))
                    (int (/ (game-result ::aig/game-step) 15))))))))))
 
-(deftest run-game-test-quit
+(deftest run-test-interactive-quit
   (with-in-str "q\n"
-    (let [game-result (aim/run {:game-step-duration 20
-                                :player-step-duration 40
+    (let [game-result (aim/run {:game-step-duration 100
+                                :player-step-duration 200
                                 :interactive true
                                 :number-of-steps 15
                                 :board-size 8})]
-      (is (= (game-result ::aig/game-step) 0)))))
+      (is (< (game-result ::aig/game-step) 2)))))
 
-(deftest run-game-test-timing-steps
+(deftest run-test-timing-steps
   (testing "When running a step takes less time to run than game
   step duration, it waits for the remaining time (at 1ms resolution)"
     ;; init-game {params}

@@ -90,19 +90,21 @@
   ([opts initial-state]
    (log/info "Running game with the following options:\n" opts)
 
-   ;; setup game
-   (let [full-state (atom (aig/create-game-with-state initial-state))]
-     (swap! full-state assoc-in [::gs/game-state ::gs/status] :active)
+   (let [state-atom (atom nil)]
+
+     (aig/initialize-game state-atom initial-state (opts :game-step-duration))
+     
+     ;; setup interactive mode if requested    
+     (when (opts :interactive)
+       (let [interactivity-atom (atom :pause)]
+         (setup-interactivity state-atom
+                              interactivity-atom
+                              (opts :number-of-steps))
+         (future (process-user-input interactivity-atom))))
      
      ;; run game and player threads 
-     (let [game-result (future (aig/run-game full-state (opts :game-step-duration)))]
-       (future (aip/run-player full-state (opts :player-step-duration)))
-
-       ;; setup interactive mode if needed
-       (when (opts :interactive)
-         (let [interactivity-atom (atom :pause)]
-           (setup-interactivity full-state interactivity-atom (opts :number-of-steps))
-           (future (process-user-input interactivity-atom))))
+     (let [game-result (future (aig/run-until-end state-atom (opts :game-step-duration)))]
+       (future (aip/run-player state-atom (opts :player-step-duration)))
        
        ;; return game thread result
        @game-result)))

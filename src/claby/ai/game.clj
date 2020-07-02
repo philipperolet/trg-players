@@ -18,7 +18,7 @@
             [claby.utils :as u]
             [clojure.tools.logging :as log]))
 
-;;; Game data spec & function
+;;; Full game state spec & helpers
 ;;;;;;;
 
 ;; Time interval (ms) between each game step (see claby.ai.game)
@@ -38,22 +38,36 @@
                        (keys requested-movements))))))
                        
 
-(defn create-game-with-state [game-state]
-  {::gs/game-state game-state
-   ::game-step 0
-   ::requested-movements {}})
-
-
 (defn data->string
   "Converts game data to nice string"
   [{:keys [::gs/game-state ::game-step], :as full-state}]
   (str (format "Step %d\n" game-step)
        (gs/state->string game-state)))
 
-;;; Running the game
+(defn active?
+  [full-state]
+  (= :active (-> full-state ::gs/game-state ::gs/status)))
+
+;;; Game initialization
 ;;;;;;
 
-(s/fdef run-step
+
+(defn get-initial-full-state [game-state]
+  {::gs/game-state (assoc game-state ::gs/status :active)
+   ::game-step 0
+   ::requested-movements {}})
+
+(defn initialize-game
+  "Sets everything up for the game to start (arg check, state reset, log)."
+  [state-atom initial-state game-step-duration]
+  {:pre [(s/valid? ::game-step-duration game-step-duration)]}
+  (reset! state-atom (get-initial-full-state initial-state))
+  (log/info "The game begins.\n" (data->string @state-atom)))
+
+;;; Game execution
+;;;;;;
+
+(s/fdef compute-new-state
   :args (-> (s/cat :full-state ::full-state)
             (s/and #(= (-> % :full-state ::gs/game-state ::gs/status) :active)))
   :ret ::full-state
@@ -65,7 +79,7 @@
          (comment "Movements cleared")
          (empty? (::requested-movements ret)))))
 
-(defn run-step
+(defn compute-new-state
   "Runs a step of the game : execute movements, clear requested-movements,
   increase step."
   [{:as full-state, :keys [::requested-movements]}]
@@ -80,19 +94,15 @@
       (assoc ::requested-movements {})
       (update ::game-step inc)))
 
-(defn active?
-  [full-state]
-  (= :active (-> full-state ::gs/game-state ::gs/status)))
+(defn run-individual-step
+  [full-state-atom game-step-duration]
+  (swap! full-state-atom compute-new-state)
+  (Thread/sleep game-step-duration))
 
-(defn run-game
+(defn run-until-end
   "Main game loop."
   [full-state-atom game-step-duration]
-  {:pre [(s/valid? ::game-step-duration game-step-duration)]}
-  (log/info "The game begins.\n" (data->string @full-state-atom))
-  
   (while (active? @full-state-atom)
-    (Thread/sleep game-step-duration)
-    (swap! full-state-atom run-step))
-
+    (run-individual-step full-state-atom game-step-duration))
   (log/info "The game ends.\n" (data->string  @full-state-atom))
   @full-state-atom)

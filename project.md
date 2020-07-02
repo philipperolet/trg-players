@@ -3,7 +3,8 @@
 ## Todo
 ### AI Game (AIG) v0.1
 #### v0.1.1 ####
-- gestion des débordements de timing
+- gestion des débordements de timing à 1ms près
+- gestion des débordements de timing à 0.01ms près
 - Step de la partie à 10ms
 - ajouter player senses
 - Step de la partie à 1ms
@@ -23,6 +24,7 @@
 ## Done
 ### AI Game v0.1
 #### v0.1.1 ####
+- refactoring pour séparer setup & run et être plus FCIS
 - régler le pb des tests
 
 #### v0.1.0 - DONE
