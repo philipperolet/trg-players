@@ -92,7 +92,7 @@
 
    (let [state-atom (atom nil)]
 
-     (aig/initialize-game state-atom initial-state (opts :game-step-duration))
+     (aig/initialize-game state-atom initial-state opts)
      
      ;; setup interactive mode if requested    
      (when (opts :interactive)
@@ -104,7 +104,7 @@
      
      ;; run game and player threads 
      (let [game-result (future (aig/run-until-end state-atom (opts :game-step-duration)))]
-       (future (aip/run-player state-atom (opts :player-step-duration)))
+       (future (aip/play-until-end state-atom (opts :player-step-duration)))
        
        ;; return game thread result
        @game-result)))

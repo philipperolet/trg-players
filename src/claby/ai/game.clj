@@ -59,8 +59,9 @@
 
 (defn initialize-game
   "Sets everything up for the game to start (arg check, state reset, log)."
-  [state-atom initial-state game-step-duration]
-  {:pre [(s/valid? ::game-step-duration game-step-duration)]}
+  [state-atom initial-state {:as opts, :keys [game-step-duration player-step-duration]}]
+  {:pre [(s/valid? ::game-step-duration game-step-duration)
+         (s/valid? ::game-step-duration player-step-duration)]}  
   (reset! state-atom (get-initial-full-state initial-state))
   (log/info "The game begins.\n" (data->string @state-atom)))
 
@@ -96,8 +97,8 @@
 
 (defn run-individual-step
   [full-state-atom game-step-duration]
-  (swap! full-state-atom compute-new-state)
-  (Thread/sleep game-step-duration))
+  (Thread/sleep game-step-duration)
+  (swap! full-state-atom compute-new-state))
 
 (defn run-until-end
   "Main game loop."

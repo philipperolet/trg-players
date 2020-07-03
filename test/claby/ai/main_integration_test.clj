@@ -1,13 +1,16 @@
 (ns claby.ai.main-integration-test
   (:require [claby.ai.game :as aig]
             [claby.ai.main :as aim]
+            [claby.ai.player :as aip]
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.state-test :as gst]
             [claby.utils :refer [check-all-specs]]
             [clojure.spec.test.alpha :as st]
             [clojure.test :refer [deftest is testing]]
-            [claby.utils :as u]))
+            [claby.utils :as u]
+            [claby.game.generation :as gg]
+            [claby.ai.player :as aip]))
 
 (st/instrument)
 
@@ -54,11 +57,19 @@
                                 :board-size 8})]
       (is (< (game-result ::aig/game-step) 2)))))
 
-(deftest run-test-timing-steps
-  (testing "When running a step takes less time to run than game
-  step duration, it waits for the remaining time (at 1ms resolution)"
-    ;; init-game {params}
-    ;; run 5 steps and for each check the above
-    )
-  (testing "When running a step takes more time to run than game step
-  duration, it throws"))
+#_(deftest run-test-timing-steps
+  (let [state-atom (atom nil)
+        gsduration 50
+        psduration 50]
+    (aig/initialize-game state-atom
+                         (gg/create-nice-game 8 {::gg/density-map {:fruit 5}})
+                         gsduration)
+    (testing "When running a step takes less time to run than game
+    step duration, it waits for the remaining time (at 1ms
+    resolution)"
+      (is (u/almost= gsduration
+                     (u/time (aig/run-individual-step state-atom gsduration))
+                     1))
+      )
+    (testing "When running a step takes more time to run than game step
+  duration, it throws")))
