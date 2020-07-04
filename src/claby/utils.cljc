@@ -76,4 +76,11 @@
   float--that is, taking into account micro/nanoseconds, subject to
   the underlying platform's precision."
   [expr]
-  `(let [start-time# (System/nanoTime)] ~expr (/ (- (System/nanoTime) start-time#) 1000000)))
+  `(let [start-time# (System/nanoTime)]
+     ~expr
+     (/ (- (System/nanoTime) start-time#) 1000000.0)))
+
+(defn filter-keys
+  "Like select-keys, with a predicate on the keys"
+  [pred map_]
+  (select-keys map_ (filter pred (keys map_))))
