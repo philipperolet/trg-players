@@ -1,20 +1,26 @@
 (ns claby.ai.world
-  "World thread, with main game loop, responsible for setting up/ending
-  the game, updating game state, providing player senses, executing
-  player and enemies movement requests.
+  "Module responsible for running the world, by:
+  - listening to movement requests (on `requested-movements`);
+  - updating the `world-state` according to the movement requests;
+  - updating the world's timestamp every time its state changes
+    (ATTOW only via requested-movements).
 
-  The game runs in discretized time, with a specified
-  `game-step-duration`.  At every `game-step`,`run-individual-step`
-  checks whether movements are requested via `requested-movements`,
-  executes them and updates the `game-state`.
-
-  An execution that takes longer or equal than the duration of a step
-  will add a `misstep` to the state of the game--thus taking the exact
-  step duration time to execute is still considered a misstep. This is
-  handled by `update-timing-data`
-
-  If `too_many_missteps` are made, an exception will be thrown."
+  Regarding the first element, movement requests can be made by the
+  player as well as by enemies. The last element is intended to allow
+  a detailed execution history.
   
+  Two constraints are enforced :
+  
+  - **thread-safe consistency** between `game-state` and
+  `requested-movements`, meaning if an external thread sees that
+  `requested-movements` is empty, it means that game state has already
+  been updated. Conversely, if `requested-movements` is not empty,
+  `game-state` has *not* been updated with those movements;
+  
+  - **timeliness** of the game, meaning that executing requested
+  movements should not take more than 1ms. The program will not halt
+  at the first delay over 1ms, for stability. However, it will throw
+  an exception if delays happen too much."
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [claby.game.state :as gs]

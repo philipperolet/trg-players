@@ -1,8 +1,5 @@
 ## Todo
-- Documenter le fonctionnement souhaité
-  - première passe dans README.md & les docs
-- adapter le backlog de la v0.1.1 pour qu'il aille à ce fonctionnement
-- committer ce qui a été fait précédemment dans un état correct
+
 ### Notes
 - disable spec testing for fdef in def?
 - install linter clj-kondo
@@ -12,22 +9,29 @@
 - spec tests faster how
 
 ## Backlog
+### AI World v0.2.0
 
-### AI Game (AIG) v0.1
+**World**
+- ref: full-state -> world-state & fix world-test
+- add: listening to movement requests async
+- add: updating the world's timestamp at each world state change
+- add: thread-safe consistency
+- add: timeliness
+- ref: clean legacy code
 
-#### v0.1.1 ####
-- gestion des débordements de timing à 1ms près
-- gestion des débordements de timing à 0.01ms près
-- Step de la partie à 10ms
-- ajouter player senses
-- Step de la partie à 1ms
-- ajouter le paramétrage de niveau et de taille
+**Player**
+- ref: random player via an interface
+- ref: player options as part of the player interface
+- add: non-random player
 
+**Main**
+- ref: fit the new player/world apis & clean legacy code
 
-#### ajouter le stockage
-#### ajouter le thread de visu
-#### Créer un joueur pas trop débile
-
+**Final acceptance**
+Run 2 games with the CLI, 1 with the random player, 1 with the non-random
+Watch them via logs every 10 steps.
+- int-test: the two above games are run without logging and "work"
+  - same as the test existing now, updated with the new api
 
 ## Icebox
 - remove libs from vcs to avoid useless commits / searchs?
@@ -37,6 +41,10 @@
 - convenient way of having tests in emacs
 
 ## Done
+### AI World v0.2
+- Documenter le fonctionnement souhaité dans README.md, main/world/player.clj
+- préparer le backlog de la v0.2.0 pour qu'il aille à ce fonctionnement
+
 ### AI Game v0.1
 #### v0.1.1 ####
 - refactoring pour séparer setup & run et être plus FCIS

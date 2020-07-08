@@ -1,9 +1,7 @@
 (ns claby.ai.player
-  "Base player thread. A player should watch the game via its player
-  senses and make movement requests accordingly (see claby.ai.world)
-
-  The game may take up to step-duration to excute movement
-  requests. The player algorithm may take it into account."
+  "Module responsible for the player. A player makes movement requests
+  regularly, through `play-move`. The function handling the
+  movement requests is `request-movement`"
   (:require [claby.ai.world :as aiw]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.alpha :as s]

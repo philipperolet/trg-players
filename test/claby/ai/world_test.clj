@@ -20,7 +20,7 @@
 (def full-state (aiw/get-initial-full-state test-state 0))
 
 (deftest compute-new-state-test
-  (testing "Basic behaviour"
+  (testing "Basic behaviour, correctly updating world state on movement requests."
     (is (= test-state (-> full-state (aiw/compute-new-state) ::gs/game-state)))
     
     (is (= (-> full-state
