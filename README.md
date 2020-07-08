@@ -2,8 +2,9 @@
 
 A simple game of eating fruits in a maze, avoiding unpasteurized cheese and moving enemies, with 6 levels to clear. The game can be played :
 
+- by computers using CLI (**AI world**).
 - by humans in a browser (**Lapyrinthe**);
-- by computers using CLI (**AI game**).
+
 
 ## Setup
 
@@ -16,24 +17,21 @@ For more info on requirements / dependencies and which version of what you need 
 ### Installation
 - Install by cloning this rep.
 
-## Usage : Lapyrinthe ###
+## AI world
 
-- Start game with niceties (sound, rabbits everywhere, animations) with ``lein fig:build-lapy``
-- Start game with minimal skin with ``lein fig:build-mini`` (intended for AI Game visualisation)
+### Purpose
+**AI world** provides a simple programmatic world, and an interface to implement wannabe-intelligent players to interact in this world. The world's rules are those of the above described games. Therefore, a good player will be able to navigate the maze to eat lots of fruits, while avoiding enemies.
 
-Move the player with arrow keys, or e - d - s - f keys. Game starts at level 1, and if the player clears all levels 6 you will see the ending.
+### Usage
+Launching AI world will run a single game using the player code located in `claby.ai.player`.
 
-Cheat codes allow to start directly at a given level, or to slow down the enemies, by adding the query string `?cheatlev=X&tick=Y`
-
-## Usage : AI game ##
-
-Start game
-- in CLI with `lein run args`
-- in REPL by getting to the `claby.ai.main` namespace and typing `(run args)`
+Start game:
+- in CLI with `lein run args`;
+- in REPL by getting to the `claby.ai.main` namespace and typing `(run args)`.
 
 Run `lein run -h` to print CLI arguments. They are also described in `cli-options` at [claby.ai.main](src/claby/ai/main.clj).
 
-### Programmatic mode - interactive mode ###
+#### Programmatic mode - interactive mode ###
 In programmatic mode, game only displays initial and end states.
 
 Game can be run interactively using the `--interactive/-i` flag. In that case:
@@ -42,20 +40,37 @@ Game can be run interactively using the `--interactive/-i` flag. In that case:
 
 See main.clj for more details.
 
-## Development
-
 ### Project structure
 Game models and actions are in ``claby.game``
 
-UX tools and entry points for **lapyrinthe** are in ``claby.ux``
+3 main modules in `claby.ai`:
+- **main.clj** is responsible for launching AI world;
+- **world.clj** is responsible for running the world;
+- **player.clj** is responsible for running the player.
 
-Code for **AI Game** is in ``claby.ai``
+### How world and player operate
+The world is the *reality*, all that is external to the player's intelligence and senses--the player is defined by its senses and its movement decisions. In the real world, the player would be one's brain & nerves, sensing information and deciding actions. The world woud be everything else--including one's bodily functions.
 
-### Architecture for AI Game
+Movement requests are the player's responsibility, while performing the actual movement is the world's responsibility. Theoretically, the player could request movements that are not executed, similarly to somebody suffering from the locked-in syndrome.
+
+#### Architecture for AI Game
 
 ![Architecture image](https://docs.google.com/drawings/d/e/2PACX-1vT1ogu40fw8SG1oWGnR4WCJE3kmnCFcYzwMuLwiAuGbJ1vb8V2M8JzLFYiwczdS6D6cYqsMLmmyFO-_/pub?w=960&h=720)
 
-### Lapyrinthe : use
+## Lapyrinthe
+
+### Usage
+
+- Start game with niceties (sound, rabbits everywhere, animations) with ``lein fig:build-lapy``
+- Start game with minimal skin with ``lein fig:build-mini`` (intended for AI Game visualisation)
+
+Move the player with arrow keys, or e - d - s - f keys. Game starts at level 1, and if the player clears all levels 6 you will see the ending.
+
+Cheat codes allow to start directly at a given level, or to slow down the enemies, by adding the query string `?cheatlev=X&tick=Y`
+
+### Dev & deploy
+UX tools and entry points for **lapyrinthe** are in ``claby.ux``
+
 To get an interactive development environment run:
 
     lein fig:build-{mini|lapy}
@@ -78,7 +93,7 @@ To create a production build run:
 	lein fig:prod
 
 
-## License
+# License
 
 Copyright © 2020 Philippe Rolet
 

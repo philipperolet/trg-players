@@ -1,7 +1,20 @@
-# Project Management
-
 ## Todo
+- Documenter le fonctionnement souhaité
+  - première passe dans README.md & les docs
+- adapter le backlog de la v0.1.1 pour qu'il aille à ce fonctionnement
+- committer ce qui a été fait précédemment dans un état correct
+### Notes
+- disable spec testing for fdef in def?
+- install linter clj-kondo
+- fix project opening when only 1 window
+- refactor game with only 1 self-like arg logic
+- project notes on f7 rather than c-x 4 p
+- spec tests faster how
+
+## Backlog
+
 ### AI Game (AIG) v0.1
+
 #### v0.1.1 ####
 - gestion des débordements de timing à 1ms près
 - gestion des débordements de timing à 0.01ms près
@@ -10,11 +23,13 @@
 - Step de la partie à 1ms
 - ajouter le paramétrage de niveau et de taille
 
+
 #### ajouter le stockage
 #### ajouter le thread de visu
 #### Créer un joueur pas trop débile
 
-## Backlog
+
+## Icebox
 - remove libs from vcs to avoid useless commits / searchs?
 - tab should autocomplete
 - add walls & fruits with clicks

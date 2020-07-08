@@ -6,7 +6,7 @@
             [clojure.string :as str]
             [clojure.tools.cli :as ctc]
             [clojure.tools.logging :as log]
-            [claby.ai.game :as aig]
+            [claby.ai.world :as aiw]
             [claby.game.state :as gs]
             [claby.ai.player :as aip]
             [claby.game.generation :as gg])
@@ -14,7 +14,7 @@
 
 (def cli-options
   [["-g" "--game-step-duration GST"
-    "Time interval (ms) between each game step (see claby.ai.game)."
+    "Time interval (ms) between each game step (see claby.ai.world)."
     :default 25
     :parse-fn #(Integer/parseInt %)]
    ["-p" "--player-step-duration PST"
@@ -47,7 +47,7 @@
   - (Enter while paused) step will run the next number-of-steps and pause
   - (r)un/(r)esume will proceed with running the game."
   [full-state interactivity-atom]
-  (println (aig/data->string full-state))
+  (println (aiw/data->string full-state))
   (swap! interactivity-atom #(if (= % :step) :pause %))
   (while (= :pause @interactivity-atom)
     (Thread/sleep 100)))
@@ -55,8 +55,8 @@
 (defn- setup-interactivity
   [full-state-atom interactivity-atom number-of-steps]
   (add-watch full-state-atom :setup-interactivity
-             (fn [_ _ old-data {:as new-data, :keys [::aig/game-step]}]
-               (when (and (< (old-data ::aig/game-step) game-step)
+             (fn [_ _ old-data {:as new-data, :keys [::aiw/game-step]}]
+               (when (and (< (old-data ::aiw/game-step) game-step)
                           (= (mod game-step number-of-steps) 0))
                  (run-interactive-mode new-data interactivity-atom))))
   
@@ -85,14 +85,14 @@
 ;;;;;;
 
 (defn run
-  "Runs a game with `initial-data` matching full-state spec (see game.clj).
+  "Runs a game with `initial-data` matching full-state spec (see world.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
   ([opts initial-state]
    (log/info "Running game with the following options:\n" opts)
 
    (let [state-atom (atom nil)]
 
-     (aig/initialize-game state-atom initial-state opts)
+     (aiw/initialize-game state-atom initial-state opts)
      
      ;; setup interactive mode if requested    
      (when (opts :interactive)
@@ -103,7 +103,7 @@
          (future (process-user-input interactivity-atom))))
      
      ;; run game and player threads 
-     (let [game-result (future (aig/run-until-end state-atom (opts :game-step-duration)))]
+     (let [game-result (future (aiw/run-until-end state-atom (opts :game-step-duration)))]
        (future (aip/play-until-end state-atom (opts :player-step-duration)))
        
        ;; return game thread result
