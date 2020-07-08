@@ -46,15 +46,15 @@
   - (Enter while running) pause will pause the game
   - (Enter while paused) step will run the next number-of-steps and pause
   - (r)un/(r)esume will proceed with running the game."
-  [full-state interactivity-atom]
-  (println (aiw/data->string full-state))
+  [world-state interactivity-atom]
+  (println (aiw/data->string world-state))
   (swap! interactivity-atom #(if (= % :step) :pause %))
   (while (= :pause @interactivity-atom)
     (Thread/sleep 100)))
 
 (defn- setup-interactivity
-  [full-state-atom interactivity-atom number-of-steps]
-  (add-watch full-state-atom :setup-interactivity
+  [world-state-atom interactivity-atom number-of-steps]
+  (add-watch world-state-atom :setup-interactivity
              (fn [_ _ old-data {:as new-data, :keys [::aiw/game-step]}]
                (when (and (< (old-data ::aiw/game-step) game-step)
                           (= (mod game-step number-of-steps) 0))
@@ -63,7 +63,7 @@
   (add-watch interactivity-atom :abort-game-if-quit
              (fn [_ _ _ val]
                (if (= :quit val)
-                 (swap! full-state-atom
+                 (swap! world-state-atom
                         assoc-in [::gs/game-state ::gs/status] :over)))))
 
 (s/fdef get-interactivity-value
@@ -85,7 +85,7 @@
 ;;;;;;
 
 (defn run
-  "Runs a game with `initial-data` matching full-state spec (see world.clj).
+  "Runs a game with `initial-data` matching world-state spec (see world.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
   ([opts initial-state]
    (log/info "Running game with the following options:\n" opts)

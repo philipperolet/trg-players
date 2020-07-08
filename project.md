@@ -12,7 +12,6 @@
 ### AI World v0.2.0
 
 **World**
-- ref: full-state -> world-state & fix world-test
 - add: listening to movement requests async
 - add: updating the world's timestamp at each world state change
 - add: thread-safe consistency
@@ -42,6 +41,7 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
+- ref: full-state -> world-state 
 - Documenter le fonctionnement souhaité dans README.md, main/world/player.clj
 - préparer le backlog de la v0.2.0 pour qu'il aille à ce fonctionnement
 

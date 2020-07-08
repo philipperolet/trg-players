@@ -17,13 +17,13 @@
   only eating 1 fruit"
   (assoc-in gst/test-state-2 [::gb/game-board 4 4] :fruit))
 
-(def full-state (aiw/get-initial-full-state test-state 0))
+(def world-state (aiw/get-initial-world-state test-state 0))
 
 (deftest compute-new-state-test
   (testing "Basic behaviour, correctly updating world state on movement requests."
-    (is (= test-state (-> full-state (aiw/compute-new-state) ::gs/game-state)))
+    (is (= test-state (-> world-state (aiw/compute-new-state) ::gs/game-state)))
     
-    (is (= (-> full-state
+    (is (= (-> world-state
                (assoc ::aiw/requested-movements {0 :up :player :left})
                (aiw/compute-new-state)
                (assoc ::aiw/requested-movements {:player :down 0 :up 1 :right})
@@ -39,26 +39,26 @@
   
   (testing "Game lost or won during step should not err even when
         some movements remain"
-    (let [full-state (assoc full-state ::gs/game-state gst/test-state-2)]
-      (is (= (-> full-state
+    (let [world-state (assoc world-state ::gs/game-state gst/test-state-2)]
+      (is (= (-> world-state
                  (assoc ::aiw/requested-movements {0 :up 1 :down :player :left})
                  (aiw/compute-new-state)
                  (get-in [::gs/game-state ::gs/status]))
              :won))
       
-      (is (= (-> full-state
+      (is (= (-> world-state
                  (assoc ::aiw/requested-movements {:player :left 0 :up 1 :down})
                  (aiw/compute-new-state)
                  (get-in [::gs/game-state ::gs/status]))
              :won))
 
-      (is (= (-> full-state
+      (is (= (-> world-state
                  (assoc ::aiw/requested-movements {:player :right 1 :left 0 :up})
                  (aiw/compute-new-state)
                  (get-in [::gs/game-state ::gs/status]))
              :over))
 
-      (is (= (-> full-state
+      (is (= (-> world-state
                  (assoc ::aiw/requested-movements {1 :left 0 :up :player :right})
                  (aiw/compute-new-state)
                  (get-in [::gs/game-state ::gs/status]))
@@ -69,8 +69,8 @@
   depending on time spent add a misstep"
     (let [game-step-duration 20]
       (are [timestamp time-to-wait missteps]
-          (= (aiw/update-timing-data full-state timestamp game-step-duration)
-             (-> full-state
+          (= (aiw/update-timing-data world-state timestamp game-step-duration)
+             (-> world-state
                  (assoc ::aiw/missteps missteps)
                  (assoc ::aiw/time-to-wait time-to-wait)))
         10 10 0

@@ -51,19 +51,19 @@
 
 (s/def ::requested-movements (s/map-of ::ge/being ::ge/direction))
 
-(defn- full-state-predicate-matcher
-  "Generator helper to match ::full-state constraints"
-  [full-state]
-  (-> full-state
-      (update ::missteps min (full-state ::game-step))
+(defn- world-state-predicate-matcher
+  "Generator helper to match ::world-state constraints"
+  [world-state]
+  (-> world-state
+      (update ::missteps min (world-state ::game-step))
       (assoc ::requested-movements
              (u/filter-keys
               #(or (= % :player)
-                   (< % (count (get-in full-state
+                   (< % (count (get-in world-state
                                        [::gs/game-state ::gs/enemy-positions]))))
-              (full-state ::requested-movements)))))
+              (world-state ::requested-movements)))))
 
-(def full-state-keys-spec
+(def world-state-keys-spec
   (s/keys :req [::gs/game-state
                 ::game-step
                 ::requested-movements
@@ -71,8 +71,8 @@
                 ::time-to-wait
                 ::missteps]))
 
-(s/def ::full-state
-  (-> full-state-keys-spec
+(s/def ::world-state
+  (-> world-state-keys-spec
       (s/and (fn [{:keys [::requested-movements]
                    {:keys [::gs/enemy-positions]} ::gs/game-state}]
                (comment "for all movements,  enemy index < enemy count")
@@ -82,8 +82,8 @@
                (comment "no more missteps than actual game steps")
                (<= missteps game-step)))
       (s/with-gen #(gen/fmap
-                    full-state-predicate-matcher
-                    (s/gen full-state-keys-spec)))))
+                    world-state-predicate-matcher
+                    (s/gen world-state-keys-spec)))))
 
 
 (defn data->string
@@ -96,13 +96,13 @@
        (gs/state->string game-state)))
 
 (defn active?
-  [full-state]
-  (= :active (-> full-state ::gs/game-state ::gs/status)))
+  [world-state]
+  (= :active (-> world-state ::gs/game-state ::gs/status)))
 
 ;;; Game initialization
 ;;;;;;
 
-(defn get-initial-full-state
+(defn get-initial-world-state
   ([game-state initial-timestamp]
    {::gs/game-state (assoc game-state ::gs/status :active)
     ::game-step 0
@@ -110,28 +110,28 @@
     ::time-to-wait 0
     ::missteps 0
     ::step-timestamp initial-timestamp})
-  ([game-state] (get-initial-full-state game-state (System/currentTimeMillis))))
+  ([game-state] (get-initial-world-state game-state (System/currentTimeMillis))))
 
 (defn initialize-game
   "Sets everything up for the game to start (arg check, state reset, log)."
   [state-atom initial-state {:as opts, :keys [game-step-duration player-step-duration]}]
   {:pre [(s/valid? ::game-step-duration game-step-duration)
          (s/valid? ::game-step-duration player-step-duration)]}  
-  (reset! state-atom (get-initial-full-state initial-state))
+  (reset! state-atom (get-initial-world-state initial-state))
   (log/info "The game begins.\n" (data->string @state-atom)))
 
 ;;; Game execution
 ;;;;;;
 
 (s/fdef compute-new-state
-  :args (-> (s/cat :full-state ::full-state)
+  :args (-> (s/cat :world-state ::world-state)
             (s/and
-             #(= (-> % :full-state ::gs/game-state ::gs/status) :active)))
-  :ret ::full-state
+             #(= (-> % :world-state ::gs/game-state ::gs/status) :active)))
+  :ret ::world-state
   :fn (s/and
-       (fn [{{:keys [full-state]} :args, :keys [ret]}]
+       (fn [{{:keys [world-state]} :args, :keys [ret]}]
          (comment "Step increases")
-         (= (::game-step ret) (inc (::game-step full-state))))
+         (= (::game-step ret) (inc (::game-step world-state))))
        (fn [{:keys [:ret]}]
          (comment "Movements cleared")
          (empty? (::requested-movements ret)))))
@@ -140,18 +140,18 @@
   "Timing is handled as follows:
   - at game step beginning, state is updated with the step timestamp
   - i"
-  [full-state new-timestamp game-step-duration]
-  (let [step-execution-time (- new-timestamp (full-state ::step-timestamp))
+  [world-state new-timestamp game-step-duration]
+  (let [step-execution-time (- new-timestamp (world-state ::step-timestamp))
         time-to-wait (max (- game-step-duration step-execution-time) 0)]
-    (-> full-state
+    (-> world-state
         (assoc ::time-to-wait time-to-wait)
         (update ::missteps #(if (zero? time-to-wait) (inc %) %)))))
 
 (defn compute-new-state
   "Computes the new state derived from running a step of the
   game. Executes movements until none is left or game is over."
-  [{:as full-state, :keys [::requested-movements]}]
-  (-> full-state
+  [{:as world-state, :keys [::requested-movements]}]
+  (-> world-state
       (update ::gs/game-state
               (partial u/reduce-until #(not= (::gs/status %) :active) ge/move-being)
               requested-movements)
@@ -165,18 +165,18 @@
   - wait for the remaining amount of time (0 if time was bigger);
   - update the state with the new state's starting time
   - compute the new state"
-  [full-state-atom game-step-duration]
-  (swap! full-state-atom update-timing-data
+  [world-state-atom game-step-duration]
+  (swap! world-state-atom update-timing-data
          (System/currentTimeMillis) game-step-duration)
-  (Thread/sleep (@full-state-atom ::time-to-wait))
-  (swap! full-state-atom assoc ::step-timestamp (System/currentTimeMillis))
-  (swap! full-state-atom compute-new-state)
-  (log/info (data->string @full-state-atom)))
+  (Thread/sleep (@world-state-atom ::time-to-wait))
+  (swap! world-state-atom assoc ::step-timestamp (System/currentTimeMillis))
+  (swap! world-state-atom compute-new-state)
+  (log/info (data->string @world-state-atom)))
 
 (defn run-until-end
   "Main game loop."
-  [full-state-atom game-step-duration]
-  (while (active? @full-state-atom)
-    (run-individual-step full-state-atom game-step-duration))
-  (log/info "The game ends.\n" (data->string  @full-state-atom))
-  @full-state-atom)
+  [world-state-atom game-step-duration]
+  (while (active? @world-state-atom)
+    (run-individual-step world-state-atom game-step-duration))
+  (log/info "The game ends.\n" (data->string  @world-state-atom))
+  @world-state-atom)
