@@ -16,3 +16,4 @@ pom.xml
 .#*
 /resources/public/cljs-out/
 .lein-failures
+.clj-kondo
