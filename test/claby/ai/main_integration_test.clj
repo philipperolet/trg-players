@@ -64,27 +64,29 @@
                          (gg/create-nice-game 8 {::gg/density-map {:fruit 5}})
                          opts)
     (testing "When running a step takes less time to run than game
-    step duration, it waits for the remaining time (at ~1ms
+    step duration, it waits for the remaining time (at ~3ms
     resolution)"
-      (aip/play-move state-atom 0)
-      (is (u/almost= (opts :game-step-duration)
-                     (u/time (aiw/run-individual-step state-atom
-                                                      (opts :game-step-duration)))
-                     1))
-      (aip/play-move state-atom 0)
-      (is (u/almost= (opts :game-step-duration)
-                     (u/time (aiw/run-individual-step state-atom
-                                                      (opts :game-step-duration)))
-                     1))
-      (is (u/almost= (* (opts :game-step-duration) 5)
-                     (u/time (dotimes [_ 5]
-                               ;; since player & game are not in
-                               ;; separate threads, player should not
-                               ;; wait before updating its requests
-                               ;; for move
-                               (aip/play-move state-atom 0)
-                               (aiw/run-individual-step state-atom
-                                                        (opts :game-step-duration))))
-                     5)))
+      (let [start-time (System/currentTimeMillis)]
+        (aip/play-move state-atom 0)
+        (aiw/run-individual-step state-atom (opts :game-step-duration))
+        (is (u/almost= (opts :game-step-duration)
+                       (- (System/currentTimeMillis) start-time)
+                       3))
+        (aip/play-move state-atom 0)
+        (aiw/run-individual-step state-atom (opts :game-step-duration))
+        (is (u/almost= (* 2 (opts :game-step-duration))
+                       (- (System/currentTimeMillis) start-time)
+                       6))
+        (dotimes [_ 5]
+                         ;; since player & game are not in
+                         ;; separate threads, player should not
+                         ;; wait before updating its requests
+                         ;; for move
+                         (aip/play-move state-atom 0)
+                         (aiw/run-individual-step state-atom
+                                                  (opts :game-step-duration)))
+        (is (u/almost= (* (opts :game-step-duration) 7)
+                       (- (System/currentTimeMillis) start-time)
+                       21))))
     (testing "When running a step takes more time to run than game step
   duration, it throws")))

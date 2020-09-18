@@ -1,12 +1,11 @@
 ## Todo
 
 ### Notes
-- disable spec testing for fdef in def?
-- install linter clj-kondo
-- fix project opening when only 1 window
-- refactor game with only 1 self-like arg logic
-- project notes on f7 rather than c-x 4 p
-- spec tests faster how
+- score 10 step 0 should be illegal as game state
+- refactor player-step duration => le foutre au bon endroit, dans les params du player
+- enlever la logique de durée dans run-step / run-until-end
+- documenter le besoin de check de requested-movements à l'intérieur de swap
+  - documenter le choix de mettre required-movements à l'intérieur de world state : whereas separating the identities would require refs to ensure consistency, more complex and probably slower.
 
 ## Backlog
 ### AI World v0.2.0
@@ -38,6 +37,8 @@ Watch them via logs every 10 steps.
 - add walls & fruits with clicks
 - let tests be pretty-printed
 - convenient way of having tests in emacs
+- refactor game with only 1 self-like arg logic
+- project notes on f7 rather than c-x 4 p
 
 ## Done
 ### AI World v0.2

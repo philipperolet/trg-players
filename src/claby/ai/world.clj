@@ -2,25 +2,36 @@
   "Module responsible for running the world, by:
   - listening to movement requests (on `requested-movements`);
   - updating the `world-state` according to the movement requests;
-  - updating the world's timestamp every time its state changes
+  - updating the world's timestamp & step number every time its state changes
     (ATTOW only via requested-movements).
 
   Regarding the first element, movement requests can be made by the
-  player as well as by enemies. The last element is intended to allow
-  a detailed execution history.
+  player as well as by enemies.
+
+  Three constraints are enforced :
   
-  Two constraints are enforced :
-  
-  - **thread-safe consistency** between `game-state` and
-  `requested-movements`, meaning if an external thread sees that
+  1. **thread-safe consistency of movement**: if an external thread sees that
   `requested-movements` is empty, it means that game state has already
   been updated. Conversely, if `requested-movements` is not empty,
   `game-state` has *not* been updated with those movements;
-  
-  - **timeliness** of the game, meaning that executing requested
+
+  2. **thread-safe consistency of history**: world steps and
+  timestamps should *always* be increased atomically whenever
+  `world-state` changes, it should not be possible to observe
+  `world-state` in which a change has been made (e.g. to
+  `requested-movement`) but timestamp/step have not yet been updated
+
+  3. **timeliness** of the game, meaning that executing requested
   movements should not take more than 1ms. The program will not halt
   at the first delay over 1ms, for stability. However, it will throw
-  an exception if delays happen too much."
+  an exception if delays happen too much.
+
+  The 2nd constraint is ensured through TODO (specs on state changers,
+  optionally a watcher *checking* the constraint). It is not ensured
+  by a watcher actually *updating* timestamp & step, because it could
+  lead to inconsistent states, since the occurence of a state change
+  and the execution of the watcher function are not atomically
+  performed."
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [claby.game.state :as gs]
@@ -114,19 +125,22 @@
 
 (defn initialize-game
   "Sets everything up for the game to start (arg check, state reset, log)."
-  [state-atom initial-state {:as opts, :keys [game-step-duration player-step-duration]}]
-  {:pre [(s/valid? ::game-step-duration game-step-duration)
-         (s/valid? ::game-step-duration player-step-duration)]}  
-  (reset! state-atom (get-initial-world-state initial-state))
-  (log/info "The game begins.\n" (data->string @state-atom)))
+  [world-state-atom initial-game-state {:as opts, :keys [player-step-duration]}]
+  {:pre [(s/valid? ::game-step-duration player-step-duration)]}  
+  (reset! world-state-atom (get-initial-world-state initial-game-state))
+  (log/info "The game begins.\n" (data->string @world-state-atom)))
 
 ;;; Game execution
 ;;;;;;
 
 (s/fdef compute-new-state
-  :args (-> (s/cat :world-state ::world-state)
+  :args (-> (s/cat :world-state ::world-state
+                   :step-timestamp ::step-timestamp)
             (s/and
-             #(= (-> % :world-state ::gs/game-state ::gs/status) :active)))
+             #(= (-> % :world-state ::gs/game-state ::gs/status) :active)
+             (fn [{:keys [step-timestamp world-state]}]
+               (comment "New timestamp must be bigger than previous one")
+               (>= step-timestamp (world-state ::step-timestamp)))))
   :ret ::world-state
   :fn (s/and
        (fn [{{:keys [world-state]} :args, :keys [ret]}]
@@ -150,13 +164,35 @@
 (defn compute-new-state
   "Computes the new state derived from running a step of the
   game. Executes movements until none is left or game is over."
-  [{:as world-state, :keys [::requested-movements]}]
+  [{:as world-state, :keys [::requested-movements]} step-timestamp]
   (-> world-state
       (update ::gs/game-state
               (partial u/reduce-until #(not= (::gs/status %) :active) ge/move-being)
               requested-movements)
       (assoc ::requested-movements {})
-      (update ::game-step inc)))
+      (update ::game-step inc)
+      (assoc ::step-timestamp step-timestamp)))
+
+(defn- setup-update-world-on-movement-request [world-state-atom]
+  "Sets up listening of movement requests, so that every time a
+  movement is requested the world state is updated accordingly.
+
+  If `requested-movements` is not empty, a state change is
+  triggered--which will in turn call the watch again, thus the
+  necessity to check in the watch whether `requested-movements` is
+  empty, in addition to the check performed in the (atomic) execution
+  of movement.
+  
+  It is possible that between the watch trigger and the watch function
+  execution, other movements are requested, thus triggering another
+  watch call with a different . It is not an issue since when the
+  first watch call is executed, it swaps the current atom value, not
+  the one at watch trigger (stored in new-state)."
+  (add-watch world-state-atom
+             :update-on-movement-request
+             (fn [_ atom _ new-state]
+               (if (not-empty (new-state ::requested-movements))
+                 (swap! atom compute-new-state (System/currentTimeMillis))))))
 
 (defn run-individual-step
   "Runs a step. The timing is handled as follows:
@@ -170,7 +206,7 @@
          (System/currentTimeMillis) game-step-duration)
   (Thread/sleep (@world-state-atom ::time-to-wait))
   (swap! world-state-atom assoc ::step-timestamp (System/currentTimeMillis))
-  (swap! world-state-atom compute-new-state)
+  (swap! world-state-atom compute-new-state (System/currentTimeMillis))
   (log/info (data->string @world-state-atom)))
 
 (defn run-until-end

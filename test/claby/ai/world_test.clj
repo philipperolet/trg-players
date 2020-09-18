@@ -7,7 +7,8 @@
             [claby.game.state :as gs]
             [claby.game.board :as gb]
             [claby.game.state-test :as gst]
-            [claby.ai.world :as aiw]))
+            [claby.ai.world :as aiw]
+            [claby.ai.player :as aip]))
 
 (st/instrument)
 (check-all-specs claby.ai.world)
@@ -63,6 +64,17 @@
                  (aiw/compute-new-state)
                  (get-in [::gs/game-state ::gs/status]))
              :over)))))
+
+(deftest ^:integration listening-to-requests-test
+  (testing "World state is updated when there is a movement request."
+    (let [world-state-atom (atom nil)]
+      (aiw/initialize-game world-state-atom
+                           (world-state ::gs/game-state)
+                           {:player-step-duration 50})
+      (swap! world-state-atom assoc ::aiw/requested-movements {:player :right})
+      (is (= (-> @world-state-atom ::gs/game-state ::gs/player-position)
+             [1 3]))
+      (is (empty? (@world-state-atom ::aiw/requested-movements))))))
 
 (deftest update-timing-data-test
   (testing "It should update step timestamp and remaining time, and

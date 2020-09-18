@@ -27,7 +27,7 @@ Launching AI world will run a single game using the player code located in `clab
 
 Start game:
 - in CLI with `lein run args`;
-- in REPL by getting to the `claby.ai.main` namespace and typing `(run args)`.
+- in REPL by getting to the `claby.ai.main` namespace and typing `(-main args)`.
 
 Run `lein run -h` to print CLI arguments. They are also described in `cli-options` at [claby.ai.main](src/claby/ai/main.clj).
 
