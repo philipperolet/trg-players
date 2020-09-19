@@ -88,11 +88,13 @@
 
 (defn data->string
   "Converts game data to nice string"
-  [{:keys [::gs/game-state ::game-step ::step-timestamp ::time-to-wait]}]
-  (str (format "Step %d\nTimestamp (mod 1 000 000) %d\nTime-to-wait %d\n"
+  [{:keys [::gs/game-state ::game-step ::step-timestamp ::time-to-wait ::missteps]}]
+  (str (format (str "Step %d\nTimestamp (mod 1 000 000) %d\nTime-to-wait %d\n"
+                    "Missteps %d\n")
                game-step
                (mod step-timestamp 1000000)
-               time-to-wait)
+               time-to-wait
+               missteps)
        (gs/state->string game-state)))
 
 (defn active?
@@ -124,9 +126,7 @@
 ;;;;;;
 
 (s/fdef compute-new-state
-  :args (-> (s/cat :world-state ::world-state)
-            (s/and
-             #(= (-> % :world-state ::gs/game-state ::gs/status) :active)))
+  :args (s/cat :world-state ::world-state)
   :ret ::world-state
   :fn (s/and
        (fn [{{:keys [world-state]} :args, :keys [ret]}]
@@ -165,18 +165,23 @@
   - wait for the remaining amount of time (0 if time was bigger);
   - update the state with the new state's starting time
   - compute the new state"
-  [world-state-atom game-step-duration]
+  [world-state-atom {:as game-options, :keys [game-step-duration logging-steps]}]
+  
   (swap! world-state-atom update-timing-data
          (System/currentTimeMillis) game-step-duration)
   (Thread/sleep (@world-state-atom ::time-to-wait))
   (swap! world-state-atom assoc ::step-timestamp (System/currentTimeMillis))
   (swap! world-state-atom compute-new-state)
-  (log/info (data->string @world-state-atom)))
+
+  ;; Log every logging-steps steps, or never if 0
+  (if (and (pos? logging-steps)
+           (zero? (mod (@world-state-atom ::game-step) logging-steps)))
+      (log/info (data->string @world-state-atom))))
 
 (defn run-until-end
   "Main game loop."
-  [world-state-atom game-step-duration]
+  [world-state-atom game-options]
   (while (active? @world-state-atom)
-    (run-individual-step world-state-atom game-step-duration))
+    (run-individual-step world-state-atom game-options))
   (log/info "The game ends.\n" (data->string  @world-state-atom))
   @world-state-atom)

@@ -1,11 +1,11 @@
 ## Todo
+- Create a player that spans all the board using the non-closed-areas algorithm of "enjoyable games"
 
 ### Notes
 - disable spec testing for fdef in def?
 - install linter clj-kondo
 - fix project opening when only 1 window
 - refactor game with only 1 self-like arg logic
-- project notes on f7 rather than c-x 4 p
 - spec tests faster how
 
 ## Backlog
@@ -41,6 +41,8 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ Missteps in world state string
++ for non-interactive mode, adjustable log rate--defaulting to no log
 - ref: full-state -> world-state 
 - Documenter le fonctionnement souhaité dans README.md, main/world/player.clj
 - préparer le backlog de la v0.2.0 pour qu'il aille à ce fonctionnement

@@ -31,6 +31,11 @@
     "Number of steps in-between interaction. Only used in interactive mode."
     :default 50
     :parse-fn #(Integer/parseInt %)]
+   ["-l" "--logging-steps STEPS"
+    "Log the world state every STEPS steps. Only used in
+*non*-interactive mode. 0 means no logging during game."
+    :default 0
+    :parse-fn #(Integer/parseInt %)]
    ["-h" "--help"]])
 
 ;;; Interactive mode setup
@@ -103,7 +108,8 @@
          (future (process-user-input interactivity-atom))))
      
      ;; run game and player threads 
-     (let [game-result (future (aiw/run-until-end state-atom (opts :game-step-duration)))]
+     (let [game-result
+           (future (aiw/run-until-end state-atom opts))]
        (future (aip/play-until-end state-atom (opts :player-step-duration)))
        
        ;; return game thread result
