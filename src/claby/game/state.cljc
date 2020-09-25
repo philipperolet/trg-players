@@ -137,7 +137,8 @@
          (-> i (+ size) (mod (* size size)))]]
   (cond 
     (and (or (= value :empty) (= value :fruit))
-         (some #(or (= (nth board %) :mark) (= (nth board %) :marked)) positions-to-check))
+         (some #(or (= (nth board %) :mark) (= (nth board %) :marked))
+               positions-to-check))
     :mark
 
     (= value :mark)
@@ -167,8 +168,7 @@
     (loop [board explorable-board]
       ;; if no more exploration return true iff no fruit left
       (if (not (some #{:mark} board))
-        (= ;;#dbg ^{:break/when (= player-position [0 0])}
-           ((frequencies board) :fruit) nil)
+        (= ((frequencies board) :fruit) nil)
         
         ;; else go on exploring, marking new elements according 
         (recur (map-indexed #(explore-cell board size %1 %2) board))))))

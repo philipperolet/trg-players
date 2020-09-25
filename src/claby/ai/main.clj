@@ -58,8 +58,8 @@
     (Thread/sleep 100)))
 
 (defn- setup-interactivity
-  [world-state-atom interactivity-atom number-of-steps]
-  (add-watch world-state-atom :setup-interactivity
+  [world-state interactivity-atom number-of-steps]
+  (add-watch world-state :setup-interactivity
              (fn [_ _ old-data {:as new-data, :keys [::aiw/game-step]}]
                (when (and (< (old-data ::aiw/game-step) game-step)
                           (= (mod game-step number-of-steps) 0))
@@ -68,7 +68,7 @@
   (add-watch interactivity-atom :abort-game-if-quit
              (fn [_ _ _ val]
                (if (= :quit val)
-                 (swap! world-state-atom
+                 (swap! world-state
                         assoc-in [::gs/game-state ::gs/status] :over)))))
 
 (s/fdef get-interactivity-value
@@ -95,22 +95,22 @@
   ([opts initial-state]
    (log/info "Running game with the following options:\n" opts)
 
-   (let [state-atom (atom nil)]
+   (let [world-state (atom nil)]
 
-     (aiw/initialize-game state-atom initial-state opts)
+     (aiw/initialize-game world-state initial-state opts)
      
      ;; setup interactive mode if requested    
      (when (opts :interactive)
        (let [interactivity-atom (atom :pause)]
-         (setup-interactivity state-atom
+         (setup-interactivity world-state
                               interactivity-atom
                               (opts :number-of-steps))
          (future (process-user-input interactivity-atom))))
      
      ;; run game and player threads 
      (let [game-result
-           (future (aiw/run-until-end state-atom opts))]
-       (future (aip/play-until-end state-atom (opts :player-step-duration)))
+           (future (aiw/run-until-end world-state opts))]
+       (future (aip/play-until-end world-state (opts :player-step-duration)))
        
        ;; return game thread result
        @game-result)))

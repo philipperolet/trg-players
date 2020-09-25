@@ -5,7 +5,7 @@
               [clojure.test.check.properties]
               [cljs.spec.test.alpha :as st]]
        :clj [[clojure.spec.test.alpha :as st]
-             [clojure.test :refer [is deftest testing]]])
+             [clojure.test :refer [is deftest testing are]]])
    [claby.utils :as u]))
 
 (deftest reduce-until-test
@@ -55,3 +55,13 @@
   (is (= (u/filter-keys #(>= % 3) {1 :a 2 :b 3 :c 4 :d}) {3 :c 4 :d}))
   (is (= (u/filter-keys #(= 2 (count %)) {"a" 1 "bc" 2 "cde" 3}) {"bc" 2}))
   (is (= (u/filter-keys #(int? %) {:a 2 :b 3}) {})))
+
+(deftest remove-common-beginning
+  (are [s1 s2 res]
+      (= (u/remove-common-beginning s1 s2) res)
+    '(1 2 3 4 5) '(1 2 5 4) '(3 4 5)
+    [] [] []
+    [] '() []
+    '(1 2 3) '(4 5 6) '(1 2 3)
+    [2 4 7] '(2 4 7 8) []
+    '(2 4 7 8) [2 4 7] '(8)))

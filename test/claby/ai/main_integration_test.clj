@@ -12,7 +12,6 @@
             [claby.game.generation :as gg]))
 
 (st/instrument)
-
 (deftest run-test-basic
   (testing "Runs a basic game (removing cheese & enemies), expects the
   game to finish well"
@@ -21,8 +20,8 @@
                          (assoc-in [::gb/game-board 3 3] :fruit)
                          (assoc ::gs/enemy-positions []))
           game-result (aim/run
-                        {:game-step-duration 50
-                         :player-step-duration 100
+                        {:game-step-duration 15
+                         :player-step-duration 30
                          :logging-steps 0}
                         test-state)] 
       (is (= :won (-> game-result ::gs/game-state ::gs/status)))
@@ -60,24 +59,25 @@
       (is (< (game-result ::aiw/game-step) 2)))))
 
 (deftest run-test-timing-steps
-  (let [state-atom (atom nil)
+  (let [world-state (atom nil)
         opts {:game-step-duration 50
               :player-step-duration 50
               :logging-steps 0}]
-    (aiw/initialize-game state-atom
+    (aiw/initialize-game world-state
                          (gg/create-nice-game 8 {::gg/density-map {:fruit 5}})
                          opts)
     (testing "When running a step takes less time to run than game
     step duration, it waits for the remaining time (at ~3ms resolution)"
-      (let [start-time (System/currentTimeMillis)]
-        (aip/play-move state-atom 0)
-        (aiw/run-individual-step state-atom opts)
+      (let [start-time (System/currentTimeMillis)
+            player-state (aip/get-initial-player-state @world-state)]
+        (aip/request-movement player-state world-state)
+        (aiw/run-individual-step world-state opts)
         (is (u/almost= (opts :game-step-duration)
                        (- (System/currentTimeMillis) start-time)
                        3))
         
-        (aip/play-move state-atom 0)
-        (aiw/run-individual-step state-atom opts)
+        (aip/request-movement player-state world-state)
+        (aiw/run-individual-step world-state opts)
         (is (u/almost= (* 2 (opts :game-step-duration))
                        (- (System/currentTimeMillis) start-time)        
                        6))
@@ -87,8 +87,8 @@
           ;; separate threads, player should not
           ;; wait before updating its requests
           ;; for move
-          (aip/play-move state-atom 0)
-          (aiw/run-individual-step state-atom opts))
+          (aip/request-movement player-state world-state)
+          (aiw/run-individual-step world-state opts))
         (is (u/almost= (* (opts :game-step-duration) 7)
                        (- (System/currentTimeMillis) start-time)
                        21)))

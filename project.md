@@ -1,12 +1,9 @@
-## Todo
-- Create a player that spans all the board using the non-closed-areas algorithm of "enjoyable games"
-
-### Notes
-- disable spec testing for fdef in def?
-- install linter clj-kondo
-- fix project opening when only 1 window
-- refactor game with only 1 self-like arg logic
-- spec tests faster how
+## Now & next up
+- Refactoring pass (tb adjusted)
+- player bug should stop the game
+- Make player implementation selection for the algorithm easy
+- put specs back on for update-path-stack/mark-board
+- make an experiment with 1000 rand games, compare avg step number with 95% conf interval on random variable and mean
 
 ## Backlog
 ### AI World v0.2.0
@@ -21,7 +18,7 @@
 **Player**
 - ref: random player via an interface
 - ref: player options as part of the player interface
-- add: non-random player
+
 
 **Main**
 - ref: fit the new player/world apis & clean legacy code
@@ -41,6 +38,7 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ add: non-random player - spans all the board algorithmically
 + Missteps in world state string
 + for non-interactive mode, adjustable log rate--defaulting to no log
 - ref: full-state -> world-state 

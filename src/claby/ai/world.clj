@@ -79,8 +79,8 @@
                (every? #(or (= % :player) (< % (count enemy-positions)))
                        (keys requested-movements)))
              (fn [{:keys [::missteps ::game-step]}]
-               (comment "no more missteps than actual game steps")
-               (<= missteps game-step)))
+               (comment "no more missteps than actual game steps + 1 (current)")
+               (<= missteps (inc game-step))))
       (s/with-gen #(gen/fmap
                     world-state-predicate-matcher
                     (s/gen world-state-keys-spec)))))
