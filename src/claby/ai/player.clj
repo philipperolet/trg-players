@@ -12,7 +12,11 @@
 #_(defn request-movement [world-state]
   (gen/generate (s/gen ::ge/direction)))
 
-"This player tries to go everywhere on the board by exploring all possible paths that do not lead to an already explored position. It maintains a board simulation in which walls & explored territory are marked (using cell value :fruit) so they are not explored multiple times."
+(comment "This player tries to go everywhere on the board by exploring all
+possible paths that do not lead to an already explored position. It
+maintains a board simulation in which walls & explored territory are
+marked (using cell value :fruit) so they are not explored multiple
+times.")
 
 (defn get-initial-player-state
   "Creates a player state from the current world."
@@ -22,10 +26,10 @@
   (atom {:initial-position player-position
          :exploration-data {:board (-> (gb/empty-board (count game-board))
                                        (assoc-in player-position :fruit))
-                             :current-path '()
-                             :path-stack '(())}}))
+                            :current-path '()
+                            :path-stack '(())}}))
 
-(defn wall-present?
+(defn- wall-present?
   "Checks if a wall blocked the player on the path.
 
   In the context of iterate-exploration, there can be no
@@ -39,7 +43,7 @@
           [(mod (+ (initial-position 0) movement-down) board-size)
            (mod (+ (initial-position 1) movement-right) board-size)])))
 
-(defn get-walk-from-to
+(defn- get-walk-from-to
   "Computes the player's path to walk from its current position-- the
   end of the last path it explored--to its next destination--the end
   of the new path to explore.
@@ -69,7 +73,7 @@
                      (not= :empty (get-in board player-position)))))
   :ret ::gb/game-board)
 
-(defn mark-board
+(defn- mark-board
   "Return board switching :empty cells next to position (and thus to be
   explored) to :fruit"
   [board player-position]
@@ -97,7 +101,7 @@
                      (not= :empty (get-in board player-position)))))
   :ret ::path-stack)
 
-(defn update-path-stack
+(defn- update-path-stack
   [path-stack board player-position]
   (let [get-position-from-dir
         (fn [direction] (ge/move-position player-position direction (count board)))
@@ -110,7 +114,7 @@
          (map #(concat (first path-stack) (list %)))
          (concat (rest path-stack)))))
 
-(defn iterate-exploration
+(defn- iterate-exploration
   "Starts at the end of the last explored path (the first path in path
   stack). If the expected postion does not match the actual, then the
   end of the last path was a wall and we should unstack another path
@@ -134,9 +138,10 @@
                                      :board next-board
                                      :path-stack next-stack})))
 
-(defn get-next-movement
-  "While there is a path to explore, pop the next direction. When the path is empty,
-  get a new path to explore."
+(defn update-player-state
+  "While there is a path to explore, pop the next direction. When the
+  path is empty, get a new path to explore. Once the board is fully
+  explored the game should have ended -- next movement becomes nil."
   [player world]
   (-> (if (empty? (-> player :exploration-data :current-path))
         (iterate-exploration player (-> world ::gs/game-state ::gs/player-position))
@@ -148,8 +153,7 @@
 
 (defn request-movement
   [player-state world-state]
-  ;; pop next direction
-  (swap! player-state get-next-movement @world-state)
+  (swap! player-state update-player-state @world-state)
   (swap! world-state
          assoc-in [::aiw/requested-movements :player]
          (@player-state :next-movement)))
