@@ -2,14 +2,14 @@
   (:require [claby.ai.world :as aiw]
             [claby.ai.main :as aim]
             [claby.ai.player :as aip]
+            [claby.ai.exhaustive-player :refer [exhaustive-player]]
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.state-test :as gst]
-            [claby.utils :refer [check-all-specs]]
             [clojure.spec.test.alpha :as st]
             [clojure.test :refer [deftest is testing]]
-            [claby.utils :as u]
-            [claby.game.generation :as gg]))
+            [claby.game.generation :as gg]
+            [claby.utils :as u]))
 
 (st/instrument)
 (deftest run-test-basic
@@ -69,7 +69,7 @@
     (testing "When running a step takes less time to run than game
     step duration, it waits for the remaining time (at ~3ms resolution)"
       (let [start-time (System/currentTimeMillis)
-            player-state (aip/get-initial-player-state @world-state)]
+            player-state (atom (exhaustive-player @world-state))]
         (aip/request-movement player-state world-state)
         (aiw/run-individual-step world-state opts)
         (is (u/almost= (opts :game-step-duration)

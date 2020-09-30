@@ -1,8 +1,8 @@
 ## Now & next up
-- Refactoring pass (tb adjusted)
-- player bug should stop the game
 - Make player implementation selection for the algorithm easy
-- put specs back on for update-path-stack/mark-board
+- ref: random player via an interface
+- player bug should stop the game
+- put specs back on for update-path-stack/mark-board?
 - make an experiment with 1000 rand games, compare avg step number with 95% conf interval on random variable and mean
 
 ## Backlog
@@ -15,10 +15,6 @@
 - add: timeliness
 - ref: clean legacy code
 
-**Player**
-- ref: random player via an interface
-- ref: player options as part of the player interface
-
 
 **Main**
 - ref: fit the new player/world apis & clean legacy code
@@ -29,6 +25,17 @@ Watch them via logs every 10 steps.
 - int-test: the two above games are run without logging and "work"
   - same as the test existing now, updated with the new api
 
+### AI World v0.3.0
+- Add player using reinforcement learning - basic
+  - get back to speed on RL
+  - design algo
+
+### Next versions
+- Then use DL in a basic way to model part of it
+- then look up DL players
+- then look up alphazero
+
+
 ## Icebox
 - remove libs from vcs to avoid useless commits / searchs?
 - tab should autocomplete
@@ -38,6 +45,7 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ Refactoring pass
 + add: non-random player - spans all the board algorithmically
 + Missteps in world state string
 + for non-interactive mode, adjustable log rate--defaulting to no log

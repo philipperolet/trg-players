@@ -1,20 +1,17 @@
-(ns claby.ai.player-test
-  (:require [clojure.test :refer [testing deftest is are]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
+(ns claby.ai.exhaustive-player-test
+  (:require [clojure.test :refer [deftest is are]]
             [clojure.spec.test.alpha :as st]
             [claby.utils :refer [check-all-specs]]
             [claby.game.state :as gs]
             [claby.game.board :as gb]
             [claby.game.generation :as gg]
             [claby.game.events :as ge]
-            [claby.game.state-test :as gst]
-            [claby.ai.player :as aip]
-            [claby.ai.world :as aiw]
-            [claby.game.events :as ge]))
+            [claby.ai.exhaustive-player :as aip]
+            [claby.ai.player :refer [update-player]]
+            [claby.ai.world :as aiw]))
 
 (st/instrument)
-(check-all-specs claby.ai.player)
+(check-all-specs claby.ai.exhaustive-player)
 
 (deftest get-walk-from-to-test
   (are [p1 p2 wall? res]
@@ -88,15 +85,15 @@
              (#(update % ::gb/game-board
                        assoc-in (update (% ::gs/player-position) 0 dec) :empty))))
         player
-        @(aip/get-initial-player-state world)
+        (aip/exhaustive-player world)
         next-player
-        (aip/update-player-state player world)
+        (update-player player world)
         next-world
         (update-in world [::gs/game-state ::gs/player-position]
-                  ge/move-position (next-player :next-movement) 8)
+                  ge/move-position (-> next-player :next-movement) 8)
         next-player-2
-        (aip/update-player-state next-player next-world)]
-    (is (= :up (next-player :next-movement)))
+        (update-player next-player next-world)]
+    (is (= :up (-> next-player :next-movement)))
     (is (= '() (-> next-player :exploration-data :current-path)))
-    (is (= :down (next-player-2 :next-movement)))
+    (is (= :down (-> next-player-2 :next-movement)))
     (is (= '(:down) (-> next-player-2 :exploration-data :current-path)))))

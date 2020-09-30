@@ -2,14 +2,14 @@
   "Main thread for AI game. Start game with the `run` function, see
   below for CLI Options."
   (:require [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
             [clojure.string :as str]
             [clojure.tools.cli :as ctc]
             [clojure.tools.logging :as log]
             [claby.ai.world :as aiw]
             [claby.game.state :as gs]
             [claby.ai.player :as aip]
-            [claby.game.generation :as gg])
+            [claby.game.generation :as gg]
+            [claby.ai.exhaustive-player :refer [exhaustive-player]])
   (:gen-class))
 
 (def cli-options
@@ -110,7 +110,9 @@
      ;; run game and player threads 
      (let [game-result
            (future (aiw/run-until-end world-state opts))]
-       (future (aip/play-until-end world-state (opts :player-step-duration)))
+       (future (aip/play-until-end world-state
+                                   (atom (exhaustive-player @world-state))
+                                   (opts :player-step-duration)))
        
        ;; return game thread result
        @game-result)))
