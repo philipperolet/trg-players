@@ -1,5 +1,4 @@
 ## Now & next up
-- player bug should stop the game
 - put specs back on for update-path-stack/mark-board?
 - make an experiment with 1000 rand games, compare avg step number with 95% conf interval on random variable and mean
 
@@ -43,6 +42,7 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ player bug stops the game and shows error message
 + Make player implementation selection for the algorithm easy
 + Refactoring pass
 + ref: random player via an interface

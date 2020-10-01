@@ -99,3 +99,18 @@
       (testing "When running a step takes more time to run than game step
   duration, it throws")))
   )
+
+(deftest game-ends-on-player-error-test
+  (let [failing-player
+        (reify aip/Player
+          (update-player [_ _] (throw (RuntimeException. "I crashed!"))))]
+    
+    (with-redefs [aim/player-create-fn {:failing (constantly failing-player)}]
+      
+      (is (thrown-with-msg? java.util.concurrent.ExecutionException
+                            #".*I crashed!.*"
+                            (aim/run {:game-step-duration 15
+                                      :player-step-duration 30
+                                      :logging-steps 0
+                                      :board-size 8
+                                      :player-type "failing"}))))))

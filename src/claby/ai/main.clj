@@ -114,12 +114,18 @@
          (future (process-user-input interactivity-atom))))
      
      ;; run game and player threads 
-     (let [game-result (future (aiw/run-until-end world-state opts))]
-       (future
-         (aip/play-until-end
-          world-state
-          (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
-          (opts :player-step-duration)))
+     (let [game-result
+           (future (aiw/run-until-end world-state opts))
+           player-result
+           (future
+             (aip/play-until-end
+              world-state
+              (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
+              (opts :player-step-duration)))]
+
+       ;; checks that player does not stop running during game execution
+       (while (not (realized? game-result))
+         (when (realized? player-result) @player-result))
        
        ;; return game thread result
        @game-result)))

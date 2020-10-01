@@ -17,3 +17,5 @@ pom.xml
 /resources/public/cljs-out/
 .lein-failures
 .clj-kondo
+/.dir-locals.el
+/flycheck_.dir-locals.elc
