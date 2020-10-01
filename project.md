@@ -1,6 +1,4 @@
 ## Now & next up
-- Make player implementation selection for the algorithm easy
-- ref: random player via an interface
 - player bug should stop the game
 - put specs back on for update-path-stack/mark-board?
 - make an experiment with 1000 rand games, compare avg step number with 95% conf interval on random variable and mean
@@ -45,7 +43,9 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ Make player implementation selection for the algorithm easy
 + Refactoring pass
++ ref: random player via an interface
 + add: non-random player - spans all the board algorithmically
 + Missteps in world state string
 + for non-interactive mode, adjustable log rate--defaulting to no log

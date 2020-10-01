@@ -1,5 +1,5 @@
 (ns claby.ai.exhaustive-player-test
-  (:require [clojure.test :refer [deftest is are]]
+  (:require [clojure.test :refer [deftest is are testing]]
             [clojure.spec.test.alpha :as st]
             [claby.utils :refer [check-all-specs]]
             [claby.game.state :as gs]
@@ -92,8 +92,15 @@
         (update-in world [::gs/game-state ::gs/player-position]
                   ge/move-position (-> next-player :next-movement) 8)
         next-player-2
-        (update-player next-player next-world)]
+        (update-player next-player next-world)
+        next-world-2 ;; world with pending movement not yet executed
+        (assoc-in next-world [::aiw/requested-movements :player] :down)]
     (is (= :up (-> next-player :next-movement)))
     (is (= '() (-> next-player :exploration-data :current-path)))
     (is (= :down (-> next-player-2 :next-movement)))
-    (is (= '(:down) (-> next-player-2 :exploration-data :current-path)))))
+    (is (= '(:down) (-> next-player-2 :exploration-data :current-path)))
+
+    (testing
+        "if movement has not yet been executed, do not make movement requests"
+
+      (is (nil? (:next-movement (update-player next-player-2 next-world-2)))))))

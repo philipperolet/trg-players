@@ -12,6 +12,7 @@
             [claby.utils :as u]))
 
 (st/instrument)
+
 (deftest run-test-basic
   (testing "Runs a basic game (removing cheese & enemies), expects the
   game to finish well"
@@ -19,10 +20,10 @@
                          (assoc-in [::gb/game-board 3 2] :fruit)
                          (assoc-in [::gb/game-board 3 3] :fruit)
                          (assoc ::gs/enemy-positions []))
-          game-result (aim/run
-                        {:game-step-duration 15
-                         :player-step-duration 30
-                         :logging-steps 0}
+          game-result (aim/run {:game-step-duration 15
+                                :player-step-duration 30
+                                :logging-steps 0
+                                :player-type "random"}
                         test-state)] 
       (is (= :won (-> game-result ::gs/game-state ::gs/status)))
       
@@ -43,7 +44,8 @@
                                     :interactive true
                                     :number-of-steps 15
                                     :board-size 8
-                                    :logging-steps 0})]
+                                    :logging-steps 0
+                                    :player-type "random"})]
           (with-in-str "r\n"
             (is (= ((:call-count (meta counting-function)))
                    (int (/ (game-result ::aiw/game-step) 15))))))))))
@@ -55,14 +57,16 @@
                                 :interactive true
                                 :number-of-steps 15
                                 :board-size 8
-                                :logging-steps 0})]
+                                :logging-steps 0
+                                :player-type "random"})]
       (is (< (game-result ::aiw/game-step) 2)))))
 
 (deftest run-test-timing-steps
   (let [world-state (atom nil)
         opts {:game-step-duration 50
               :player-step-duration 50
-              :logging-steps 0}]
+              :logging-steps 0
+              :player-type "random"}]
     (aiw/initialize-game world-state
                          (gg/create-nice-game 8 {::gg/density-map {:fruit 5}})
                          opts)

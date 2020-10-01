@@ -15,11 +15,11 @@
 (def cli-options
   [["-g" "--game-step-duration GST"
     "Time interval (ms) between each game step (see claby.ai.world)."
-    :default 25
+    :default 15
     :parse-fn #(Integer/parseInt %)]
    ["-p" "--player-step-duration PST"
     "Time interval (ms) between each move request from player."
-    :default 50
+    :default 30
     :parse-fn #(Integer/parseInt %)]
    ["-s" "--board-size SIZE"
     "Board size for the game"
@@ -36,6 +36,11 @@
 *non*-interactive mode. 0 means no logging during game."
     :default 0
     :parse-fn #(Integer/parseInt %)]
+   ["-t" "--player-type PLAYER-TYPE"
+    "Artificial player that will play the game. E.g. 'random'
+    implements a player moving at random. For a list of
+    implementations see sources in claby.ai package"
+    :default "random"]
    ["-h" "--help"]])
 
 ;;; Interactive mode setup
@@ -88,17 +93,18 @@
 
 ;;; Main game routine
 ;;;;;;
+(def player-create-fn
+  {:random (fn [_] (aip/->RandomPlayer))
+   :exhaustive exhaustive-player})
 
 (defn run
   "Runs a game with `initial-data` matching world-state spec (see world.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
   ([opts initial-state]
    (log/info "Running game with the following options:\n" opts)
-
    (let [world-state (atom nil)]
-
      (aiw/initialize-game world-state initial-state opts)
-     
+
      ;; setup interactive mode if requested    
      (when (opts :interactive)
        (let [interactivity-atom (atom :pause)]
@@ -108,11 +114,12 @@
          (future (process-user-input interactivity-atom))))
      
      ;; run game and player threads 
-     (let [game-result
-           (future (aiw/run-until-end world-state opts))]
-       (future (aip/play-until-end world-state
-                                   (atom (exhaustive-player @world-state))
-                                   (opts :player-step-duration)))
+     (let [game-result (future (aiw/run-until-end world-state opts))]
+       (future
+         (aip/play-until-end
+          world-state
+          (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
+          (opts :player-step-duration)))
        
        ;; return game thread result
        @game-result)))
@@ -132,5 +139,6 @@
       (println (str/join "\n" (opts :error)))
       
       :else
-      ((run (opts :options))
-       (shutdown-agents)))))
+      (let [game-result (run (opts :options))]
+        (shutdown-agents)
+        game-result))))

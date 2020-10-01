@@ -8,7 +8,8 @@
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.events :as ge]
-            [claby.ai.player :refer [Player]]))
+            [claby.ai.player :refer [Player]]
+            [claby.ai.world :as aiw]))
 
 (defn- wall-present?
   "Checks if a wall blocked the player on the path.
@@ -119,22 +120,30 @@
                                      :board next-board
                                      :path-stack next-stack})))
 
-(defrecord ExhaustivePlayer [initial-position exploration-data]
-  Player
-  (update-player
-    [player world]
-    (comment "While there is a path to explore, pop the next direction. When
-  the path is empty, get a new path to explore. Once the board is
-  fully explored the game should have ended -- next movement becomes
-  nil.")
-    (-> (if (empty? (-> player :exploration-data :current-path))
-          (iterate-exploration player
-                               (-> world ::gs/game-state ::gs/player-position))
+(defn- update-player-with-movement
+  "While there is a path to explore, pop the next direction. When the
+  path is empty, get a new path to explore. Once the board is fully
+  explored the game should have ended -- next movement becomes nil."
+  [player world]
+  (-> (if (empty? (-> player :exploration-data :current-path))
+          (iterate-exploration player (-> world ::gs/game-state ::gs/player-position))
           player)
         ;; get next direction in current path
         (#(assoc % :next-movement (-> % :exploration-data :current-path first)))
         ;; pop it
-        (update-in [:exploration-data :current-path] rest))))
+        (update-in [:exploration-data :current-path] rest)))
+
+(defrecord ExhaustivePlayer [initial-position exploration-data]
+  Player
+  (update-player
+    [player world]
+    (comment "If the last movement has not yet been executed, wait and
+    do not make a movement request. Else, go through with update.")
+    (let [movement-still-pending?
+          (some? (-> world ::aiw/requested-movements :player))]
+      (if movement-still-pending?
+        (assoc player :next-movement nil)
+        (update-player-with-movement player world)))))
 
 (defn exhaustive-player
   [{:as world-state,
