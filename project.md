@@ -1,5 +1,5 @@
 ## Now & next up
-- put specs back on for update-path-stack/mark-board?
+- make game cycles faster than 1ms
 - make an experiment with 1000 rand games, compare avg step number with 95% conf interval on random variable and mean
 
 ## Backlog
@@ -22,7 +22,17 @@ Watch them via logs every 10 steps.
 - int-test: the two above games are run without logging and "work"
   - same as the test existing now, updated with the new api
 
-### AI World v0.3.0
+### v0.2.1
+- add score to the world
+- random player senses are only a 7*7 grid, the step and the score
+- exhaustive-player senses are only a 7*7 grid, the step and the score
+
+### v0.3.0
+- option to store game & player data in a db for random player
+- * for exhaustive player
+- tools to inspect games
+
+### v0.4.0
 - Add player using reinforcement learning - basic
   - get back to speed on RL
   - design algo
@@ -42,6 +52,7 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ option to disable logging
 + player bug stops the game and shows error message
 + Make player implementation selection for the algorithm easy
 + Refactoring pass

@@ -5,6 +5,7 @@
             [clojure.string :as str]
             [clojure.tools.cli :as ctc]
             [clojure.tools.logging :as log]
+            [clojure.tools.logging.impl :as li]
             [claby.ai.world :as aiw]
             [claby.game.state :as gs]
             [claby.ai.player :as aip]
@@ -41,6 +42,10 @@
     implements a player moving at random. For a list of
     implementations see sources in claby.ai package"
     :default "random"]
+   ["-ll" "--logging-level LEVEL"
+    "Logging level"
+    :default java.util.logging.Level/INFO
+    :parse-fn #(java.util.logging.Level/parse %)]
    ["-h" "--help"]])
 
 ;;; Interactive mode setup
@@ -97,37 +102,42 @@
   {:random (fn [_] (aip/->RandomPlayer))
    :exhaustive exhaustive-player})
 
+(defn- start-interactive-mode
+  [world-state nb-steps]
+  (let [interactivity-atom (atom :pause)]
+    (setup-interactivity world-state interactivity-atom nb-steps)
+    (future (process-user-input interactivity-atom))))
+
+(defn- start-player-thread
+  [world-state opts]
+  (future
+    (aip/play-until-end
+     world-state
+     (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
+     (opts :player-step-duration))))
+
 (defn run
   "Runs a game with `initial-data` matching world-state spec (see world.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
   ([opts initial-state]
-   (log/info "Running game with the following options:\n" opts)
    (let [world-state (atom nil)]
+     ;; setup logging
+     (.setLevel (li/get-logger log/*logger-factory* *ns*) (opts :logging-level))
+     (log/info "Running game with the following options:\n" opts)
+
+     ;; initialize game and interactivity
      (aiw/initialize-game world-state initial-state opts)
-
-     ;; setup interactive mode if requested    
      (when (opts :interactive)
-       (let [interactivity-atom (atom :pause)]
-         (setup-interactivity world-state
-                              interactivity-atom
-                              (opts :number-of-steps))
-         (future (process-user-input interactivity-atom))))
+       (start-interactive-mode world-state (opts :number-of-steps)))
      
-     ;; run game and player threads 
-     (let [game-result
-           (future (aiw/run-until-end world-state opts))
-           player-result
-           (future
-             (aip/play-until-end
-              world-state
-              (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
-              (opts :player-step-duration)))]
+     ;; start game and player threads 
+     (let [game-result (future (aiw/run-until-end world-state opts))
+           player-result (start-player-thread world-state opts)]
 
-       ;; checks that player does not stop running during game execution
+       ;; checks that player does not stop running during game
+       ;; execution, then return result
        (while (not (realized? game-result))
          (when (realized? player-result) @player-result))
-       
-       ;; return game thread result
        @game-result)))
    
   ([opts]
