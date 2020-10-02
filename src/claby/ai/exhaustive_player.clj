@@ -45,16 +45,6 @@
     
     (concat backward-path forward-path)))
 
-#_(s/fdef mark-board
-  :args (-> (s/cat :board ::gb/game-board :player-position ::gs/player-position)
-            (s/and (fn [{:keys [board player-position]}]
-                     (comment "Player position is inside board")
-                     (every? #(< % (count board)) player-position))
-                   (fn [{:keys [board player-position]}]
-                     (comment "Board is already non-empty at position")
-                     (not= :empty (get-in board player-position)))))
-  :ret ::gb/game-board)
-
 (defn- mark-board
   "Return board switching :empty cells next to position (and thus to be
   explored) to :fruit"
@@ -68,20 +58,6 @@
     (->> '(:up :down :left :right)
          (map #(ge/move-position player-position % (count board)))
          (reduce mark-cell board))))
-
-#_(s/def ::path-stack (s/coll-of (s/coll-of ::ge/direction)))
-
-#_(s/fdef update-path-stack
-  :args (-> (s/cat :path-stack ::path-stack
-                   :board ::gb/game-board
-                   :player-position ::gs/player-position)
-            (s/and (fn [{:keys [board player-position]}]
-                     (comment "Player position is inside board")
-                     (every? #(< % (count board)) player-position))
-                   (fn [{:keys [board player-position]}]
-                     (comment "Board is already non-empty at position")
-                     (not= :empty (get-in board player-position)))))
-  :ret ::path-stack)
 
 (defn- update-path-stack
   [path-stack board player-position]
