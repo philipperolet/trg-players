@@ -42,11 +42,13 @@
 ;; timestamp in ms of current step start
 (s/def ::step-timestamp nat-int?)
 
-;; time to wait = game step duration - step execution time (obtained by comparing step timestamps before and after running the step)
-;; or 0 if step execution time exceeded game step duration
+;; time to wait = game step duration - step execution time (obtained
+;; by comparing step timestamps before and after running the step) or
+;; 0 if step execution time exceeded game step duration
 (s/def ::time-to-wait (s/int-in 0 max-game-step-duration))
 
-;; number of steps that were not performed fast enough (i.e. took more than game-step-duration
+;; number of steps that were not performed fast enough (i.e. took more
+;; than game-step-duration
 (s/def ::missteps nat-int?)
 
 (s/def ::requested-movements (s/map-of ::ge/being ::ge/direction))
@@ -136,17 +138,6 @@
          (comment "Movements cleared")
          (empty? (::requested-movements ret)))))
 
-(defn update-timing-data
-  "Timing is handled as follows:
-  - at game step beginning, state is updated with the step timestamp
-  - i"
-  [world-state new-timestamp game-step-duration]
-  (let [step-execution-time (- new-timestamp (world-state ::step-timestamp))
-        time-to-wait (max (- game-step-duration step-execution-time) 0)]
-    (-> world-state
-        (assoc ::time-to-wait time-to-wait)
-        (update ::missteps #(if (zero? time-to-wait) (inc %) %)))))
-
 (defn compute-new-state
   "Computes the new state derived from running a step of the
   game. Executes movements until none is left or game is over."
@@ -158,30 +149,13 @@
       (assoc ::requested-movements {})
       (update ::game-step inc)))
 
-(defn run-individual-step
-  "Runs a step. The timing is handled as follows:
-  - first compare time since last step's beginning with game step duration;
-  - if bigger, count it as a misstep;
-  - wait for the remaining amount of time (0 if time was bigger);
-  - update the state with the new state's starting time
-  - compute the new state"
-  [world-state-atom {:as game-options, :keys [game-step-duration logging-steps]}]
-  
-  (swap! world-state-atom update-timing-data
-         (System/currentTimeMillis) game-step-duration)
-  (Thread/sleep (@world-state-atom ::time-to-wait))
+(defn run-step
+  "Runs a step of the world."
+  [world-state-atom logging-steps]
   (swap! world-state-atom assoc ::step-timestamp (System/currentTimeMillis))
   (swap! world-state-atom compute-new-state)
 
   ;; Log every logging-steps steps, or never if 0
-  (if (and (pos? logging-steps)
-           (zero? (mod (@world-state-atom ::game-step) logging-steps)))
-      (log/info (data->string @world-state-atom))))
-
-(defn run-until-end
-  "Main game loop."
-  [world-state-atom game-options]
-  (while (active? @world-state-atom)
-    (run-individual-step world-state-atom game-options))
-  (log/info "The game ends.\n" (data->string  @world-state-atom))
-  @world-state-atom)
+  (when (and (pos? logging-steps)
+             (zero? (mod (@world-state-atom ::game-step) logging-steps)))
+    (log/info (data->string @world-state-atom))))

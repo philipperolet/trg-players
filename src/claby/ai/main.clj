@@ -9,6 +9,7 @@
             [claby.ai.world :as aiw]
             [claby.game.state :as gs]
             [claby.ai.player :as aip]
+            [claby.ai.game-runner :as gr]
             [claby.game.generation :as gg]
             [claby.ai.exhaustive-player :refer [exhaustive-player]])
   (:gen-class))
@@ -108,14 +109,6 @@
     (setup-interactivity world-state interactivity-atom nb-steps)
     (future (process-user-input interactivity-atom))))
 
-(defn- start-player-thread
-  [world-state opts]
-  (future
-    (aip/play-until-end
-     world-state
-     (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
-     (opts :player-step-duration))))
-
 (defn run
   "Runs a game with `initial-data` matching world-state spec (see world.clj).
   Opts is a map containing `:player-step-duration` and `:game-step-duration`"
@@ -129,21 +122,18 @@
      (aiw/initialize-game world-state initial-state opts)
      (when (opts :interactive)
        (start-interactive-mode world-state (opts :number-of-steps)))
-     
-     ;; start game and player threads 
-     (let [game-result (future (aiw/run-until-end world-state opts))
-           player-result (start-player-thread world-state opts)]
 
-       ;; checks that player does not stop running during game
-       ;; execution, then return result
-       (while (not (realized? game-result))
-         (when (realized? player-result) @player-result))
-       @game-result)))
+     ;; runs the game
+     (let [player-state
+           (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
+           result
+           (gr/run-game (gr/->ClockedThreadsRunner world-state player-state opts))]
+       (log/info "The game ends.\n" (aiw/data->string  @world-state))
+       result)))
    
   ([opts]
-   (run opts (gg/create-nice-game
-              (opts :board-size)
-              {::gg/density-map {:fruit 5}}))))
+   (run opts (gg/create-nice-game (opts :board-size)
+                                  {::gg/density-map {:fruit 5}}))))
 
 (defn -main [& args]
   (let [opts (ctc/parse-opts args cli-options)]

@@ -1,7 +1,5 @@
 (ns claby.ai.world-test
   (:require [clojure.test :refer [testing deftest is are]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
             [claby.utils :refer [check-all-specs]]
             [claby.game.state :as gs]
@@ -63,18 +61,3 @@
                  (aiw/compute-new-state)
                  (get-in [::gs/game-state ::gs/status]))
              :over)))))
-
-(deftest update-timing-data-test
-  (testing "It should update step timestamp and remaining time, and
-  depending on time spent add a misstep"
-    (let [game-step-duration 20]
-      (are [timestamp time-to-wait missteps]
-          (= (aiw/update-timing-data world-state timestamp game-step-duration)
-             (-> world-state
-                 (assoc ::aiw/missteps missteps)
-                 (assoc ::aiw/time-to-wait time-to-wait)))
-        10 10 0
-        5 15 0
-        20 0 1
-        22 0 1
-        30 0 1))))

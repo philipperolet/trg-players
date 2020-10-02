@@ -2,13 +2,11 @@
   (:require [claby.ai.world :as aiw]
             [claby.ai.main :as aim]
             [claby.ai.player :as aip]
-            [claby.ai.exhaustive-player :refer [exhaustive-player]]
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.state-test :as gst]
             [clojure.spec.test.alpha :as st]
             [clojure.test :refer [deftest is testing]]
-            [claby.game.generation :as gg]
             [claby.utils :as u]))
 
 (st/instrument)
@@ -61,44 +59,6 @@
                                 :player-type "random"})]
       (is (< (game-result ::aiw/game-step) 2)))))
 
-(deftest run-test-timing-steps
-  (let [world-state (atom nil)
-        opts {:game-step-duration 50
-              :player-step-duration 50
-              :logging-steps 0
-              :player-type "random"}]
-    (aiw/initialize-game world-state
-                         (gg/create-nice-game 8 {::gg/density-map {:fruit 5}})
-                         opts)
-    (testing "When running a step takes less time to run than game
-    step duration, it waits for the remaining time (at ~3ms resolution)"
-      (let [start-time (System/currentTimeMillis)
-            player-state (atom (exhaustive-player @world-state))]
-        (aip/request-movement player-state world-state)
-        (aiw/run-individual-step world-state opts)
-        (is (u/almost= (opts :game-step-duration)
-                       (- (System/currentTimeMillis) start-time)
-                       3))
-        
-        (aip/request-movement player-state world-state)
-        (aiw/run-individual-step world-state opts)
-        (is (u/almost= (* 2 (opts :game-step-duration))
-                       (- (System/currentTimeMillis) start-time)        
-                       6))
-        
-        (dotimes [_ 5]
-          ;; since player & game are not in
-          ;; separate threads, player should not
-          ;; wait before updating its requests
-          ;; for move
-          (aip/request-movement player-state world-state)
-          (aiw/run-individual-step world-state opts))
-        (is (u/almost= (* (opts :game-step-duration) 7)
-                       (- (System/currentTimeMillis) start-time)
-                       21)))
-      (testing "When running a step takes more time to run than game step
-  duration, it throws")))
-  )
 
 (deftest game-ends-on-player-error-test
   (let [failing-player
