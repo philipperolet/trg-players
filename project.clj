@@ -15,7 +15,7 @@ in a browser (**Lapyrinthe**), or by computers using CLI (**AI game**)."
                  [org.clojure/tools.logging "1.1.0"]
                  [reagent "0.10.0"]]
 
-  :source-paths ["src"]
+  :source-paths ["src" "scripts"]
   :main claby.ai.main
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
             "fig:build-lapy" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]

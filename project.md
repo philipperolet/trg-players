@@ -1,6 +1,7 @@
 ## Now & next up
-- make game cycles faster than 1ms
-- make an experiment with 1000 rand games, compare avg step number with 95% conf interval on random variable and mean
+- add watcher-based runner
+- make parallel computing of experiment work
+- experiment with 95% conf interval on random variable and mean
 
 ## Backlog
 ### AI World v0.2.0
@@ -52,6 +53,8 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ make script to run experiment with  many rand games, compare avg step number 
++ monothread runner (very fast) | x logging level works all the time
 + option to disable logging
 + player bug stops the game and shows error message
 + Make player implementation selection for the algorithm easy
