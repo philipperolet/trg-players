@@ -57,3 +57,11 @@
        (while (not (realized? game-result))
          (when (realized? player-result) @player-result))       
        @game-result)))
+
+(defrecord MonoThreadRunner [world-state player-state opts]
+  GameRunner
+  (run-game [{:keys [world-state player-state opts]}]
+    (while (aiw/active? @world-state)
+      (aip/request-movement player-state world-state)
+      (aiw/run-step world-state (opts :logging-steps)))
+    @world-state))

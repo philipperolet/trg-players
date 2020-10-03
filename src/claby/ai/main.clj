@@ -115,7 +115,7 @@
   ([opts initial-state]
    (let [world-state (atom nil)]
      ;; setup logging
-     (.setLevel (li/get-logger log/*logger-factory* *ns*) (opts :logging-level))
+     (.setLevel (li/get-logger log/*logger-factory* "") (opts :logging-level))
      (log/info "Running game with the following options:\n" opts)
 
      ;; initialize game and interactivity
@@ -127,7 +127,7 @@
      (let [player-state
            (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
            result
-           (gr/run-game (gr/->ClockedThreadsRunner world-state player-state opts))]
+           (gr/run-game (gr/->MonoThreadRunner world-state player-state opts))]
        (log/info "The game ends.\n" (aiw/data->string  @world-state))
        result)))
    
