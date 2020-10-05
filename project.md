@@ -1,5 +1,5 @@
 ## Now & next up
-- add watcher-based runner
+
 - experiment with 95% conf interval on random variable and mean
 
 ## Backlog
@@ -52,7 +52,9 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ refactor world / main / game-runner to extract threaded-timing logic and doc
 + refactor tests to grasp default args and work on all game runners, + add tests for all game runners
++ add watcher-based runner
 + make parallel computing of experiment work
 + make script to run experiment with  many rand games, compare avg step number 
 + monothread runner (very fast) | x logging level works all the time

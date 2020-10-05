@@ -122,18 +122,18 @@
 
 (defn run
   "Runs a game with `initial-state` matching world specs (see world.clj)."
-  ([opts initial-state]
-   (let [world-state (atom nil)]
+  ([opts initial-game-state]
+   (let [world-state (atom (aiw/get-initial-world-state initial-game-state))]
      ;; setup logging
      (.setLevel (li/get-logger log/*logger-factory* "") (opts :logging-level))
      (log/info "Running game with the following options:\n" opts)
 
-     ;; initialize game and interactivity
-     (aiw/initialize-game world-state initial-state opts)
+     ;; setup interactivity if requested
      (when (opts :interactive)
        (start-interactive-mode world-state (opts :number-of-steps)))
-
+     
      ;; runs the game
+     (log/info "The game begins.\n" (aiw/data->string @world-state))
      (let [player-state
            (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
            result
