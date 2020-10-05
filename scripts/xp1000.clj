@@ -31,9 +31,9 @@
           :board-size 20
           :player-type player-type
           :logging-level java.util.logging.Level/WARNING}
-         results
-         (repeatedly (Integer/parseInt nb-xps) #(aim/run game-args))
+         arg-sequence
+         (repeatedly (Integer/parseInt nb-xps) (constantly game-args))
          measures
-         (map #(::aiw/game-step %) results)]
+         (pmap #(::aiw/game-step (aim/run %)) arg-sequence)]
      (display-stats "Steps per game" measures))))
 

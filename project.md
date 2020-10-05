@@ -1,6 +1,5 @@
 ## Now & next up
 - add watcher-based runner
-- make parallel computing of experiment work
 - experiment with 95% conf interval on random variable and mean
 
 ## Backlog
@@ -53,6 +52,7 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ make parallel computing of experiment work
 + make script to run experiment with  many rand games, compare avg step number 
 + monothread runner (very fast) | x logging level works all the time
 + option to disable logging
