@@ -52,6 +52,7 @@ Watch them via logs every 10 steps.
 
 ## Done
 ### AI World v0.2
++ refactor tests to grasp default args and work on all game runners, + add tests for all game runners
 + make parallel computing of experiment work
 + make script to run experiment with  many rand games, compare avg step number 
 + monothread runner (very fast) | x logging level works all the time

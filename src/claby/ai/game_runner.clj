@@ -5,7 +5,11 @@
   Comes with an implementation with clocked threads,
   ClockedThreadsRunner, in which the world and the player update
   regularly at a predetermined frequency, `player-step-duration` and
-  `game-step-duration`."
+  `game-step-duration`.
+
+  Also comes with 2 other implementations of the protocol, a
+  straightforward monothreaded one, and another one using watch
+  functions to run the game."
   (:require [claby.ai.player :as aip]
             [claby.ai.world :as aiw]))
 
@@ -25,7 +29,7 @@
   - first compare time since last step's beginning with game step duration;
   - if bigger, count it as a misstep;
   - wait for the remaining amount of time (0 if time was bigger);
-  - run the step as usual ("
+  - run the step as usual"
   [world-state-atom {:as game-options, :keys [game-step-duration logging-steps]}]
   (swap! world-state-atom update-timing-data
          (System/currentTimeMillis) game-step-duration)
@@ -55,7 +59,8 @@
        ;; checks that player does not stop running during game
        ;; execution, then return result
        (while (not (realized? game-result))
-         (when (realized? player-result) @player-result))       
+         (when (realized? player-result) @player-result))
+       (shutdown-agents)
        @game-result)))
 
 (defrecord MonoThreadRunner [world-state player-state opts]
@@ -65,3 +70,14 @@
       (aip/request-movement player-state world-state)
       (aiw/run-step world-state (opts :logging-steps)))
     @world-state))
+
+(defrecord WatcherRunner [world-state player-state opts]
+  GameRunner
+  (run-game [{:keys [world-state player-state opts]}]
+    (add-watch world-state :run-world
+               (fn [_ _ _ new-st]
+                 (when (aiw/active? new-st)
+                   (if (-> new-st ::aiw/requested-movements :player)
+                     (aiw/run-step world-state (opts :logging-steps))
+                     (aip/request-movement player-state world-state)))))))
+

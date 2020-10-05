@@ -5,7 +5,17 @@
             [claby.utils :as u]
             [claby.game.generation :as gg]
             [claby.ai.game-runner :as gr]
+            [claby.ai.main-test :refer [parse-run-args basic-run]]
             [claby.ai.world-test :refer [world-state]]))
+
+(deftest run-test-basic-monothreadrunner
+  (basic-run "MonoThreadRunner"))
+
+(deftest run-test-basic-clockedthreadsrunner
+  (basic-run "ClockedThreadsRunner"))
+
+(deftest run-test-basic-watcherrunner
+  (basic-run "WatcherRunner"))
 
 (deftest update-timing-data-test
   (testing "It should update step timestamp and remaining time, and
@@ -24,10 +34,7 @@
 
 (deftest run-test-timing-steps
   (let [world-state (atom nil)
-        opts {:game-step-duration 50
-              :player-step-duration 50
-              :logging-steps 0
-              :player-type "random"}]
+        opts (parse-run-args "-p 50 -g 50 -gr ClockedThreadsRunner")]
     (aiw/initialize-game world-state
                          (gg/create-nice-game 8 {::gg/density-map {:fruit 5}})
                          opts)

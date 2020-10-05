@@ -1,6 +1,10 @@
 (ns claby.ai.main
   "Main thread for AI game. Start game with the `run` function, see
-  below for CLI Options."
+  below for CLI Options. There are multiple available implementations
+  of game running, modeled by the `GameRunner` protocol.
+
+  Most importantly, various implementations of articificial players
+  can be specified via the `Player` protocol in `claby.ai.player`."
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [clojure.tools.cli :as ctc]
@@ -15,15 +19,7 @@
   (:gen-class))
 
 (def cli-options
-  [["-g" "--game-step-duration GST"
-    "Time interval (ms) between each game step (see claby.ai.world)."
-    :default 15
-    :parse-fn #(Integer/parseInt %)]
-   ["-p" "--player-step-duration PST"
-    "Time interval (ms) between each move request from player."
-    :default 30
-    :parse-fn #(Integer/parseInt %)]
-   ["-s" "--board-size SIZE"
+  [["-s" "--board-size SIZE"
     "Board size for the game"
     :default 12
     :parse-fn #(Integer/parseInt %)]
@@ -43,10 +39,25 @@
     implements a player moving at random. For a list of
     implementations see sources in claby.ai package"
     :default "random"]
+   ["-gr" "--game-runner GAME-RUNNER"
+    "Game runner function to use. ATTOW, ClockedThreadsRunner,
+    MonoThreadRunner or WatcherRunner"
+    :default gr/->MonoThreadRunner
+    :parse-fn #(resolve (symbol (str "gr/->" %)))]
    ["-ll" "--logging-level LEVEL"
     "Logging level"
     :default java.util.logging.Level/INFO
     :parse-fn #(java.util.logging.Level/parse %)]
+   ["-g" "--game-step-duration GST"
+    "Time finterval (ms) between each game step, used only by
+    ClockedThreadsRunner"
+    :default 5
+    :parse-fn #(Integer/parseInt %)]
+   ["-p" "--player-step-duration PST"
+    "Time interval (ms) between each move request from player, used
+    only by ClockedThreadsRunner"
+    :default 5
+    :parse-fn #(Integer/parseInt %)]
    ["-h" "--help"]])
 
 ;;; Interactive mode setup
@@ -110,8 +121,7 @@
     (future (process-user-input interactivity-atom))))
 
 (defn run
-  "Runs a game with `initial-data` matching world-state spec (see world.clj).
-  Opts is a map containing `:player-step-duration` and `:game-step-duration`"
+  "Runs a game with `initial-state` matching world specs (see world.clj)."
   ([opts initial-state]
    (let [world-state (atom nil)]
      ;; setup logging
@@ -127,7 +137,7 @@
      (let [player-state
            (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
            result
-           (gr/run-game (gr/->MonoThreadRunner world-state player-state opts))]
+           (gr/run-game ((opts :game-runner) world-state player-state opts))]
        (log/info "The game ends.\n" (aiw/data->string  @world-state))
        result)))
    
@@ -145,6 +155,4 @@
       (println (str/join "\n" (opts :error)))
       
       :else
-      (let [game-result (run (opts :options))]
-        (shutdown-agents)
-        game-result))))
+      (run (opts :options)))))
