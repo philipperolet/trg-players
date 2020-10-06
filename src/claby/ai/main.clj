@@ -42,7 +42,7 @@
     :default "random"]
    ["-r" "--game-runner GAME-RUNNER"
     "Game runner function to use. ATTOW, ClockedThreadsRunner,
-    MonoThreadRunner or WatcherRunner"
+    MonoThreadRunner or WatcherRunner (which breaks for board sizes > 10)"
     :default gr/->MonoThreadRunner
     :parse-fn #(resolve (symbol (str "claby.ai.game-runner/->" %)))
     :validate [#(some? %)]]

@@ -104,8 +104,9 @@
 (defn run-step
   "Runs a step of the world."
   [world-state-atom logging-steps]
-  (swap! world-state-atom assoc ::step-timestamp (System/currentTimeMillis))
-  (swap! world-state-atom compute-new-state)
+  (swap! world-state-atom
+         (comp #(assoc % ::step-timestamp (System/currentTimeMillis))
+               compute-new-state))
 
   ;; Log every logging-steps steps, or never if 0
   (when (and (pos? logging-steps)
