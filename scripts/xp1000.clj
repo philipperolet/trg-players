@@ -2,7 +2,8 @@
   "Run 1000 times games with 2 types of player and compares the results,
   giving the good stats."
   (:require [claby.ai.main :as aim]
-            [claby.ai.world :as aiw]))
+            [claby.ai.world :as aiw]
+            [claby.ai.game-runner :as gr]))
 
 (defn mean
   "Mean value of a sequence of numbers"
@@ -30,7 +31,8 @@
           :logging-steps 0
           :board-size 20
           :player-type player-type
-          :logging-level java.util.logging.Level/WARNING}
+          :logging-level java.util.logging.Level/WARNING
+          :game-runner gr/->WatcherRunner}
          arg-sequence
          (repeatedly (Integer/parseInt nb-xps) (constantly game-args))
          measures

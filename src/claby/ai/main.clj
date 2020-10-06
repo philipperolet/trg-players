@@ -22,7 +22,8 @@
   [["-s" "--board-size SIZE"
     "Board size for the game"
     :default 12
-    :parse-fn #(Integer/parseInt %)]
+    :parse-fn #(Integer/parseInt %)
+    :validate [#(< 4 % 100) "Must be an int between 4 and 100"]]
    ["-i" "--interactive"
     "Run the game in interactive mode (see README.md)"]
    ["-n" "--number-of-steps STEPS"
@@ -31,7 +32,7 @@
     :parse-fn #(Integer/parseInt %)]
    ["-l" "--logging-steps STEPS"
     "Log the world state every STEPS steps. Only used in
-*non*-interactive mode. 0 means no logging during game."
+    *non*-interactive mode. 0 means no logging during game."
     :default 0
     :parse-fn #(Integer/parseInt %)]
    ["-t" "--player-type PLAYER-TYPE"
@@ -39,15 +40,17 @@
     implements a player moving at random. For a list of
     implementations see sources in claby.ai package"
     :default "random"]
-   ["-gr" "--game-runner GAME-RUNNER"
+   ["-r" "--game-runner GAME-RUNNER"
     "Game runner function to use. ATTOW, ClockedThreadsRunner,
     MonoThreadRunner or WatcherRunner"
     :default gr/->MonoThreadRunner
-    :parse-fn #(resolve (symbol (str "gr/->" %)))]
-   ["-ll" "--logging-level LEVEL"
-    "Logging level"
+    :parse-fn #(resolve (symbol (str "claby.ai.game-runner/->" %)))
+    :validate [#(some? %)]]
+   ["-v" "--logging-level LEVEL"
+    "Verbosity, specified as a logging level"
     :default java.util.logging.Level/INFO
-    :parse-fn #(java.util.logging.Level/parse %)]
+    :parse-fn #(java.util.logging.Level/parse %)
+    :validate [#(some? %)]]
    ["-g" "--game-step-duration GST"
     "Time finterval (ms) between each game step, used only by
     ClockedThreadsRunner"
@@ -151,8 +154,9 @@
       (-> opts :options :help)
       (println (opts :summary))
       
-      (opts :errors)
-      (println (str/join "\n" (opts :error)))
-      
+      (some? (opts :errors))
+      (println (str "There were error(s) in args parsing.\n"
+                    (str/join "\n" (opts :errors))))
+
       :else
       (run (opts :options)))))
