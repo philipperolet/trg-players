@@ -18,6 +18,12 @@
             [claby.ai.players.random])
   (:gen-class))
 
+(defn- parse-game-runner [runner-name]
+  (if (= runner-name "ClockedThreadsRunner")
+    (do (require 'claby.ai.clocked-threads-runner)
+        (resolve 'claby.ai.clocked-threads-runner/->ClockedThreadsRunner))
+    (resolve (symbol (str "claby.ai.game-runner/->" runner-name)))))
+
 (def cli-options
   [["-s" "--board-size SIZE"
     "Board size for the game"
@@ -48,7 +54,7 @@
     "Game runner function to use. ATTOW, ClockedThreadsRunner,
     MonoThreadRunner or WatcherRunner (which breaks for board sizes > 10)"
     :default gr/->MonoThreadRunner
-    :parse-fn #(resolve (symbol (str "claby.ai.game-runner/->" %)))
+    :parse-fn parse-game-runner
     :validate [#(some? %)]]
    ["-v" "--logging-level LEVEL"
     "Verbosity, specified as a logging level"

@@ -54,5 +54,3 @@
         (when (= (-> @world-state ::aiw/game-step) last-step)
           (aip/request-movement player-state world-state)))
       @world-state)))
-
-
