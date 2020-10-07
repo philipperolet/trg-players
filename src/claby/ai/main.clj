@@ -15,7 +15,7 @@
             [claby.ai.player :as aip]
             [claby.ai.game-runner :as gr]
             [claby.game.generation :as gg]
-            [claby.ai.exhaustive-player :refer [exhaustive-player]])
+            [claby.ai.players.random])
   (:gen-class))
 
 (def cli-options
@@ -35,11 +35,15 @@
     *non*-interactive mode. 0 means no logging during game."
     :default 0
     :parse-fn #(Integer/parseInt %)]
-   ["-t" "--player-type PLAYER-TYPE"
-    "Artificial player that will play the game. E.g. 'random'
-    implements a player moving at random. For a list of
-    implementations see sources in claby.ai package"
-    :default "random"]
+   ["-t" "--player PLAYER-TYPE"
+    "Artificial player that will play the game. Arg should be the
+    namespace in which the protocol is implemented, unqualified (it
+    will be prefixed with claby.ai.players). E.g. \"random\" will
+    target the RandomPlayer protocol implementation in
+    claby.ai.players.random (it's a player moving at random)."
+    :default claby.ai.players.random/map->RandomPlayer
+    :parse-fn aip/load-player-constructor-by-name
+    :validate [#(some? %)]]
    ["-r" "--game-runner GAME-RUNNER"
     "Game runner function to use. ATTOW, ClockedThreadsRunner,
     MonoThreadRunner or WatcherRunner (which breaks for board sizes > 10)"
@@ -113,9 +117,6 @@
 
 ;;; Main game routine
 ;;;;;;
-(def player-create-fn
-  {:random (fn [_] (aip/->RandomPlayer))
-   :exhaustive exhaustive-player})
 
 (defn- start-interactive-mode
   [world-state nb-steps]
@@ -138,7 +139,7 @@
      ;; runs the game
      (log/info "The game begins.\n" (aiw/data->string @world-state))
      (let [player-state
-           (atom ((player-create-fn (keyword (opts :player-type))) @world-state))
+           (atom (aip/init-player ((opts :player) {}) @world-state))
            result
            (gr/run-game ((opts :game-runner) world-state player-state opts))]
        (log/info "The game ends.\n" (aiw/data->string  @world-state))

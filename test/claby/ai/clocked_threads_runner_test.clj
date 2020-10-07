@@ -6,7 +6,8 @@
             [claby.game.generation :as gg]
             [claby.ai.main-test :refer [parse-run-args basic-run]]
             [claby.ai.world-test :as aiwt]
-            [claby.ai.clocked-threads-runner :as ctr]))
+            [claby.ai.clocked-threads-runner :as ctr]
+            [claby.ai.players.random :refer [->RandomPlayer]]))
 
 (def timed-world-state
   (assoc aiwt/world-state ::ctr/missteps 0))
@@ -37,9 +38,9 @@
         opts (parse-run-args "-p 50 -g 50 -gr ClockedThreadsRunner")]
     (testing "When running a step takes less time to run than game
     step duration, it waits for the remaining time (at ~3ms resolution)"
-      (let [player-state (atom (aip/->RandomPlayer))
+      (let [player-state (atom (->RandomPlayer))
+            _ (aip/request-movement player-state world-state)
             start-time (System/currentTimeMillis)]
-        (aip/request-movement player-state world-state)
         (ctr/run-timed-step world-state opts)
         (is (u/almost= (opts :game-step-duration)
                        (- (System/currentTimeMillis) start-time)

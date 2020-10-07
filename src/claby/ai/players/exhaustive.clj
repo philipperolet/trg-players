@@ -1,4 +1,4 @@
-(ns claby.ai.exhaustive-player
+(ns claby.ai.players.exhaustive
   "This player tries to go everywhere on the board by exploring all
   possible paths that do not lead to an already explored position. It
   maintains a board simulation in which walls & explored territory are

@@ -1,26 +1,7 @@
-## Now & next up
+## Now & next up - v0.2.1
 
-- experiment with 95% conf interval on random variable and mean
 
 ## Backlog
-### AI World v0.2.0
-
-**World**
-- add: listening to movement requests async
-- add: updating the world's timestamp at each world state change
-- add: thread-safe consistency
-- add: timeliness
-- ref: clean legacy code
-
-
-**Main**
-- ref: fit the new player/world apis & clean legacy code
-
-**Final acceptance**
-Run 2 games with the CLI, 1 with the random player, 1 with the non-random
-Watch them via logs every 10 steps.
-- int-test: the two above games are run without logging and "work"
-  - same as the test existing now, updated with the new api
 
 ### v0.2.1
 - add score to the world
@@ -51,7 +32,8 @@ Watch them via logs every 10 steps.
 - convenient way of having tests in emacs
 
 ## Done
-### AI World v0.2
+### AI World v0.2.0
++ refactor player dependency injection to not require any more coding, + docs
 + refactor world / main / game-runner to extract threaded-timing logic and doc
 + refactor tests to grasp default args and work on all game runners, + add tests for all game runners
 + add watcher-based runner

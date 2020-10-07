@@ -62,10 +62,12 @@
 (deftest game-ends-on-player-error-test
   (let [failing-player
         (reify aip/Player
+          (init-player [player _] player)
           (update-player [_ _] (throw (RuntimeException. "I crashed!"))))]
     
-    (with-redefs [aim/player-create-fn {:failing (constantly failing-player)}]
+    (let [run-args (-> (parse-run-args "")
+                       (assoc :player (constantly failing-player)))]
       
       (is (thrown-with-msg? java.lang.Exception
                             #".*I crashed!.*"
-                            (aim/run (parse-run-args "-t failing")))))))
+                            (aim/run run-args))))))

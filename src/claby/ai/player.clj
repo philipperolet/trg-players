@@ -1,8 +1,10 @@
 (ns claby.ai.player
-  "Module responsible for the player interface, along with a basic
-  random player.
+  "Player protocol."
+  (:require [claby.ai.world :as aiw]
+            [clojure.string :as str]))
 
-  A Player updates its state every time it needs via `update-player`.
+(defprotocol Player
+  "A Player updates its state every time it needs via `update-player`.
   It can move by putting a non-nil direction for its move in its
   `:next-movement` field.
 
@@ -13,19 +15,20 @@
   that into account, for instance by waiting until the movement is
   actually executed. When this happens, note that requesting the same
   movement rather than not requesting a movement might result in the
-  movement being executed twice."
-  (:require [claby.ai.world :as aiw]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.alpha :as s]
-            [claby.game.events :as ge]))
+  movement being executed twice.
 
-(defprotocol Player
-  (update-player [player world]))
-
-(defrecord RandomPlayer []
-  Player
-  (update-player [player _]
-    (assoc player :next-movement (gen/generate (s/gen ::ge/direction)))))
+  Protocol implementations targeted at use by main.clj should be named
+  {name}Player and reside in a namespace whose last fragment is
+  {name}, e.g. the random player implementation will be `RandomPlayer`
+  and will reside at `claby.ai.players.random`, see
+  `load-player-constructor-by-name`."
+  
+  (init-player [player world] "Returns a fully initialized
+  player. Should be called before the first call to
+  update-player. Intended to be callled with all fields of player
+  record set to nil")
+  (update-player [player world] "Updates player state, and ultimately
+  the :next-movement field, every time a movement is requested."))
 
 (defn request-movement
   [player-state world-state]
@@ -34,3 +37,12 @@
     (swap! world-state
            assoc-in [::aiw/requested-movements :player]
            (-> @player-state :next-movement))))
+
+(defn load-player-constructor-by-name
+  [player-name]
+  (let [player-ns-string
+        (str "claby.ai.players." player-name)
+        player-constructor-string
+        (str player-ns-string "/map->" (str/capitalize player-name) "Player")]
+    (require (symbol player-ns-string))
+    (resolve (symbol player-constructor-string))))

@@ -1,4 +1,4 @@
-(ns claby.ai.exhaustive-player-test
+(ns claby.ai.players.exhaustive-test
   (:require [clojure.test :refer [deftest is are testing]]
             [clojure.spec.test.alpha :as st]
             [claby.utils :refer [check-all-specs]]
@@ -6,12 +6,12 @@
             [claby.game.board :as gb]
             [claby.game.generation :as gg]
             [claby.game.events :as ge]
-            [claby.ai.exhaustive-player :as aip]
+            [claby.ai.players.exhaustive :as aip]
             [claby.ai.player :refer [update-player]]
             [claby.ai.world :as aiw]))
 
 (st/instrument)
-(check-all-specs claby.ai.exhaustive-player)
+(check-all-specs claby.ai.players.exhaustive)
 
 (deftest get-walk-from-to-test
   (are [p1 p2 wall? res]
