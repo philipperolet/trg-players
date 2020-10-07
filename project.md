@@ -4,7 +4,6 @@
 ## Backlog
 
 ### v0.2.1
-- add score to the world
 - random player senses are only a 7*7 grid, the step and the score
 - exhaustive-player senses are only a 7*7 grid, the step and the score
 

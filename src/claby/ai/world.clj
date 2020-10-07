@@ -56,8 +56,9 @@
 (defn data->string
   "Converts game data to nice string"
   [{:keys [::gs/game-state ::game-step ::step-timestamp]}]
-  (str (format "Step %d\nTimestamp (mod 1 000 000) %d"
+  (str (format "Step %d\nScore %d\nTimestamp (mod 1 000 000) %d"
                game-step
+               (game-state ::gs/score)
                (mod step-timestamp 1000000))
        (gs/state->string game-state)))
 
