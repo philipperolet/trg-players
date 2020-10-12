@@ -23,8 +23,9 @@
 
 (def test-board-size-generator (gen/choose min-board-size max-test-board-size))
 
-(defn game-board-generator [size]
+(defn game-board-generator
   "Returns a board generator favoring empty cells (more than 2/3)"
+  [size]
   (-> (gen/one-of [(s/gen ::game-cell) (gen/return :empty) (gen/return :empty)])
       (gen/vector size)
       (gen/vector size)))
@@ -140,9 +141,8 @@
           (->> line
                (keep-indexed #(when (cell-set %2) %1))
                (#(get-closest % (position 1)))
-               (#(if % (vector ind %))))))
+               (#(when % (vector ind %))))))
        (#(get-closest % first (position 0)))))
   
   ([board cell-set]
    (find-in-board board cell-set [0 0])))
-

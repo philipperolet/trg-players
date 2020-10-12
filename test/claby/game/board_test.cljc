@@ -1,7 +1,5 @@
 (ns claby.game.board-test
   (:require [clojure.test :refer [testing deftest is are]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
             [claby.utils
              #?(:clj :refer :cljs :refer-macros) [check-all-specs]]

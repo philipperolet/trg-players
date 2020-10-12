@@ -33,7 +33,7 @@
     (gen/return :won)
     (s/gen (cset/difference game-statuses #{:won}))))
   
-(defn- game-state-generator [size]
+(defn game-state-generator [size]
   (gen/bind
    (->> (gb/game-board-generator size)
         (gen/such-that #(s/valid? ::gb/game-board %)))

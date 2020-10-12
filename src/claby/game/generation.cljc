@@ -27,7 +27,7 @@
 (def wall-generator
   (gen/fmap #(apply generate-wall %)
             (gen/bind (gen/choose gb/min-board-size gb/max-test-board-size)
-                    #(gen/tuple (gen/return %) (gen/choose 1 %)))))
+                      #(gen/tuple (gen/return %) (gen/choose 1 %)))))
 
 (s/def ::wall
   #_("A wall is defined by a starting position and

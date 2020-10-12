@@ -6,7 +6,8 @@
               [clojure.test.check.properties]
               [cljs.spec.test.alpha :as st]]
        :clj [[clojure.spec.test.alpha :as st]
-             [clojure.test :refer [is deftest testing]]])))
+             [clojure.test :refer [is deftest testing]]])
+   [clojure.string :as str]))
 
 (defn check-results 
   "Returns a nicer version of test.check results for a namespace"
@@ -21,15 +22,25 @@
   "Returns a more pretty version of results of check on a symbol.
   
    If spec conformance test failed, returns failure data, else nil"
-  [sym]
-  (-> (st/check #?(:cljs 'sym :clj sym))
-      first
-      st/abbrev-result
-      (select-keys [:failure :sym])
-      :failure))
+  ([sym opts]
+   (-> (st/check #?(:cljs 'sym :clj sym) opts)
+       first
+       st/abbrev-result
+       (select-keys [:failure :sym])
+       :failure))
+  ([sym] (check-failure sym {})))
+
+(defmacro check-spec
+  "Creates a test with deftest for a given symbol, with given options."
+  ([sym opts]
+   (-> `((testing ~(str "Testing spec " sym)
+           (is (not (check-failure ~sym ~opts)))))
+       (conj (symbol (str "check-spec-" (last (str/split (str sym) #"/")))))
+       (conj 'deftest)))
+  ([sym] `(check-spec ~sym {})))
 
 (defmacro check-all-specs
-  "Tests all specs in namespace ns using test.check"
+  "Check-spec for all specs in namespace ns"
   [symbs]
   (let [ns-specs (st/enumerate-namespace #?(:cljs 'symbs :clj symbs))]
     (-> (map (fn [to-check]
@@ -38,7 +49,9 @@
              ns-specs)
         (conj 'check-namespace-specs)
         (conj 'deftest))))
-
+(defmacro fake-it [symb opts] (-> `((check-failure ~(str symb) ~opts))
+                                  (conj (symbol (str "chek-" symb)))
+                                  (conj 'deftest)))
 (defn reduce-until
   "Like clojure.core/reduce, but stops reduction when `pred` is
   true. `pred` takes one argument, the current reduction value, before
@@ -94,3 +107,81 @@
   (if (or (empty? seq1) (not= (first seq1) (first seq2)))
     seq1
     (recur (rest seq1) (rest seq2))))
+
+"ModSubVector : A view on vector vect that is a subvector starting at
+`start`, of length `length`, such that:
+
+- start & length can be bigger than vect count or smaller than 0 (via
+  modulo (count vect)). In particular the subvec restarts from zero if
+  start + length > (count vect)
+
+- the resulting subvector is of size `length`, its first
+element (index 0) is vect[position], its last element is
+vect[(position + length) % vect-size]."
+
+(deftype ModSubVector [vect start length]
+  clojure.lang.Indexed
+  (nth [this n m]
+    (if (< -1 n length)
+      (nth vect (mod (+ start n) (count vect)))
+      m))
+  (nth [this n]
+    (or (nth this n nil)
+        (throw (IndexOutOfBoundsException.))))
+  
+  clojure.lang.Counted
+  (count [this] length)
+  clojure.lang.IPersistentVector
+
+  clojure.lang.IPersistentCollection
+  (equiv [this obj]
+    (cond
+      (indexed? obj)
+      (and (= (count obj) (count this))
+           (loop [cnt (dec (count this))]
+             (if (= (nth obj cnt) (nth this cnt))
+               (or (zero? cnt)
+                   (recur (dec cnt)))
+               false)))
+
+      (seqable? obj)
+      (= (seq this) (seq obj))
+
+      :else
+      false))
+  
+  clojure.lang.Seqable
+  (seq [this]
+    (reify clojure.lang.ISeq
+      (first [this_s] (vect (mod start (count vect))))
+      (next [this_s]
+        (if (= 1 length) nil (seq (ModSubVector. vect (inc start) (dec length)))))
+      (seq [this_s] this_s)
+      (more [this_s] (or (next this_s) '()))
+      (equiv [this_s obj]
+        (and (seqable? obj)
+             (let [obj_s (seq obj)]
+               (and (= (first this_s) (first obj_s))
+                    (= (next this_s) (next obj_s)))))))))
+
+(defn modsubvec
+  "Returns a subvector of `vect` starting at `start`, of length
+  `length`, using modulo if start+length > (count vect)"
+  [vect start length]
+  {:pre [(vector? vect)
+         (int? start)
+         (nat-int? length)
+         (< 0 length (inc (count vect)))]}
+  (->ModSubVector vect start length))
+
+(defn scaffold [iface]
+  (doseq [[iface methods] (->> iface .getMethods 
+                            (map #(vector (.getName (.getDeclaringClass %)) 
+                                    (symbol (.getName %))
+                                    (count (.getParameterTypes %))))
+                            (group-by first))]
+    (println (str "  " iface))
+    (doseq [[_ name argcount] methods]
+      (println 
+        (str "    " 
+          (list name (into ['this] (take argcount (repeatedly gensym)))))))))

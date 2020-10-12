@@ -1,5 +1,6 @@
 ## Now & next up - v0.2.1
-
+- write UpperConfidencePlayer
+  - write main loop for new UCP
 
 ## Backlog
 
@@ -31,6 +32,9 @@
 - convenient way of having tests in emacs
 
 ## Done
+### v0.2.1
+- added modsubvec, check-spec & scaffold (to utils), get-player-senses (to player)
+
 ### AI World v0.2.0
 + refactor player dependency injection to not require any more coding, + docs
 + refactor world / main / game-runner to extract threaded-timing logic and doc
