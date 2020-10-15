@@ -11,8 +11,9 @@
 
 ;;; Movement on board
 ;;;;;;;
+(def directions #{:up :right :down :left})
 
-(s/def ::direction #{:up :right :down :left})
+(s/def ::direction directions)
 
 (s/def ::being (s/or :player #{:player}
                      :enemy (s/int-in 0 10)))
