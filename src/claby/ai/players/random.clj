@@ -6,7 +6,7 @@
 
 (defrecord RandomPlayer []
   Player
-  (init-player [player _] player)
+  (init-player [player _ _] player)
   (update-player [player _]
     (assoc player :next-movement (gen/generate (s/gen ::ge/direction)))))
 

@@ -13,7 +13,7 @@
   (let [world-state (-> gst/test-state-2
                         (assoc ::gs/player-position [2 0])
                         aiw/get-initial-world-state)
-        tree-root (-> (sut/tree-exploration-player {::sut/frequency 0
+        tree-root (-> (sut/->TreeExplorationPlayer {::sut/frequency 0
                                                     ::sut/children {}}
                                                    100)
                       (aip/update-player world-state)

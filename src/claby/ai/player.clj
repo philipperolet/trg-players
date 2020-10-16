@@ -8,7 +8,8 @@
             [claby.game.state :as gs]
             [claby.game.board :as gb]
             [claby.utils :as u]
-            [clojure.spec.gen.alpha :as gen]))
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.spec.test.alpha :as st]))
 
 (defprotocol Player
   "A Player updates its state every time it needs via `update-player`.
@@ -27,13 +28,18 @@
   Protocol implementations targeted at use by main.clj should be named
   {name}Player and reside in a namespace whose last fragment is
   {name}, e.g. the random player implementation will be `RandomPlayer`
-  and will reside at `claby.ai.players.random`, see
-  `load-player-constructor-by-name`."
+  and will reside at `claby.ai.players.random`, see `load-player`."
   
-  (init-player [player world] "Returns a fully initialized
+  (init-player [player opts world] "Returns a fully initialized
   player. Should be called before the first call to
-  update-player. Intended to be callled with all fields of player
-  record set to nil")
+  update-player. Intended to be called with all fields of player
+  record set to nil, callers should expect fields to be ignored /
+  overriden. Opts are implementation-specific and thus should be
+  documented by implementations.
+
+  Therefore, the idiomatic way to create a player of any given
+  impl should be `(init-player (map->GivenImplPlayer {}) opts world)`")
+
   (update-player [player world] "Updates player state, and ultimately
   the :next-movement field, every time a movement is requested."))
 
@@ -105,11 +111,20 @@
            assoc-in [::aiw/requested-movements :player]
            (-> @player-state :next-movement))))
 
-(defn load-player-constructor-by-name
-  [player-name]
-  (let [player-ns-string
-        (str "claby.ai.players." player-name)
+(defn load-player
+  [player-type opts world]
+  (let [player-ns-string (str "claby.ai.players." player-type)
         player-constructor-string
-        (str player-ns-string "/map->" (str/capitalize player-name) "Player")]
-    (require (symbol player-ns-string))
-    (resolve (symbol player-constructor-string))))
+        (-> player-type
+            ;; convert player-type to CamelCase
+            (str/split #"-") (#(map str/capitalize %)) str/join
+            ;; merge to constructor string
+            (#(str player-ns-string "/map->" % "Player")))]
+    
+    (try
+      (require (symbol player-ns-string))
+      (catch java.io.FileNotFoundException _
+        (throw (RuntimeException.
+                "Couldn't load player. Check player type matches a
+                player implementation in `claby.ai.players`"))))
+    (init-player ((resolve (symbol player-constructor-string)) {}) opts world)))

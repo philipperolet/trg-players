@@ -24,6 +24,8 @@
 
 (s/def ::children (s/map-of ::ge/direction ::tree-node :max-count 4 :distinct true))
 
+(def default-nb-sims 1000)
+
 (defn- max-sim-size [game-state]
   (let [board-size (count (::gb/game-board game-state))]
     (* board-size board-size)))
@@ -94,7 +96,9 @@
 (defrecord TreeExplorationPlayer [root-node nb-sims]
   aip/Player
   (init-player [this world opts]
-    (tree-exploration-player {::frequency 0 ::children {}}))
+    (assoc this
+           :root-node {::frequency 0 ::children {}}
+           :nb-sims (-> opts (:nb-sims default-nb-sims))))
   (update-player [this world]
     (let [new-root
           (if (empty? (::children root-node))
@@ -105,8 +109,3 @@
           (assoc :root-node new-root)
           (simulate-games (-> world ::gs/game-state))
           (#(assoc % :next-movement (->  % :root-node min-child ::ge/direction)))))))
-
-(defn tree-exploration-player
-  [root-node nb-sims]
-  {:pre [(s/valid? ::tree-node root-node)]}
-  (->TreeExplorationPlayer root-node nb-sims))

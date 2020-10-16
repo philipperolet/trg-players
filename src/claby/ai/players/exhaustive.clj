@@ -8,7 +8,7 @@
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.events :as ge]
-            [claby.ai.player :refer [Player]]
+            [claby.ai.player :refer [Player init-player]]
             [claby.ai.world :as aiw]))
 
 (defn- wall-present?
@@ -111,6 +111,17 @@
 
 (defrecord ExhaustivePlayer [initial-position exploration-data]
   Player
+
+  (init-player
+    [this opts
+     {:as world, {:keys [::gs/player-position ::gb/game-board]} ::gs/game-state}]
+    (assoc this
+           :initial-position player-position
+           :exploration-data {:board (-> (gb/empty-board (count game-board))
+                                         (assoc-in player-position :fruit))
+                              :current-path '()
+                              :path-stack '(())}))
+
   (update-player
     [player world]
     (comment "If the last movement has not yet been executed, wait and
@@ -120,13 +131,3 @@
       (if movement-still-pending?
         (assoc player :next-movement nil)
         (update-player-with-movement player world)))))
-
-(defn exhaustive-player
-  [{:as world-state,
-    {:keys [::gs/player-position ::gb/game-board]} ::gs/game-state}]
-  (map->ExhaustivePlayer
-   {:initial-position player-position
-    :exploration-data {:board (-> (gb/empty-board (count game-board))
-                                  (assoc-in player-position :fruit))
-                       :current-path '()
-                       :path-stack '(())}}))

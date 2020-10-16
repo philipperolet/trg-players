@@ -6,8 +6,8 @@
             [claby.game.board :as gb]
             [claby.game.generation :as gg]
             [claby.game.events :as ge]
-            [claby.ai.players.exhaustive :as aip]
-            [claby.ai.player :refer [update-player]]
+            [claby.ai.players.exhaustive :as sut]
+            [claby.ai.player :as aip]
             [claby.ai.world :as aiw]))
 
 (st/instrument)
@@ -15,18 +15,18 @@
 
 (deftest get-walk-from-to-test
   (are [p1 p2 wall? res]
-      (= res (#'aip/get-walk-from-to p1 p2 wall?))
+      (= res (#'sut/get-walk-from-to p1 p2 wall?))
     [:up :left] [:up :right] false '(:right :right)
     [:down :down :left :left] [:down :down :right :up] true '(:right :right :up)))
 
 (def base-board (-> (gb/empty-board 5)
                     (assoc-in [3 3] :fruit)))
 
-(def test-board (#'aip/mark-board base-board [3 3]))
+(def test-board (#'sut/mark-board base-board [3 3]))
 
 (def test-board-2 (-> test-board
-                         (#'aip/mark-board [3 4])
-                         (#'aip/mark-board [4 3])))
+                         (#'sut/mark-board [3 4])
+                         (#'sut/mark-board [4 3])))
 
 (deftest mark-board-test
   (is (every? #{:fruit} (map #(get-in test-board %) [[3 4] [4 3] [3 2] [2 3]])))
@@ -39,7 +39,7 @@
 
 (deftest update-stack-test
   (are [stack board pos res]
-      (= res (#'aip/update-path-stack stack board pos))
+      (= res (#'sut/update-path-stack stack board pos))
 
     '() (gb/empty-board 5) [3 3] '((:up) (:down) (:right) (:left))
 
@@ -48,7 +48,7 @@
 
 (deftest wall-present-test
   (are [init-pos player-pos path res]
-      (= res (#'aip/wall-present? init-pos player-pos path 5))
+      (= res (#'sut/wall-present? init-pos player-pos path 5))
     [0 0] [1 1] '(:down :right) false
     [0 0] [1 0] '(:down :right) true
     [1 0] [2 1] '(:left :up :right :right :down :down) false
@@ -57,7 +57,7 @@
 
 (deftest iterate-exploration-test
   (are [player pos res]
-      (= res (:exploration-data (#'aip/iterate-exploration player pos)))
+      (= res (:exploration-data (#'sut/iterate-exploration player pos)))
     
     {:initial-position [3 3]
      :exploration-data {:current-path '()
@@ -74,7 +74,7 @@
                         :path-stack '((:up) (:down) (:right) (:left))}}
     [2 3]
     {:current-path '(:down :down)
-     :board (#'aip/mark-board test-board [2 3])
+     :board (#'sut/mark-board test-board [2 3])
      :path-stack '((:down) (:right) (:left) (:up :up) (:up :right) (:up :left))}))
 
 (deftest update-player-state-test
@@ -85,14 +85,14 @@
              (#(update % ::gb/game-board
                        assoc-in (update (% ::gs/player-position) 0 dec) :empty))))
         player
-        (aip/exhaustive-player world)
+        (aip/init-player (sut/map->ExhaustivePlayer {}) {} world)
         next-player
-        (update-player player world)
+        (aip/update-player player world)
         next-world
         (update-in world [::gs/game-state ::gs/player-position]
                   ge/move-position (-> next-player :next-movement) 8)
         next-player-2
-        (update-player next-player next-world)
+        (aip/update-player next-player next-world)
         next-world-2 ;; world with pending movement not yet executed
         (assoc-in next-world [::aiw/requested-movements :player] :down)]
     (is (= :up (-> next-player :next-movement)))
@@ -103,4 +103,4 @@
     (testing
         "if movement has not yet been executed, do not make movement requests"
 
-      (is (nil? (:next-movement (update-player next-player-2 next-world-2)))))))
+      (is (nil? (:next-movement (aip/update-player next-player-2 next-world-2)))))))

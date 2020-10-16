@@ -1,5 +1,5 @@
 ## Now & next up - v0.2.1
-- players created via specific multimethod, player options added to cli
+- Add test to TE player and fix it
 
 
 ## Backlog
@@ -33,6 +33,7 @@
 
 ## Done
 ### v0.2.1
+- refactor player cli options & player creation to fit new TE-player
 + added tree-exploration-player
 - added modsubvec, check-spec & scaffold (to utils), get-player-senses (to player)
 
