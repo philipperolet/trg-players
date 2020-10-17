@@ -7,18 +7,9 @@
             [claby.game.state-test :as gst]
             [clojure.spec.test.alpha :as st]
             [clojure.test :refer [deftest is testing]]
-            [claby.utils :as u]
-            [clojure.string :as str]
-            [clojure.tools.cli :as ctc]))
+            [claby.utils :as u]))
 
 (st/instrument)
-
-(defn parse-run-args
-  [args]
-  (-> args
-      (str/split #" ")
-      (ctc/parse-opts aim/cli-options)
-      :options))
 
 (defn basic-run
   "Runs a basic game (removing cheese & enemies), expects the
@@ -29,7 +20,7 @@
                        (assoc-in [::gb/game-board 3 3] :fruit)
                        (assoc ::gs/enemy-positions []))
         game-result (aim/run
-                      (parse-run-args (str "-gr " game-runner))
+                      (aim/parse-run-args (str "-gr " game-runner))
                       test-state)]      
     (is (= :won (-> game-result ::gs/game-state ::gs/status)))
     
@@ -48,14 +39,14 @@
  act n times if there were N steps."
     (let [counting-function (u/count-calls (constantly 0))]
       (with-redefs [aim/run-interactive-mode counting-function]
-        (let [game-result (aim/run (parse-run-args "-i -n 15"))]
+        (let [game-result (aim/run (aim/parse-run-args "-i -n 15"))]
           (with-in-str "r\n"
             (is (= ((:call-count (meta counting-function)))
                    (int (/ (game-result ::aiw/game-step) 15))))))))))
 
 (deftest run-test-interactive-quit
   (with-in-str "q\n"
-    (let [game-result (aim/run (parse-run-args "-g 100 -p 200 -i -n 15 -b 8"))]
+    (let [game-result (aim/run (aim/parse-run-args "-g 100 -p 200 -i -n 15 -b 8"))]
       (is (< (game-result ::aiw/game-step) 2)))))
 
 
@@ -68,4 +59,4 @@
     (with-redefs [aip/load-player (constantly failing-player)]
       (is (thrown-with-msg? java.lang.Exception
                             #".*I crashed!.*"
-                            (aim/run (parse-run-args "")))))))
+                            (aim/run (aim/parse-run-args "")))))))

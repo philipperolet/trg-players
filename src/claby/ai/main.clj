@@ -75,6 +75,14 @@
     :parse-fn #(Integer/parseInt %)]
    ["-h" "--help"]])
 
+(defn parse-run-args
+  "Convenience function to get the args map from an arg string"
+  [args]
+  (-> args
+      (str/split #" ")
+      (ctc/parse-opts cli-options)
+      :options))
+
 ;;; Interactive mode setup
 ;;;;;;;;;;
 

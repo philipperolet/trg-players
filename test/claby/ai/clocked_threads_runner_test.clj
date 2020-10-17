@@ -4,7 +4,8 @@
             [clojure.test :refer [is testing deftest are]]
             [claby.utils :as u]
             [claby.game.generation :as gg]
-            [claby.ai.main-test :refer [parse-run-args basic-run]]
+            [claby.ai.main :refer [parse-run-args]]
+            [claby.ai.main-test :refer [basic-run]]
             [claby.ai.world-test :as aiwt]
             [claby.ai.clocked-threads-runner :as ctr]
             [claby.ai.players.random :refer [->RandomPlayer]]))
