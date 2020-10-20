@@ -141,9 +141,9 @@
     (future (process-user-input interactivity-atom))))
 
 (defn run
-  "Runs a game with `initial-state` matching world specs (see world.clj)."
-  ([opts initial-game-state]
-   (let [world-state (atom (aiw/get-initial-world-state initial-game-state))]
+  "Runs a game with world state initialized to `world`."
+  ([opts world]
+   (let [world-state (atom world)]
      ;; setup logging
      (.setLevel (li/get-logger log/*logger-factory* "") (opts :logging-level))
      (log/info "Running game with the following options:\n" opts)
@@ -162,8 +162,9 @@
        [@world-state @player-state])))
    
   ([opts]
-   (run opts (gg/create-nice-game (opts :board-size)
-                                  {::gg/density-map {:fruit 5}}))))
+   (run opts (aiw/get-initial-world-state
+              (gg/create-nice-game (opts :board-size)
+                                   {::gg/density-map {:fruit 5}})))))
 
 (defn -main [& args]
   (let [opts (ctc/parse-opts args cli-options)]

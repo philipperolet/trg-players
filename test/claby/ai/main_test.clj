@@ -21,7 +21,7 @@
                        (assoc ::gs/enemy-positions []))
         game-result (first (aim/run
                              (aim/parse-run-args (str "-gr " game-runner))
-                             test-state))]      
+                             (aiw/get-initial-world-state test-state)))]      
     (is (= :won (-> game-result ::gs/game-state ::gs/status)))
     
     (is (< 5 (-> game-result ::aiw/game-step)))
