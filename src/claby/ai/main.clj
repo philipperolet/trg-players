@@ -156,11 +156,10 @@
      (log/info "The game begins.\n" (aiw/data->string @world-state))
      (let [player-state (atom (aip/load-player (opts :player-type)
                                                (opts :player-opts)
-                                               @world-state))
-           result
-           (gr/run-game ((opts :game-runner) world-state player-state opts))]
+                                               @world-state))]
+       (gr/run-game ((opts :game-runner) world-state player-state opts))
        (log/info "The game ends.\n" (aiw/data->string  @world-state))
-       result)))
+       [@world-state @player-state])))
    
   ([opts]
    (run opts (gg/create-nice-game (opts :board-size)

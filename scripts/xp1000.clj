@@ -36,6 +36,6 @@
          arg-sequence
          (repeatedly (Integer/parseInt nb-xps) (constantly game-args))
          measures
-         (pmap #(::aiw/game-step (aim/run %)) arg-sequence)]
+         (pmap #(::aiw/game-step (first (aim/run %))) arg-sequence)]
      (display-stats "Steps per game" measures))))
 

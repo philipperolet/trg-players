@@ -19,9 +19,9 @@
                        (assoc-in [::gb/game-board 3 2] :fruit)
                        (assoc-in [::gb/game-board 3 3] :fruit)
                        (assoc ::gs/enemy-positions []))
-        game-result (aim/run
-                      (aim/parse-run-args (str "-gr " game-runner))
-                      test-state)]      
+        game-result (first (aim/run
+                             (aim/parse-run-args (str "-gr " game-runner))
+                             test-state))]      
     (is (= :won (-> game-result ::gs/game-state ::gs/status)))
     
     (is (< 5 (-> game-result ::aiw/game-step)))
@@ -39,7 +39,7 @@
  act n times if there were N steps."
     (let [counting-function (u/count-calls (constantly 0))]
       (with-redefs [aim/run-interactive-mode counting-function]
-        (let [game-result (aim/run (aim/parse-run-args "-i -n 15"))]
+        (let [game-result (first (aim/run (aim/parse-run-args "-i -n 15")))]
           (with-in-str "r\n"
             (is (= ((:call-count (meta counting-function)))
                    (int (/ (game-result ::aiw/game-step) 15))))))))))
@@ -47,7 +47,7 @@
 (deftest run-test-interactive-quit
   (with-in-str "q\n"
     (let [game-result (aim/run (aim/parse-run-args "-g 100 -p 200 -i -n 15 -b 8"))]
-      (is (< (game-result ::aiw/game-step) 2)))))
+      (is (< ((first game-result) ::aiw/game-step) 2)))))
 
 
 (deftest game-ends-on-player-error-test

@@ -1,7 +1,15 @@
-## Now & next up - v0.2.1
-- Add test to TE player and fix it
+## Plan - TBD FINISH IT
 
+#### Faire marcher un player pas mal : tree explo ####
+- interactiviser mieux le game : pouvoir faire tourner X steps et s'arrêter programmatiquement
+- Le test d'intégration doit tourner exactement sur 300 steps
+- complété par 1 qui tourne sur 5 secondes
+- identifier la cause du bug du joueur qui tourne en rond
+- test & fix de ce bug
 
+#### Historique des jeux conservés et rejouables
+#### Visu de jeu sur le net
+#### TBD - Première version de m0
 ## Backlog
 
 ### v0.2.1
