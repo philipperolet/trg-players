@@ -142,8 +142,8 @@
 
 (defn run
   "Runs a game with world state initialized to `world`."
-  ([opts world]
-   (let [world-state (atom world)]
+  ([opts world player]
+   (let [world-state (atom world) player-state (atom player)]
      ;; setup logging
      (.setLevel (li/get-logger log/*logger-factory* "") (opts :logging-level))
      (log/info "Running game with the following options:\n" opts)
@@ -154,13 +154,14 @@
      
      ;; runs the game
      (log/info "The game begins.\n" (aiw/data->string @world-state))
-     (let [player-state (atom (aip/load-player (opts :player-type)
+     (gr/run-game ((opts :game-runner) world-state player-state opts))
+     (log/info "The game ends.\n" (aiw/data->string  @world-state))
+     [@world-state @player-state]))
+  
+  ([opts world]
+   (run opts world (aip/load-player (opts :player-type)
                                                (opts :player-opts)
-                                               @world-state))]
-       (gr/run-game ((opts :game-runner) world-state player-state opts))
-       (log/info "The game ends.\n" (aiw/data->string  @world-state))
-       [@world-state @player-state])))
-   
+                                               world)))
   ([opts]
    (run opts (aiw/get-initial-world-state
               (gg/create-nice-game (opts :board-size)
