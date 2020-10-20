@@ -74,7 +74,13 @@
           (future (run-player world-state player-state (opts :player-step-duration)))]
       
        ;; checks that player does not stop running during game
-       ;; execution, then return result
+       ;; execution, which would mean it crashed and we should abort
        (while (not (realized? game-result))
-         (when (realized? player-result) @player-result))
-       (shutdown-agents))))
+         (when (realized? player-result)
+           (future-cancel game-result)
+           @player-result)
+         (Thread/sleep 100))
+       
+       ;; in case the world thread crashes, ensure the player thread
+       ;; is stopped too
+       (future-cancel player-result))))

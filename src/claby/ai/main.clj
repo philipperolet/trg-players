@@ -153,19 +153,19 @@
        (start-interactive-mode world-state (opts :number-of-steps)))
      
      ;; runs the game
-     (log/info "The game begins.\n" (aiw/data->string @world-state))
+     (log/info "Starting world state:\n" (aiw/data->string @world-state))
      (gr/run-game ((opts :game-runner) world-state player-state opts))
-     (log/info "The game ends.\n" (aiw/data->string  @world-state))
+     (log/info "Ending world state:\n" (aiw/data->string  @world-state))
      [@world-state @player-state]))
   
   ([opts world]
-   (run opts world (aip/load-player (opts :player-type)
-                                               (opts :player-opts)
-                                               world)))
+   (run opts world
+     (aip/load-player (opts :player-type) (opts :player-opts) world)))
+  
   ([opts]
-   (run opts (aiw/get-initial-world-state
-              (gg/create-nice-game (opts :board-size)
-                                   {::gg/density-map {:fruit 5}})))))
+   (run opts
+     (aiw/get-initial-world-state
+      (gg/create-nice-game (opts :board-size) {::gg/density-map {:fruit 5}})))))
 
 (defn -main [& args]
   (let [opts (ctc/parse-opts args cli-options)]

@@ -4,7 +4,7 @@
             [clojure.test :refer [is testing deftest are]]
             [claby.utils :as u]
             [claby.game.generation :as gg]
-            [claby.ai.main :refer [parse-run-args]]
+            [claby.ai.main :as aim :refer [parse-run-args]]
             [claby.ai.main-test :refer [basic-run]]
             [claby.ai.world-test :as aiwt]
             [claby.ai.clocked-threads-runner :as ctr]
@@ -36,7 +36,7 @@
         (atom (-> (aiw/get-initial-world-state
                    (gg/create-nice-game 8 {::gg/density-map {:fruit 5}}))
                   (assoc ::ctr/missteps 0)))
-        opts (parse-run-args "-p 50 -g 50 -gr ClockedThreadsRunner")]
+        opts (parse-run-args "-p 50 -g 50 -r ClockedThreadsRunner")]
     (testing "When running a step takes less time to run than game
     step duration, it waits for the remaining time (at ~3ms resolution)"
       (let [player-state (atom (->RandomPlayer))
@@ -62,6 +62,17 @@
           (ctr/run-timed-step world-state opts))
         (is (u/almost= (* (opts :game-step-duration) 7)
                        (- (System/currentTimeMillis) start-time)
-                       21)))
-      (testing "When running a step takes more time to run than game
-  step duration, it throws"))))
+                       21))))))
+
+(deftest game-ends-on-player-error-test
+  (let [failing-player
+        (reify aip/Player
+          (init-player [player _ _] player)
+          (update-player [_ _] (throw (RuntimeException. "I crashed!"))))]
+    
+    (with-redefs [aip/load-player (constantly failing-player)]
+      (is (thrown-with-msg?
+           java.lang.Exception
+           #".*I crashed!.*"
+           (aim/run (aim/parse-run-args "-r ClockedThreadsRunner")))))))
+
