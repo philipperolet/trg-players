@@ -77,5 +77,4 @@
        ;; execution, then return result
        (while (not (realized? game-result))
          (when (realized? player-result) @player-result))
-       (shutdown-agents)
-       @game-result)))
+       (shutdown-agents))))

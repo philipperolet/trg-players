@@ -31,8 +31,7 @@
   (run-game [{:keys [world-state player-state opts]}]
     (while (aiw/active? @world-state)
       (aip/request-movement player-state world-state)
-      (aiw/run-step world-state (opts :logging-steps)))
-    @world-state))
+      (aiw/run-step world-state (opts :logging-steps)))))
 
 (defrecord WatcherRunner [world-state player-state opts]
   GameRunner
@@ -52,5 +51,4 @@
       (let [last-step (-> @world-state ::aiw/game-step)]
         (Thread/sleep 1)
         (when (= (-> @world-state ::aiw/game-step) last-step)
-          (aip/request-movement player-state world-state)))
-      @world-state)))
+          (aip/request-movement player-state world-state))))))
