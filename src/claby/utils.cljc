@@ -185,3 +185,8 @@ vect[(position + length) % vect-size]."
       (println 
         (str "    " 
           (list name (into ['this] (take argcount (repeatedly gensym)))))))))
+
+(defn map-map
+  "Return a map with `f` applied to each of `m`'s keys"
+  [f m]
+  (reduce #(update %1 %2 f) m (keys m)))

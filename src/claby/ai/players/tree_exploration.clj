@@ -11,7 +11,9 @@
             [claby.game.state :as gs]
             [claby.game.board :as gb]
             [clojure.set :as cset]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [clojure.string :as str]
+            [claby.utils :as u]))
 
 (s/def ::node-value nat-int?)
 
@@ -94,6 +96,21 @@
          (assoc player :root-node))))
 
 (s/def ::options (s/map-of #{:nb-sims} pos-int?))
+
+(defn node-path
+  "Return `tree-node` with its children only (not its children's
+  children, etc). If `directions` are given, then shows the node, the
+  child from the 1st provided direction, the child of this child
+  provided by the second direction, etc."
+  [tree-node & directions]
+  (if (empty? directions)
+    ;; remove "children" fields from the node's children
+    (update tree-node ::children (partial u/map-map #(dissoc % ::children)))
+    
+    (-> tree-node
+        (update ::children #(select-keys % (list (first directions))))
+        (update-in [::children (first directions)]
+                   #(apply node-path % (rest directions))))))
 
 (defrecord TreeExplorationPlayer [root-node nb-sims]
   aip/Player
