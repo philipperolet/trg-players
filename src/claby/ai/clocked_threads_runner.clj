@@ -7,8 +7,8 @@
   time to wait before performing a new update of the world (see below)."
   (:require [claby.ai.world :as aiw]
             [claby.ai.player :as aip]
-            [claby.ai.game-runner :refer [GameRunner]]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [claby.ai.game-runner :as gr]))
 
 ;; Time interval (ms) between each game step
 (def max-game-step-duration 1000)
@@ -46,18 +46,20 @@
 
 (defn- run-world
   [world-state game-options]
-  (while (aiw/active? @world-state)
-    (run-timed-step world-state game-options))
-  @world-state)
+  (let [remaining-steps (gr/remaining-steps-fn @world-state game-options)]
+    (while (gr/game-should-continue @world-state (remaining-steps @world-state))
+      (run-timed-step world-state game-options))
+    @world-state))
 
 (defn- run-player
-  [world-state player-state player-step-duration]
-  (while (aiw/active? @world-state)
-    (Thread/sleep player-step-duration)
-    (aip/request-movement player-state world-state)))
+  [world-state player-state opts]
+  (let [remaining-steps (gr/remaining-steps-fn @world-state opts)]
+    (while (gr/game-should-continue @world-state (remaining-steps @world-state))
+      (Thread/sleep (-> opts :player-step-duration))
+      (aip/request-movement player-state world-state))))
 
 (defrecord ClockedThreadsRunner [world-state player-state opts]
-  GameRunner
+  gr/GameRunner
   (run-game
     [{:keys [world-state player-state]
       {:keys [game-step-duration player-step-duration]} opts}]
@@ -71,7 +73,7 @@
     (let [game-result
           (future (run-world world-state opts))
           player-result
-          (future (run-player world-state player-state (opts :player-step-duration)))]
+          (future (run-player world-state player-state opts))]
       
        ;; checks that player does not stop running during game
        ;; execution, which would mean it crashed and we should abort

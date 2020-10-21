@@ -32,8 +32,10 @@
    ["-i" "--interactive"
     "Run the game in interactive mode (see README.md)"]
    ["-n" "--number-of-steps STEPS"
-    "Number of steps in-between interaction. Only used in interactive mode."
-    :default 50
+    "Number of steps that the game should run. If not specified, the
+    game runs until it ends. In non-interactive mode, execution
+    terminates after STEPS steps. If in interactive mode, user is
+    asked for action after STEPS steps."
     :parse-fn #(Integer/parseInt %)]
    ["-l" "--logging-steps STEPS"
     "Log the world state every STEPS steps. Only used in
@@ -149,7 +151,7 @@
      (log/info "Running game with the following options:\n" opts)
 
      ;; setup interactivity if requested
-     (when (opts :interactive)
+    (when (opts :interactive)
        (start-interactive-mode world-state (opts :number-of-steps)))
      
      ;; runs the game

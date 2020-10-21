@@ -20,7 +20,7 @@
                        (assoc-in [::gb/game-board 3 3] :fruit)
                        (assoc ::gs/enemy-positions []))
         game-result (first (aim/run
-                             (aim/parse-run-args (str "-gr " game-runner))
+                             (aim/parse-run-args (str "-r " game-runner))
                              (aiw/get-initial-world-state test-state)))]      
     (is (= :won (-> game-result ::gs/game-state ::gs/status)))
     
@@ -29,7 +29,11 @@
     (is (= (reduce #(assoc-in %1 %2 :empty)
                    (test-state ::gb/game-board)
                    '([1 1] [3 2] [3 3]))
-           (-> game-result ::gs/game-state ::gb/game-board)))))
+           (-> game-result ::gs/game-state ::gb/game-board)))
+    (testing "If number of steps is given, stops after said number of steps"
+      (is (= 50 (->> (aim/run (aim/parse-run-args (str "-n 50 -r " game-runner)))
+                     first
+                     ::aiw/game-step))))))
 
 (deftest run-test-basic
   (basic-run "MonoThreadRunner"))
