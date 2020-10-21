@@ -24,7 +24,7 @@
 
 (s/def ::children (s/map-of ::ge/direction ::tree-node :max-count 4 :distinct true))
 
-(def default-nb-sims 1000)
+(def default-nb-sims 200)
 
 (defn- max-sim-size [game-state]
   (let [board-size (count (::gb/game-board game-state))]
@@ -55,7 +55,7 @@
 
 (s/fdef tree-simulate
   :args (s/cat :game-state ::gs/game-state
-               :sim-size pos-int?
+               :sim-size nat-int?
                :tree-node ::tree-node)
   :ret ::tree-node)
 
@@ -93,9 +93,12 @@
          (#(nth % (-> player :nb-sims)))
          (assoc player :root-node))))
 
+(s/def ::options (s/map-of #{:nb-sims} pos-int?))
+
 (defrecord TreeExplorationPlayer [root-node nb-sims]
   aip/Player
-  (init-player [this world opts]
+  (init-player [this opts world]
+    (assert (s/valid? ::options opts))
     (assoc this
            :root-node {::frequency 0 ::children {}}
            :nb-sims (-> opts (:nb-sims default-nb-sims))))
