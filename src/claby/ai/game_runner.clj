@@ -21,8 +21,7 @@
   is not empty, `game-state` has *not* been updated with those
   movements."
   (:require [claby.ai.player :as aip]
-            [claby.ai.world :as aiw]
-            [claby.game.state :as gs]))
+            [claby.ai.world :as aiw]))
 
 (defprotocol GameRunner
   (run-game [runner]))

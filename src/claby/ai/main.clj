@@ -90,57 +90,44 @@
 
 (s/def ::interactive-command #{:quit :pause :step :run})
 
-(defn- run-interactive-mode
+(s/fdef get-interactivity-value
+  :args (s/cat :user-input string?)
+  :ret ::interactive-command)
+
+(defn- get-interactivity-value [user-input]
+  (case user-input
+    "q" :quit
+    "r" :run
+    "" :step))
+
+(defn- run-game-interactively
   "Interactive mode will print current game data, and behave depending
   on user provided commands:
   
   - (q)uit will abort the game (done in the run function)
-  - (Enter while running) pause will pause the game
-  - (Enter while paused) step will run the next number-of-steps and pause
+  - (Enter while running) will pause the game
+  - (Enter while paused) will run the next number-of-steps and pause
   - (r)un/(r)esume will proceed with running the game."
-  [world-state interactivity-atom]
-  (println (aiw/data->string world-state))
-  (swap! interactivity-atom #(if (= % :step) :pause %))
-  (while (= :pause @interactivity-atom)
-    (Thread/sleep 100)))
+  [world-state player-state opts]
+  (loop [last-user-input :step]
+    (gr/run-game ((opts :game-runner) world-state player-state opts))
+    (log/info "Current world state:\n" (aiw/data->string @world-state))
+    (cond
+      (not (aiw/active? @world-state))
+      nil
+      
+      (and (= last-user-input :run) (not (.ready *in*)))
+      (recur :run)
 
-(defn- setup-interactivity
-  [world-state interactivity-atom number-of-steps]
-  (add-watch world-state :setup-interactivity
-             (fn [_ _ old-data {:as new-data, :keys [::aiw/game-step]}]
-               (when (and (< (old-data ::aiw/game-step) game-step)
-                          (= (mod game-step number-of-steps) 0))
-                 (run-interactive-mode new-data interactivity-atom))))
-  
-  (add-watch interactivity-atom :abort-game-if-quit
-             (fn [_ _ _ val]
-               (if (= :quit val)
-                 (swap! world-state
-                        assoc-in [::gs/game-state ::gs/status] :over)))))
-
-(s/fdef get-interactivity-value
-  :args (s/cat :prev-val ::interactive-command :user-input string?)
-  :ret ::interactive-command)
-
-(defn- get-interactivity-value [prev-val user-input]
-  (case user-input
-    "q" :quit
-    "r" :run
-    "" (if (= prev-val :pause) :step :pause)
-    prev-val))
-
-(defn- process-user-input [interactivity-atom]
-  (while (not= :quit @interactivity-atom)
-    (swap! interactivity-atom get-interactivity-value (read-line))))
+      :else
+      (let [user-input (get-interactivity-value (read-line))]
+        (if (= user-input :quit)
+          nil
+          (recur user-input))))))
 
 ;;; Main game routine
 ;;;;;;
 
-(defn- start-interactive-mode
-  [world-state nb-steps]
-  (let [interactivity-atom (atom :pause)]
-    (setup-interactivity world-state interactivity-atom nb-steps)
-    (future (process-user-input interactivity-atom))))
 
 (defn run
   "Runs a game with world state initialized to `world`."
@@ -150,13 +137,11 @@
      (.setLevel (li/get-logger log/*logger-factory* "") (opts :logging-level))
      (log/info "Running game with the following options:\n" opts)
 
-     ;; setup interactivity if requested
-    (when (opts :interactive)
-       (start-interactive-mode world-state (opts :number-of-steps)))
-     
      ;; runs the game
      (log/info "Starting world state:\n" (aiw/data->string @world-state))
-     (gr/run-game ((opts :game-runner) world-state player-state opts))
+     (if (-> opts :interactive)
+       (run-game-interactively world-state player-state opts)
+       (gr/run-game ((opts :game-runner) world-state player-state opts)))
      (log/info "Ending world state:\n" (aiw/data->string  @world-state))
      [@world-state @player-state]))
   

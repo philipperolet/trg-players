@@ -39,18 +39,15 @@
   (basic-run "MonoThreadRunner"))
 
 (deftest run-test-interactive
-  (testing "Interactive mode should require r as input to run, and
- act n times if there were N steps."
-    (let [counting-function (u/count-calls (constantly 0))]
-      (with-redefs [aim/run-interactive-mode counting-function]
-        (let [game-result (first (aim/run (aim/parse-run-args "-i -n 15")))]
-          (with-in-str "r\n"
-            (is (= ((:call-count (meta counting-function)))
-                   (int (/ (game-result ::aiw/game-step) 15))))))))))
+  (testing "Interactive mode : after going through 2 loops then
+  quitting, there should be 3*STEPS performed"
+    (with-in-str "\n\nq\n"
+      (is (= (-> (aim/run (aim/parse-run-args "-i -n 33")) first ::aiw/game-step)
+             99)))))
 
 (deftest run-test-interactive-quit
   (with-in-str "q\n"
-    (let [game-result (aim/run (aim/parse-run-args "-g 100 -p 200 -i -n 15 -b 8"))]
-      (is (< ((first game-result) ::aiw/game-step) 2)))))
+    (let [game-result (aim/run (aim/parse-run-args "-i -n 15"))]
+      (is (= ((first game-result) ::aiw/game-step) 15)))))
 
 
