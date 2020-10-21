@@ -77,11 +77,16 @@
     :parse-fn #(Integer/parseInt %)]
    ["-h" "--help"]])
 
-(defn parse-run-args
+(defn- parse-arg-string
   "Convenience function to get the args map from an arg string"
+  [arg-string]
+  (->> (str/split arg-string #"'")
+       (map-indexed #(if (even? %1) (str/split %2 #" ") (vector %2)))
+       (apply concat)))
+
+(defn parse-run-args
   [args]
-  (-> args
-      (str/split #" ")
+  (-> (parse-arg-string args)
       (ctc/parse-opts cli-options)
       :options))
 
@@ -127,10 +132,8 @@
 
 ;;; Main game routine
 ;;;;;;
-
-
 (defn run
-  "Runs a game with world state initialized to `world`."
+  "Run a game given initial `world` & `player` states and game `opts`."
   ([opts world player]
    (let [world-state (atom world) player-state (atom player)]
      ;; setup logging
@@ -166,3 +169,6 @@
 
       :else
       (run (opts :options)))))
+
+(defn go [str-args]
+  (apply -main (parse-arg-string str-args)))
