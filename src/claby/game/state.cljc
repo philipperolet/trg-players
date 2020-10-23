@@ -40,14 +40,19 @@
    (fn [board]
      (gen/hash-map
       ::gb/game-board (gen/return board)
-      ::player-position (gen/vector (gen/choose 0 size) 2)
+      ::player-position (gen/vector (gen/choose 0 (dec size)) 2)
       ::score (s/gen ::score)
-      ::enemy-positions (gen/bind (gen/choose 0 max-enemies)
-                                  #(gen/vector (gen/vector (gen/choose 0 size) 2) %))
+      ::enemy-positions (gen/bind
+                         (gen/choose 0 max-enemies)
+                         #(gen/vector (gen/vector (gen/choose 0 (dec size)) 2) %))
       ::status (random-status-generator board)))))
 
 (s/def ::game-state
-  (-> (s/keys :req [::gb/game-board ::player-position ::score ::status ::enemy-positions])
+  (-> (s/keys :req [::gb/game-board
+                    ::player-position
+                    ::score
+                    ::status
+                    ::enemy-positions])
       (s/and
        (fn [{:keys [::player-position ::enemy-positions ::gb/game-board]}]
          (comment "player position & enemy positions should be inside board")
@@ -64,7 +69,8 @@
            (every? #(not= (get-in game-board %) :wall) enemy-positions))
 
          (fn [{:keys [::player-position ::enemy-positions ::status]}]
-           (comment "Game over if player and enemy on same position, except if game is won")
+           (comment "Game over if player and enemy on same position,
+           except if game is won")
            (or (= status :over)
                (= status :won)
                (every? #(not= % player-position) enemy-positions)))

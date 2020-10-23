@@ -12,17 +12,22 @@
             [claby.game.board :as gb]
             [clojure.set :as cset]
             [clojure.spec.alpha :as s]
-            [clojure.string :as str]
             [claby.utils :as u]))
 
-(s/def ::node-value nat-int?)
+(s/def ::value nat-int?)
 
-(s/def ::node-frequency nat-int?)
+(s/def ::frequency nat-int?)
 
-(s/def ::children nil)
-
-(s/def ::tree-node (s/keys :req [::frequency ::children]
-                           :opt [::value ::ge/direction]))
+(s/def ::tree-node
+  (-> (s/keys :req [::frequency ::children]
+              :opt [::value ::ge/direction])
+      (s/and
+       (fn [tn]
+         (comment "A tree node either has no children, or its freq is
+         the sum of freqs of its children")
+         (or (empty? (::children tn))
+          (= (::frequency tn)
+                (reduce + (map ::frequency (vals (::children tn))))))))))
 
 (s/def ::children (s/map-of ::ge/direction ::tree-node :max-count 4 :distinct true))
 
@@ -56,9 +61,9 @@
     (apply min-key ::frequency (vals node-children))))
 
 (s/fdef tree-simulate
-  :args (s/cat :game-state ::gs/game-state
-               :sim-size nat-int?
-               :tree-node ::tree-node)
+  :args (s/and (s/cat :game-state ::gs/game-state
+                      :sim-size nat-int?
+                      :tree-node ::tree-node))
   :ret ::tree-node)
 
 (defn- tree-simulate
@@ -70,20 +75,20 @@
         (if-let [direction (::ge/direction tree-node)]
           (ge/move-player game-state direction)
           game-state)]
-    (cond
-      (< (::gs/score game-state) (::gs/score next-state))
-      (assoc tree-node ::value 0)
+    (-> (cond
+          (< (::gs/score game-state) (::gs/score next-state))
+          (assoc tree-node ::value 0)
 
-      (or (zero? sim-size) (not (= (::gs/status next-state) :active)))
-      (assoc tree-node ::value (worst-value game-state))
+          (or (zero? sim-size) (not (= (::gs/status next-state) :active)))
+          (assoc tree-node ::value (worst-value game-state))
 
-      :else
-      (let [next-node (select-next (-> tree-node ::children))]
-        (-> tree-node
-            (assoc-in [::children (::ge/direction next-node)]
-                      (tree-simulate next-state (dec sim-size) next-node))
-            (update ::frequency inc)
-            (#(assoc % ::value (inc (::value (min-child %))))))))))
+          :else
+          (let [next-node (select-next (-> tree-node ::children))]
+            (-> tree-node
+                (assoc-in [::children (::ge/direction next-node)]
+                          (tree-simulate next-state (dec sim-size) next-node))
+                (#(assoc % ::value (inc (::value (min-child %))))))))
+        (update ::frequency inc))))
 
 (defn- simulate-games
   [player game-state]
@@ -94,8 +99,6 @@
          (iterate simulate-once-from-node)
          (#(nth % (-> player :nb-sims)))
          (assoc player :root-node))))
-
-(s/def ::options (s/map-of #{:nb-sims} pos-int?))
 
 (defn node-path
   "Return `tree-node` with its children only (not its children's
@@ -112,7 +115,9 @@
         (update-in [::children (first directions)]
                    #(apply node-path % (rest directions))))))
 
-(defrecord TreeExplorationPlayer [root-node nb-sims]
+(s/def ::options (s/map-of #{:nb-sims} pos-int?))
+
+(defrecord TreeExplorationPlayer [nb-sims]
   aip/Player
   (init-player [this opts world]
     (assert (s/valid? ::options opts))
@@ -120,12 +125,7 @@
            :root-node {::frequency 0 ::children {}}
            :nb-sims (-> opts (:nb-sims default-nb-sims))))
   (update-player [this world]
-    (let [new-root
-          (if (empty? (::children root-node))
-            root-node
-            (min-child root-node))]
-      
-      (-> this
-          (assoc :root-node new-root)
-          (simulate-games (-> world ::gs/game-state))
-          (#(assoc % :next-movement (->  % :root-node min-child ::ge/direction)))))))
+    (-> this
+        (assoc :root-node {::frequency 0 ::children {}})
+        (simulate-games (-> world ::gs/game-state))
+        (#(assoc % :next-movement (->  % :root-node min-child ::ge/direction))))))

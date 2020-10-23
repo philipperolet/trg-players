@@ -1,10 +1,10 @@
 ## Plan - TBD FINISH IT
 
 #### Faire marcher un player pas mal : tree explo ####
-- interactiviser mieux le game : pouvoir faire tourner X steps et s'arrêter programmatiquement
+- identifier la cause du bug du joueur qui tourne en rond
 - Le test d'intégration doit tourner exactement sur 300 steps
 - complété par 1 qui tourne sur 5 secondes
-- identifier la cause du bug du joueur qui tourne en rond
+
 - test & fix de ce bug
 
 #### Historique des jeux conservés et rejouables
