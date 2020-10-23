@@ -146,7 +146,7 @@
        (run-game-interactively world-state player-state opts)
        (gr/run-game ((opts :game-runner) world-state player-state opts)))
      (log/info "Ending world state:\n" (aiw/data->string  @world-state))
-     [@world-state @player-state]))
+     {:world @world-state :player @player-state}))
   
   ([opts world]
    (run opts world
@@ -170,5 +170,15 @@
       :else
       (run (opts :options)))))
 
+(def curr-game (atom {:player nil :world nil :opts nil}))
+
 (defn go [str-args]
-  (apply -main (parse-arg-string str-args)))
+  (reset! curr-game (apply -main (parse-arg-string str-args)))
+  (swap! curr-game assoc :opts (parse-run-args str-args)))
+
+(defn n [& steps]
+  (let [opts (assoc (:opts @curr-game) :number-of-steps (or (first steps) 1))]
+    (swap! curr-game
+           #(-> ((-> opts :game-runner) (-> % :world) (-> % :player) opts)
+                gr/run-game
+                (assoc :opts opts)))))
