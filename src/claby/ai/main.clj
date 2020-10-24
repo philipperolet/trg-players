@@ -79,14 +79,15 @@
 
 (defn- parse-arg-string
   "Convenience function to get the args map from an arg string"
-  [arg-string]
-  (->> (str/split arg-string #"'")
+  [arg-string & format-vars]
+  (->> (apply format arg-string format-vars)
+       (#(str/split % #"'"))
        (map-indexed #(if (even? %1) (str/split %2 #" ") (vector %2)))
        (apply concat)))
 
 (defn parse-run-args
-  [args]
-  (-> (parse-arg-string args)
+  [args & format-vars]
+  (-> (apply parse-arg-string args format-vars)
       (ctc/parse-opts cli-options)
       :options))
 
@@ -172,9 +173,10 @@
 
 (def curr-game (atom {:player nil :world nil :opts nil}))
 
-(defn go [str-args]
-  (reset! curr-game (apply -main (parse-arg-string str-args)))
-  (swap! curr-game assoc :opts (parse-run-args str-args)))
+(defn go [str-args & inits]
+  (let [opts (parse-run-args str-args)]
+    (reset! curr-game (apply run opts inits))
+    (swap! curr-game assoc :opts opts)))
 
 (defn n [& steps]
   (let [opts (assoc (:opts @curr-game) :number-of-steps (or (first steps) 1))]
