@@ -18,6 +18,9 @@
 
 (s/def ::frequency nat-int?)
 
+(defn sum-children-frequencies [tree-node]
+  (reduce + (map ::frequency (vals (::children tree-node)))))
+
 (s/def ::tree-node
   (-> (s/keys :req [::frequency ::children]
               :opt [::value ::ge/direction])
@@ -27,7 +30,7 @@
          the sum of freqs of its children")
          (or (empty? (::children tn))
           (= (::frequency tn)
-                (reduce + (map ::frequency (vals (::children tn))))))))))
+             (sum-children-frequencies tn)))))))
 
 (s/def ::children (s/map-of ::ge/direction ::tree-node :max-count 4 :distinct true))
 
@@ -35,7 +38,7 @@
 
 (defn- max-sim-size [game-state]
   (let [board-size (count (::gb/game-board game-state))]
-    (* board-size board-size)))
+    (* 2 board-size)))
 
 (defn- worst-value
   "Value given to a node once the end of the simulation is reached and
@@ -47,6 +50,8 @@
   "Returns the child of tree-node with the minimum value."
   [tree-node]
   (apply min-key ::value (vals (::children tree-node))))
+
+
 
 (defn- select-next
   [node-children]
@@ -71,10 +76,7 @@
   exploration data at current step stored in `tree-node`.
   Returns tree node with updated data."
   [game-state sim-size tree-node]
-  (let [next-state
-        (if-let [direction (::ge/direction tree-node)]
-          (ge/move-player game-state direction)
-          game-state)]
+  (let [next-state (ge/move-player game-state (::ge/direction tree-node))]
     (-> (cond
           (< (::gs/score game-state) (::gs/score next-state))
           (assoc tree-node ::value 0)
@@ -91,14 +93,12 @@
         (update ::frequency inc))))
 
 (defn- simulate-games
-  [player game-state]
+  [game-state nb-sims node]
   (let [simulate-once-from-node
-        (partial tree-simulate game-state (max-sim-size game-state))]
-    
-    (->> (-> player :root-node)
+        (partial tree-simulate game-state (max-sim-size game-state))]    
+    (->> node
          (iterate simulate-once-from-node)
-         (#(nth % (-> player :nb-sims)))
-         (assoc player :root-node))))
+         (#(nth % nb-sims)))))
 
 (defn node-path
   "Return `tree-node` with its children only (not its children's
@@ -115,6 +115,19 @@
         (update-in [::children (first directions)]
                    #(apply node-path % (rest directions))))))
 
+(defn- compute-root-node [this world]
+  (let [simulate-on-each-direction
+        #(simulate-games
+          (::gs/game-state world)
+          (/ (-> this :nb-sims) (count ge/directions))
+          {::frequency 0 ::children {} ::ge/direction %})
+        add-direction-to-map
+        #(assoc %1 (::ge/direction %2) %2)]
+    (->> ge/directions
+         (pmap simulate-on-each-direction)
+         (reduce add-direction-to-map {})
+         (assoc {} ::children))))
+
 (s/def ::options (s/map-of #{:nb-sims} pos-int?))
 
 (defrecord TreeExplorationPlayer [nb-sims]
@@ -124,8 +137,8 @@
     (assoc this
            :root-node {::frequency 0 ::children {}}
            :nb-sims (-> opts (:nb-sims default-nb-sims))))
+  
   (update-player [this world]
     (-> this
-        (assoc :root-node {::frequency 0 ::children {}})
-        (simulate-games (-> world ::gs/game-state))
+        (assoc :root-node (compute-root-node this world))
         (#(assoc % :next-movement (->  % :root-node min-child ::ge/direction))))))

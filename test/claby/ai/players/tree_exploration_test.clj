@@ -9,8 +9,7 @@
             [clojure.spec.test.alpha :as st]
             [claby.ai.main :as aim]
             [claby.game.board :as gb]
-            [clojure.test.check.generators :as g]
-            [clojure.spec.alpha :as s]))
+            [clojure.test.check.generators :as g]))
 
 
 (def world-state (-> gst/test-state-2
@@ -20,17 +19,20 @@
 (def initial-player
   (sut/->TreeExplorationPlayer 100))
 
-
+(deftest sum-children-frequencies-test
+  (is (= 6 (sut/sum-children-frequencies {::sut/children
+                                          {:up {::sut/frequency 2}
+                                           :down {::sut/frequency 4}}}))))
 (deftest tree-exploration-player-test  
   (let [tree-root (-> initial-player
                       (aip/update-player world-state)
                       :root-node)]
-    (is (= (::sut/frequency tree-root) 100))
+    (is (= (sut/sum-children-frequencies tree-root)
+           100))
     (is (= ge/directions (set (keys (::sut/children tree-root)))))
     (is (every? #(= (::sut/frequency %) 25) (vals (::sut/children tree-root))))
     (is (= (-> tree-root ::sut/children :up ::sut/children :right ::sut/value) 0))
-    (is (= (-> tree-root ::sut/children :up ::sut/value) 1))
-    (is (= (-> tree-root ::sut/value) 2))))
+    (is (= (-> tree-root ::sut/children :up ::sut/value) 1))))
 
 (deftest te-exploration-simulation-test
   (testing "Player should go eat the close fruit (up then right), then reset tree
@@ -44,14 +46,29 @@
           root-node-after-sim
           (-> player (aip/update-player world) :root-node)]
       (is (= (-> world ::gs/game-state ::gs/player-position) [1 1]))
-      (is (= (::sut/frequency root-node-after-sim) (:nb-sims player))))))
+      (is (= (sut/sum-children-frequencies root-node-after-sim)
+             (:nb-sims player))))))
 
-(deftest ^:integration te-stackoverflow-bug-test
-  (testing "Recursivity in tree-simulate should not throw stackoverflow"
-    (is (aim/run
-          (aim/parse-run-args "-t tree-exploration -n 1")
-          (aiw/get-initial-world-state ;; seeded generator, always same board
-           (g/generate (gs/game-state-generator 20) 20 3)))))) 
+(deftest ^:integration te-stability-test
+  (testing "2 tests in 1 : stackoverflow bug and speed
+
+    1/ ERROR: recursivity in tree-simulate should not throw
+    stackoverflow even big boards
+
+    2/ FAILURE: it should be faster than 50sims/sec even on big boards"
+    (let [expected-sims-per-sec 20
+          board-size 50, nb-steps 5, sims-per-step 200 
+          time-to-run-ms
+          (* nb-steps sims-per-step (/ 1000 expected-sims-per-sec))
+          game-result
+          (future
+            (aim/run
+              (aim/parse-run-args "-t tree-exploration -n %d -o '{:nb-sims %d}'"
+                                  nb-steps sims-per-step)
+              (aiw/get-initial-world-state ;; seeded generator, always same board
+               (g/generate (gs/game-state-generator board-size) 100 3))))]
+      (is (not (nil? (deref game-result time-to-run-ms nil)))
+          (str "time > than " time-to-run-ms))))) 
 
 #_(deftest ^:integration tree-exploration-player-run
   (testing "A game with tree-exploration be won in < 300 steps
