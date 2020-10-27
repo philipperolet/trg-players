@@ -15,12 +15,27 @@
             [claby.utils :as u]
             [clojure.zip :as zip]))
 
+(defn- dispatch-zipper
+  "Dispatch functions for multimethods targeting tree nodes/loc"
+  [node-or-loc & _]
+  (if (vector? node-or-loc) :zipper :basic))
+
+(defmulti children dispatch-zipper)
+(defmethod children :basic [node] (vals (::children node)))
+(defmethod children :zipper [loc] (zip/children loc))
+
+(defmulti append-child dispatch-zipper)
+(defmethod append-child :basic [node item]
+  (assoc-in node [::children (::ge/direction item)] item))
+(defmethod append-child :zipper [loc item]
+  (zip/append-child loc item))
+
 (s/def ::value nat-int?)
 
 (s/def ::frequency nat-int?)
 
 (defn sum-children-frequencies [tree-node]
-  (reduce + (map ::frequency (vals (::children tree-node)))))
+  (reduce + (map ::frequency (children tree-node))))
 
 (s/def ::tree-node
   (-> (s/keys :req [::frequency ::children]
@@ -37,6 +52,13 @@
 
 (def default-nb-sims 200)
 
+(defn- make-node
+  "make-node fn for `::tree-node` as specified in `clojure.zip/zipper`"
+  [node children]
+  (->> children
+       (reduce #(assoc %1 (::ge/direction %2) %2) {})
+       (assoc node ::children)))
+
 (defn- max-sim-size [game-state]
   (let [board-size (count (::gb/game-board game-state))]
     (* 2 board-size)))
@@ -49,22 +71,22 @@
 
 (defn- min-child
   "Returns the child of tree-node with the minimum value."
-  [tree-node]
-  (apply min-key ::value (vals (::children tree-node))))
+  ([tree-node sort-key]
+   (apply min-key sort-key (children tree-node))))
 
-
-
-(defn- select-next
-  [node-children]
-  (if (< (count node-children) 4)
+(defn- update-children
+  "Adds a child if not all have been generated yet."
+  [node-or-loc]
+  (cond-> node-or-loc
+    (< (count (children node-or-loc)) 4)
     ;; new node with direction not already in `node-children`
-    {::ge/direction (-> ge/directions
-                        (cset/difference (set (keys node-children)))
-                        first)
-     ::frequency 0
-     ::children {}}
-    ;; less visited child is selected
-    (apply min-key ::frequency (vals node-children))))
+    (append-child 
+     {::ge/direction
+      (-> ge/directions
+          (cset/difference (set (map ::ge/direction (children node-or-loc))))
+          first)
+      ::frequency 0
+      ::children {}})))
 
 (s/fdef tree-simulate
   :args (s/and (s/cat :game-state ::gs/game-state
@@ -72,11 +94,22 @@
                       :tree-node ::tree-node))
   :ret ::tree-node)
 
+(defn- root-node [direction]
+  {::frequency 0 ::children {} ::ge/direction direction})
+
+(defn- root-zipper [direction]
+  (zip/zipper (comp map? ::children)
+              (comp vals ::children)
+              make-node
+              {::frequency 0                 
+               ::ge/direction direction
+               ::children {}}))
+
 (defmulti tree-simulate
   "Simulates `sim-size` steps of a game from `game-state`, with
   exploration data at current step stored in `tree-node`.
   Returns tree node with updated data."
-  (fn [_ _ n] (if (vector? n) :zipper :basic)))
+  dispatch-zipper)
 
 (defmethod tree-simulate :basic
   [game-state sim-size tree-node]
@@ -89,12 +122,47 @@
           (assoc tree-node ::value (worst-value game-state))
 
           :else
-          (let [next-node (select-next (-> tree-node ::children))]
-            (-> tree-node
+          (let [updated-node (update-children tree-node)
+                next-node (min-child updated-node ::frequency)]
+            (-> updated-node
                 (assoc-in [::children (::ge/direction next-node)]
                           (tree-simulate next-state (dec sim-size) next-node))
-                (#(assoc % ::value (inc (::value (min-child %))))))))
+                (#(assoc % ::value (inc (::value (min-child % ::value))))))))
         (update ::frequency inc))))
+
+(defn- move-to-min-child
+  [loc]
+  (throw (java.lang.Exception. "Not Implemented")))
+
+(defn- ascend-simulation
+  [game-state sim-size loc]
+  (let [next-state (ge/move-player game-state (-> loc zip/node ::ge/direction))]
+    (-> (cond
+          (< (::gs/score game-state) (::gs/score next-state))
+          (-> loc (zip/edit #(assoc % ::value 0)))
+
+          (or (zero? sim-size) (not (= (::gs/status next-state) :active)))
+          (-> loc (zip/edit #(assoc % ::value (worst-value game-state))))
+
+          :else
+          (->> loc
+               update-children
+               move-to-min-child
+               (recur next-state (dec sim-size)))))))
+
+;; Implementation using a double recur rather than a non-tail
+;; recursive call, for efficiency.
+(defmethod tree-simulate :zipper
+  [game-state sim-size loc]
+  (loop [descending-loc (ascend-simulation game-state sim-size loc)]
+    (let [updated-loc
+          (-> descending-loc
+              (zip/edit #(update % ::frequency inc))
+              (zip/edit #(assoc % ::value (inc (::value (min-child %))))))]
+      (if-let [parent-loc (zip/up updated-loc)]
+        (recur parent-loc)
+        updated-loc))))
+
 
 (defn- simulate-games
   [game-state node nb-sims]
@@ -119,21 +187,11 @@
         (update-in [::children (first directions)]
                    #(apply node-path % (rest directions))))))
 
-(defn- make-node
-  "make-node fn for `::tree-node` as specified in `clojure.zip/zipper`"
-  [node children]
-  (->> children
-       (reduce #(assoc %1 (::ge/direction %2) %2) {})
-       (assoc node ::children)))
-
-(defprotocol TreeExplorer
-  (create-node [this world direction]))
-
 (defn- compute-root-node [this world]
   (let [simulate-on-each-direction
         #(simulate-games
           (::gs/game-state world)
-          (create-node this world %)
+          (root-node %)
           (/ (-> this :nb-sims) (count ge/directions)))]
     (->> ge/directions
          (pmap simulate-on-each-direction)
@@ -141,36 +199,14 @@
 
 (s/def ::options (s/map-of #{:nb-sims} pos-int?))
 
-(defn- init-player
-  [this opts]
-  (assert (s/valid? ::options opts))
-  (assoc this :nb-sims (-> opts (:nb-sims default-nb-sims))))
-
-(defn- update-player
-  [this world]
-  (-> this
-        (assoc :root-node (compute-root-node this world))
-        (#(assoc % :next-movement (->  % :root-node min-child ::ge/direction)))))
-
 (defrecord TreeExplorationPlayer [nb-sims]
   aip/Player
   (init-player [this opts world]
-    (init-player this opts))
+    (assert (s/valid? ::options opts))
+    (assoc this :nb-sims (-> opts (:nb-sims default-nb-sims))))
   
   (update-player [this world]
-    (update-player this world)))
-
-(defrecord FakeProtocol [])
-
-(extend-protocol TreeExplorer
-  TreeExplorationPlayer
-  (create-node [this world direction]
-    {::frequency 0 ::children {} ::ge/direction direction})
-  FakeProtocol
-  (create-node [this world direction]
-    (zip/zipper (comp map? ::children)
-                (comp vals ::children)
-                make-node
-                {::frequency 0                 
-                 ::ge/direction direction
-                 ::children {}})))
+    (-> this
+        (assoc :root-node (compute-root-node this world))
+        (#(assoc % :next-movement
+                 (->  % :root-node (min-child ::value) ::ge/direction))))))

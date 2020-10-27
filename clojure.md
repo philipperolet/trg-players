@@ -1,3 +1,12 @@
+# Unsorted
+- a change in a spec requires a new call to instrument to be taken into account
+  - make sure there is actually a call to instrument somewhere (sometimes randomly instrumented nonetheless)
+- a map is a coll
+- thrown? is part of is
+- ret specs are not checked by instrument, they are meant for doc & test.check
+- partial -> oui comme tu penses et pas comme tu veux. sur le début.
+- let values are evaluated when run; but if the value is a function, the variables in the function (e.g. derefing an atom) are not -- all the bound values are bound, not free ;)
+
 # Clojure design / function parameters
 
 Pass only params needed -- not the full object

@@ -23,6 +23,16 @@
   (is (= 6 (sut/sum-children-frequencies {::sut/children
                                           {:up {::sut/frequency 2}
                                            :down {::sut/frequency 4}}}))))
+
+(deftest update-children-test
+  (let [test-node (reduce
+                   #(sut/append-child %1 {::sut/frequency 1 ::ge/direction %2})
+                   {::sut/frequency 3}
+                   '(:up :down :right))
+        updated-node (#'sut/update-children test-node)]
+    (is (contains? (::sut/children updated-node) :right))
+    (is (= (#'sut/update-children updated-node) updated-node))))
+
 (deftest tree-exploration-player-test  
   (let [tree-root (-> initial-player
                       (aip/update-player world-state)
