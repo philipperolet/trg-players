@@ -12,7 +12,8 @@
             [claby.game.board :as gb]
             [clojure.set :as cset]
             [clojure.spec.alpha :as s]
-            [claby.utils :as u]))
+            [claby.utils :as u]
+            [clojure.zip :as zip]))
 
 (s/def ::value nat-int?)
 
@@ -71,10 +72,13 @@
                       :tree-node ::tree-node))
   :ret ::tree-node)
 
-(defn- tree-simulate
+(defmulti tree-simulate
   "Simulates `sim-size` steps of a game from `game-state`, with
   exploration data at current step stored in `tree-node`.
   Returns tree node with updated data."
+  (fn [_ _ n] (if (vector? n) :zipper :basic)))
+
+(defmethod tree-simulate :basic
   [game-state sim-size tree-node]
   (let [next-state (ge/move-player game-state (::ge/direction tree-node))]
     (-> (cond
@@ -93,7 +97,7 @@
         (update ::frequency inc))))
 
 (defn- simulate-games
-  [game-state nb-sims node]
+  [game-state node nb-sims]
   (let [simulate-once-from-node
         (partial tree-simulate game-state (max-sim-size game-state))]    
     (->> node
@@ -115,30 +119,58 @@
         (update-in [::children (first directions)]
                    #(apply node-path % (rest directions))))))
 
+(defn- make-node
+  "make-node fn for `::tree-node` as specified in `clojure.zip/zipper`"
+  [node children]
+  (->> children
+       (reduce #(assoc %1 (::ge/direction %2) %2) {})
+       (assoc node ::children)))
+
+(defprotocol TreeExplorer
+  (create-node [this world direction]))
+
 (defn- compute-root-node [this world]
   (let [simulate-on-each-direction
         #(simulate-games
           (::gs/game-state world)
-          (/ (-> this :nb-sims) (count ge/directions))
-          {::frequency 0 ::children {} ::ge/direction %})
-        add-direction-to-map
-        #(assoc %1 (::ge/direction %2) %2)]
+          (create-node this world %)
+          (/ (-> this :nb-sims) (count ge/directions)))]
     (->> ge/directions
          (pmap simulate-on-each-direction)
-         (reduce add-direction-to-map {})
-         (assoc {} ::children))))
+         (make-node {}))))
 
 (s/def ::options (s/map-of #{:nb-sims} pos-int?))
+
+(defn- init-player
+  [this opts]
+  (assert (s/valid? ::options opts))
+  (assoc this :nb-sims (-> opts (:nb-sims default-nb-sims))))
+
+(defn- update-player
+  [this world]
+  (-> this
+        (assoc :root-node (compute-root-node this world))
+        (#(assoc % :next-movement (->  % :root-node min-child ::ge/direction)))))
 
 (defrecord TreeExplorationPlayer [nb-sims]
   aip/Player
   (init-player [this opts world]
-    (assert (s/valid? ::options opts))
-    (assoc this
-           :root-node {::frequency 0 ::children {}}
-           :nb-sims (-> opts (:nb-sims default-nb-sims))))
+    (init-player this opts))
   
   (update-player [this world]
-    (-> this
-        (assoc :root-node (compute-root-node this world))
-        (#(assoc % :next-movement (->  % :root-node min-child ::ge/direction))))))
+    (update-player this world)))
+
+(defrecord FakeProtocol [])
+
+(extend-protocol TreeExplorer
+  TreeExplorationPlayer
+  (create-node [this world direction]
+    {::frequency 0 ::children {} ::ge/direction direction})
+  FakeProtocol
+  (create-node [this world direction]
+    (zip/zipper (comp map? ::children)
+                (comp vals ::children)
+                make-node
+                {::frequency 0                 
+                 ::ge/direction direction
+                 ::children {}})))
