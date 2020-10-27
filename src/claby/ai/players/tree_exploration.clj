@@ -24,6 +24,10 @@
 (defmethod children :basic [node] (vals (::children node)))
 (defmethod children :zipper [loc] (zip/children loc))
 
+(defmulti node dispatch-zipper)
+(defmethod node :basic [node] node)
+(defmethod node :zipper [loc] (zip/node loc))
+
 (defmulti append-child dispatch-zipper)
 (defmethod append-child :basic [node item]
   (assoc-in node [::children (::ge/direction item)] item))
@@ -89,9 +93,10 @@
       ::children {}})))
 
 (s/fdef tree-simulate
-  :args (s/and (s/cat :game-state ::gs/game-state
-                      :sim-size nat-int?
-                      :tree-node ::tree-node))
+  :args (s/and (s/cat :tree-node (s/or :node ::tree-node
+                                       :loc (s/tuple ::tree-node any?))
+                      :game-state ::gs/game-state
+                      :sim-size nat-int?))
   :ret ::tree-node)
 
 (defn- root-node [direction]
@@ -112,7 +117,7 @@
   dispatch-zipper)
 
 (defmethod tree-simulate :basic
-  [game-state sim-size tree-node]
+  [tree-node game-state sim-size]
   (let [next-state (ge/move-player game-state (::ge/direction tree-node))]
     (-> (cond
           (< (::gs/score game-state) (::gs/score next-state))
@@ -131,11 +136,19 @@
         (update ::frequency inc))))
 
 (defn- move-to-min-child
-  [loc]
-  (throw (java.lang.Exception. "Not Implemented")))
+  "Moves `loc` down to the child that has the minimum value according to
+  `sort-fn`"
+  [loc sort-fn]
+  (loop [current-loc (zip/down loc) min-loc current-loc]
+    (if-let [next-loc (zip/right current-loc)]
+      (recur next-loc
+             (if (< (-> next-loc zip/node sort-fn)
+                    (-> min-loc zip/node sort-fn))
+               next-loc min-loc))
+      min-loc)))
 
-(defn- ascend-simulation
-  [game-state sim-size loc]
+(defn- descend-simulation
+  [loc game-state sim-size]
   (let [next-state (ge/move-player game-state (-> loc zip/node ::ge/direction))]
     (-> (cond
           (< (::gs/score game-state) (::gs/score next-state))
@@ -145,20 +158,22 @@
           (-> loc (zip/edit #(assoc % ::value (worst-value game-state))))
 
           :else
-          (->> loc
-               update-children
-               move-to-min-child
-               (recur next-state (dec sim-size)))))))
+          (-> loc
+              update-children
+              (move-to-min-child ::frequency)
+              (recur next-state (dec sim-size)))))))
 
 ;; Implementation using a double recur rather than a non-tail
 ;; recursive call, for efficiency.
 (defmethod tree-simulate :zipper
-  [game-state sim-size loc]
-  (loop [descending-loc (ascend-simulation game-state sim-size loc)]
+  [loc game-state sim-size]
+  (loop [current-loc (descend-simulation loc game-state sim-size)]
     (let [updated-loc
-          (-> descending-loc
-              (zip/edit #(update % ::frequency inc))
-              (zip/edit #(assoc % ::value (inc (::value (min-child %))))))]
+          (cond-> current-loc
+            true (zip/edit #(update % ::frequency inc))
+            
+            (not-empty (children current-loc))
+            (zip/edit #(assoc % ::value (inc (::value (min-child % ::value))))))]
       (if-let [parent-loc (zip/up updated-loc)]
         (recur parent-loc)
         updated-loc))))
@@ -167,7 +182,7 @@
 (defn- simulate-games
   [game-state node nb-sims]
   (let [simulate-once-from-node
-        (partial tree-simulate game-state (max-sim-size game-state))]    
+        #(tree-simulate % game-state (max-sim-size game-state))]    
     (->> node
          (iterate simulate-once-from-node)
          (#(nth % nb-sims)))))
@@ -191,10 +206,11 @@
   (let [simulate-on-each-direction
         #(simulate-games
           (::gs/game-state world)
-          (root-node %)
+          (root-zipper %)
           (/ (-> this :nb-sims) (count ge/directions)))]
     (->> ge/directions
          (pmap simulate-on-each-direction)
+         (map node)
          (make-node {}))))
 
 (s/def ::options (s/map-of #{:nb-sims} pos-int?))

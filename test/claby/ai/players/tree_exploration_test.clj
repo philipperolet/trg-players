@@ -9,7 +9,8 @@
             [clojure.spec.test.alpha :as st]
             [claby.ai.main :as aim]
             [claby.game.board :as gb]
-            [clojure.test.check.generators :as g]))
+            [clojure.test.check.generators :as g]
+            [clojure.zip :as zip]))
 
 
 (def world-state (-> gst/test-state-2
@@ -33,14 +34,23 @@
     (is (contains? (::sut/children updated-node) :right))
     (is (= (#'sut/update-children updated-node) updated-node))))
 
+(deftest move-to-min-child-test
+  (let [test-zipper
+        (zip/vector-zip [{:a 8} [{:a 1} {:a 2} {:a 0} {:a 3} {:a 1}]])]
+    (is (= {:a 0} (-> test-zipper
+                      zip/down zip/right
+                      (#'sut/move-to-min-child :a)
+                      zip/node)))))
+
 (deftest tree-exploration-player-test  
   (let [tree-root (-> initial-player
                       (aip/update-player world-state)
-                      :root-node)]
+                      :root-node
+                      sut/node)]
     (is (= (sut/sum-children-frequencies tree-root)
            100))
     (is (= ge/directions (set (keys (::sut/children tree-root)))))
-    (is (every? #(= (::sut/frequency %) 25) (vals (::sut/children tree-root))))
+    (is (every? #(= (::sut/frequency %) 25) (sut/children tree-root)))
     (is (= (-> tree-root ::sut/children :up ::sut/children :right ::sut/value) 0))
     (is (= (-> tree-root ::sut/children :up ::sut/value) 1))))
 
@@ -65,8 +75,8 @@
     1/ ERROR: recursivity in tree-simulate should not throw
     stackoverflow even big boards
 
-    2/ FAILURE: it should be faster than 25 sims/sec even on big boards"
-    (let [expected-sims-per-sec 20
+    2/ FAILURE: it should be faster than 80 sims/sec even on big boards"
+    (let [expected-sims-per-sec 80
           board-size 50, nb-steps 4, sims-per-step 80
           time-to-run-ms
           (* nb-steps sims-per-step (/ 1000 expected-sims-per-sec))
