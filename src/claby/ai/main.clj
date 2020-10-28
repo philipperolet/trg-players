@@ -11,7 +11,6 @@
             [clojure.tools.logging :as log]
             [clojure.tools.logging.impl :as li]
             [claby.ai.world :as aiw]
-            [claby.game.state :as gs]
             [claby.ai.player :as aip]
             [claby.ai.game-runner :as gr]
             [claby.game.generation :as gg])

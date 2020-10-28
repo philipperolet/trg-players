@@ -122,9 +122,12 @@
             (#(str player-ns-string "/map->" % "Player")))]
     
     (try
-      (require (symbol player-ns-string))
+      ;; use of private fn serialized-require to avoid bugs due to
+      ;; require not being thread safe ATTOW
+      ;; see https://clojure.atlassian.net/browse/CLJ-1876
+      (#'clojure.core/serialized-require (symbol player-ns-string))
+      (init-player ((resolve (symbol player-constructor-string)) {}) opts world)
       (catch java.io.FileNotFoundException _
         (throw (RuntimeException.
                 "Couldn't load player. Check player type matches a
-                player implementation in `claby.ai.players`"))))
-    (init-player ((resolve (symbol player-constructor-string)) {}) opts world)))
+                player implementation in `claby.ai.players`"))))))
