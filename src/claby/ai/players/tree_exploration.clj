@@ -131,7 +131,7 @@
                 next-node (min-child updated-node ::frequency)]
             (-> updated-node
                 (assoc-in [::children (::ge/direction next-node)]
-                          (tree-simulate next-state (dec sim-size) next-node))
+                          (tree-simulate next-node next-state (dec sim-size)))
                 (#(assoc % ::value (inc (::value (min-child % ::value))))))))
         (update ::frequency inc))))
 
@@ -206,7 +206,7 @@
   (let [simulate-on-each-direction
         #(simulate-games
           (::gs/game-state world)
-          (root-zipper %)
+          (root-node %)
           (/ (-> this :nb-sims) (count ge/directions)))]
     (->> ge/directions
          (pmap simulate-on-each-direction)

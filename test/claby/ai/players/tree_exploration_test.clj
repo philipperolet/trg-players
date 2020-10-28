@@ -75,7 +75,7 @@
     1/ ERROR: recursivity in tree-simulate should not throw
     stackoverflow even big boards
 
-    2/ FAILURE: it should be faster than 80 sims/sec even on big boards"
+    2/ FAILURE: it should be faster than 50 sims/sec even on big boards"
     (let [expected-sims-per-sec 80
           board-size 50, nb-steps 4, sims-per-step 80
           time-to-run-ms
