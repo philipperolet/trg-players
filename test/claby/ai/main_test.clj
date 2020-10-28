@@ -1,16 +1,19 @@
 (ns claby.ai.main-test
   (:require [claby.ai.world :as aiw]
             [claby.ai.main :as aim]
-            [claby.ai.player :as aip]
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.state-test :as gst]
             [clojure.spec.test.alpha :as st]
-            [clojure.test :refer [deftest is testing]]
-            [claby.utils :as u]))
+            [clojure.test :refer [deftest is testing]]))
 
 (st/instrument)
 
+(deftest parse-run-args-err-test
+  (testing "should throw when an arg isn't valid"
+    (is (thrown-with-msg? java.lang.IllegalArgumentException
+                          #"There were error\(s\) in args parsing.*"
+                          (aim/parse-run-args "-l WARNING")))))
 (defn basic-run
   "Runs a basic game (removing cheese & enemies), expects the
   game to finish well"

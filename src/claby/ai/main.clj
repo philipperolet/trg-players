@@ -41,7 +41,8 @@
     "Log the world state every STEPS steps. Only used in
     *non*-interactive mode. 0 means no logging during game."
     :default 0
-    :parse-fn #(Integer/parseInt %)]
+    :parse-fn #(Integer/parseInt %)
+    :validate [int?]]
    ["-t" "--player-type PLAYER-TYPE"
     "Artificial player that will play the game. Arg should be the
     namespace in which the protocol is implemented, unqualified (it
@@ -87,9 +88,14 @@
 
 (defn parse-run-args
   [args & format-vars]
-  (-> (apply parse-arg-string args format-vars)
-      (ctc/parse-opts cli-options)
-      :options))
+  (let [parsed-data
+        (-> (apply parse-arg-string args format-vars)
+            (ctc/parse-opts cli-options))]
+    (if (some? (parsed-data :errors))
+      (throw (java.lang.IllegalArgumentException.
+              (str "There were error(s) in args parsing.\n"
+                   (str/join "\n" (parsed-data :errors)))))
+      (:options parsed-data))))
 
 ;;; Interactive mode setup
 ;;;;;;;;;;
@@ -159,17 +165,10 @@
       (gg/create-nice-game (opts :board-size) {::gg/density-map {:fruit 5}})))))
 
 (defn -main [& args]
-  (let [opts (ctc/parse-opts args cli-options)]
-    (cond
-      (-> opts :options :help)
+  (let [opts (parse-run-args (parse-arg-string args))]
+    (if (some? (-> opts :help))
       (println (opts :summary))
-      
-      (some? (opts :errors))
-      (println (str "There were error(s) in args parsing.\n"
-                    (str/join "\n" (opts :errors))))
-
-      :else
-      (run (opts :options)))))
+      (run opts))))
 
 (def curr-game (atom {:player nil :world nil :opts nil}))
 
