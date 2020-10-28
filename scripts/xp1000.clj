@@ -22,20 +22,18 @@
   (printf "%s (%d xps)\n---\nMean %.3f +- %.3f\n\n"
           title (count measures) (mean measures) (std measures)))
 
-(defn -main [nb-xps player-type]
-  (println "Starting xp...")
+(defn xp
+  [measure-fn nb-xps game-args name]
+  (printf "\n---\nStarting xp '%s' with args %s\n---\n" name nb-xps game-args)
   (time
-   (let [game-args
-         {:game-step-duration 1
-          :player-step-duration 1
-          :logging-steps 0
-          :board-size 20
-          :player-type player-type
-          :logging-level java.util.logging.Level/WARNING
-          :game-runner gr/->WatcherRunner}
-         arg-sequence
-         (repeatedly (Integer/parseInt nb-xps) (constantly game-args))
-         measures
-         (pmap #(::aiw/game-step (:world (aim/run %))) arg-sequence)]
-     (display-stats "Steps per game" measures))))
+   (->> (pmap (fn [_] (aim/go game-args)) (range (Integer/parseInt nb-xps)))
+        (map measure-fn)
+        (display-stats "Steps per game")))
+  (shutdown-agents))
+
+(defn -step-avg-xp [nb-xps player-type]
+  (xp (comp ::aiw/game-step :world)
+      nb-xps
+      (str  "-s 20 -v WARNING -t " player-type)
+      "Step Average"))
 
