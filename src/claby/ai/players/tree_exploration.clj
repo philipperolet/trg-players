@@ -206,20 +206,28 @@
   (let [simulate-on-each-direction
         #(simulate-games
           (::gs/game-state world)
-          (root-node %)
+          ((:node-constructor this) %)
           (/ (-> this :nb-sims) (count ge/directions)))]
     (->> ge/directions
          (pmap simulate-on-each-direction)
          (map node)
          (make-node {}))))
 
-(s/def ::options (s/map-of #{:nb-sims} pos-int?))
+(s/def ::options (s/map-of #{:nb-sims :node-constructor} any?))
 
 (defrecord TreeExplorationPlayer [nb-sims]
   aip/Player
   (init-player [this opts world]
-    (assert (s/valid? ::options opts))
-    (assoc this :nb-sims (-> opts (:nb-sims default-nb-sims))))
+    (let [constructor
+          (->> (-> opts (:node-constructor "root-node"))
+               (str "claby.ai.players.tree-exploration/")
+               symbol
+               resolve)]
+      (assert (s/valid? ::options opts))
+      (assert (not (nil? constructor)) "Invalid user-supplied node constructor")
+      (assoc this
+             :nb-sims (-> opts (:nb-sims default-nb-sims))
+             :node-constructor constructor)))
   
   (update-player [this world]
     (-> this

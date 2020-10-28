@@ -18,7 +18,7 @@
                      (assoc-in [::gb/game-board 4 2] :fruit)
                      aiw/get-initial-world-state))
 (def initial-player
-  (sut/->TreeExplorationPlayer 100))
+  (aip/init-player (sut/map->TreeExplorationPlayer {}) {:nb-sims 100} nil))
 
 (deftest sum-children-frequencies-test
   (is (= 6 (sut/sum-children-frequencies {::sut/children
