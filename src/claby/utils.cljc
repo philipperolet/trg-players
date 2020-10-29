@@ -84,14 +84,14 @@
   [a b precision]
   (<= (abs (- a b)) precision))
 
-(defmacro time
+(defmacro timed
   "Returns the time in miliseconds to run the expression, as a
   float--that is, taking into account micro/nanoseconds, subject to
   the underlying platform's precision."
   [expr]
-  `(let [start-time# (System/nanoTime)]
-     ~expr
-     (/ (- (System/nanoTime) start-time#) 1000000.0)))
+  `(let [start-time# (System/nanoTime)
+         result# ~expr]
+     [(/ (- (System/nanoTime) start-time#) 1000000.0) result#]))
 
 (defn filter-keys
   "Like select-keys, with a predicate on the keys"

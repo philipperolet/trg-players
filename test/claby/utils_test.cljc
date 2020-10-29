@@ -41,15 +41,16 @@
   (is (u/almost= 0.1 0.09 0.02))
   (is (not (u/almost= 0.1 0.09 0.005))))
 
-(deftest time-test
-  (is (u/almost= (u/time (Thread/sleep 10)) 10 0.5))
-  (is (not (u/almost= (u/time (Thread/sleep 10)) 10 0.00001)))
-  (is (u/almost= (u/time (Thread/sleep 10))
-                 (u/time (Thread/sleep 10))
+(deftest timed-test
+  (is (u/almost= (first (u/timed (Thread/sleep 10))) 10 0.5))
+  (is (not (u/almost= (first (u/timed (Thread/sleep 10))) 10 0.00001)))
+  (is (u/almost= (first (u/timed (Thread/sleep 10)))
+                 (first (u/timed (Thread/sleep 10)))
                  0.5))
-  (is (not (u/almost= (u/time (Thread/sleep 5))
-                      (u/time (Thread/sleep 5))
-                      0.0001))))
+  (is (not (u/almost= (first (u/timed (Thread/sleep 5)))
+                      (first (u/timed (Thread/sleep 5)))
+                      0.0001)))
+  (is (= (second (u/timed (* 3 3))) 9)))
 
 (deftest filter-keys-test
   (is (= (u/filter-keys #(>= % 3) {1 :a 2 :b 3 :c 4 :d}) {3 :c 4 :d}))
