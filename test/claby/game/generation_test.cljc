@@ -9,6 +9,7 @@
             [claby.game.board-test :refer [small-test-board]]
             [claby.game.board :as gb]
             [claby.game.generation :as gg]
+            [clojure.data.generators :as g]
             [claby.utils :as u]))
 
 (st/instrument)
@@ -70,3 +71,11 @@
         element :fruit]
     (is (= (-> board gb/board-stats :density :fruit) 18))
     (is (gg/valid-density board :fruit 18))))
+
+(deftest correctly-seeded-generation
+  (testing "With a given seed for the random number gen, should always
+  return the same nice board"
+    (let [gen-same-board
+          #(binding [g/*rnd* (java.util.Random. 20)]
+             (gg/create-nice-game 10 {::gg/density-map {:fruit 10}}))]
+      (is (every? #(= % (gen-same-board)) (repeatedly 10 gen-same-board))))))

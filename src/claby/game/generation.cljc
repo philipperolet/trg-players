@@ -4,6 +4,7 @@
                        [clojure.test.check.properties]])
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
+            [clojure.data.generators :as g]
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.events :as ge]))
@@ -18,10 +19,11 @@
   a distribution favoring previous direction."
   [board-size length]
   ;; random position
-  [[(rand-int board-size) (rand-int board-size)]
+  [[(g/uniform 0 board-size) (g/uniform 0 board-size)]
    ;; random directions length times
-   (take length (iterate #(rand-nth (-> [:up :down :left :right] (conj %) (conj %)))
-                         (gen/generate (s/gen ::ge/direction))))])
+   (take length (iterate
+                 #(g/rand-nth (-> (vec ge/directions) (conj %) (conj %)))
+                 (g/rand-nth (vec ge/directions))))])
 
 (def wall-generator
   (gen/fmap #(apply generate-wall %)
@@ -85,7 +87,7 @@
        (map-indexed (fn [ind line] (keep-indexed #(when (= %2 :empty) [ind %1]) line)))
        (reduce into)
        ;; sample n positions
-       (shuffle)
+       (g/shuffle)
        (take n)
        ;; put element at these positions on the board
        (reduce #(assoc-in %1 %2 element) board)))
@@ -164,6 +166,16 @@
                           (s/gen (s/keys :req [::density-map])))))
   :ret ::gb/game-board)
 
+(defn- add-random-wall
+  "Adds a wall of random length between 1 and board size, biased
+  towards average-length wall. The bias is introduced by averaging
+  five random lengths"
+  [board]
+  (let [board-size (count board)
+        rand-lengths (repeatedly 5 #(inc (g/uniform 0 (dec board-size))))
+        wall-length (int (/ (reduce + rand-lengths) 5))]
+    (add-wall board (generate-wall board-size wall-length))))
+
 (defn create-nice-board
   "Creates a board with randomly generated walls, fruit, cheese, etc. as
   specified by the level's density map and wall-density.
@@ -178,14 +190,9 @@
   prevent an enjoyable game. The density is not exact, since it is
   converted in a finite number of randomly-sized walls."
   [size level]
-  (let [nb-of-walls (int (/ (* size (level ::wall-density 50)) 100))
-        rand-wall-length ;; generates a length biased towards average-sized walls
-        (fn [] (int (/ (reduce + (repeatedly 5 #(inc (rand-int (dec size))))) 5)))
-        add-random-wall
-        #(add-wall % (generate-wall size (rand-wall-length)))]
-    
+  (let [nb-of-walls (int (/ (* size (level ::wall-density 50)) 100))]
     (-> (gb/empty-board size)
-        (#(iterate add-random-wall %))
+        (as-> board (iterate add-random-wall board))
         (nth nb-of-walls)
         (#(reduce-kv sow-by-density % (-> level ::density-map))))))
 
