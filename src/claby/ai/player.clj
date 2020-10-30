@@ -8,8 +8,7 @@
             [claby.game.state :as gs]
             [claby.game.board :as gb]
             [claby.utils :as u]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as st]))
+            [clojure.spec.gen.alpha :as gen]))
 
 (defprotocol Player
   "A Player updates its state every time it needs via `update-player`.
@@ -129,5 +128,5 @@
       (init-player ((resolve (symbol player-constructor-string)) {}) opts world)
       (catch java.io.FileNotFoundException _
         (throw (RuntimeException.
-                "Couldn't load player. Check player type matches a
-                player implementation in `claby.ai.players`"))))))
+                (format "Couldn't load player %s. Check player type matches a
+                player implementation in `claby.ai.players`" player-type)))))))
