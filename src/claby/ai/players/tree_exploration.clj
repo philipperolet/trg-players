@@ -12,7 +12,7 @@
             [claby.game.board :as gb]
             [clojure.set :as cset]
             [clojure.spec.alpha :as s]
-            [claby.utils :as u]
+            [claby.utils.utils :as u]
             [clojure.zip :as zip]))
 
 (defn- dispatch-zipper

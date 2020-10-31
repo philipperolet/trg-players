@@ -8,11 +8,11 @@
   Regarding the first element, movement requests can be made by the
   player as well as by enemies. The last element is intended to allow
   a detailed execution history."
-  (:require [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
+  (:require [claby.game.events :as ge]
             [claby.game.state :as gs]
-            [claby.game.events :as ge]
-            [claby.utils :as u]
+            [claby.utils.utils :as u]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.tools.logging :as log]))
 
 ;;; Full game state spec & helpers

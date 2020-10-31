@@ -1,14 +1,14 @@
 (ns claby.ai.clocked-threads-runner-test
-  (:require [claby.ai.world :as aiw]
-            [claby.ai.player :as aip]
-            [clojure.test :refer [is testing deftest are]]
-            [claby.utils :as u]
-            [claby.game.generation :as gg]
+  (:require [claby.ai.clocked-threads-runner :as ctr]
             [claby.ai.main :as aim :refer [parse-run-args]]
             [claby.ai.main-test :refer [basic-run]]
+            [claby.ai.player :as aip]
+            [claby.ai.players.random :refer [->RandomPlayer]]
+            [claby.ai.world :as aiw]
             [claby.ai.world-test :as aiwt]
-            [claby.ai.clocked-threads-runner :as ctr]
-            [claby.ai.players.random :refer [->RandomPlayer]]))
+            [claby.game.generation :as gg]
+            [claby.utils.utils :as u]
+            [clojure.test :refer [are deftest is testing]]))
 
 (def timed-world-state
   (assoc aiwt/world-state ::ctr/missteps 0))

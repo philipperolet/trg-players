@@ -179,6 +179,5 @@
 (defn n [& steps]
   (let [opts (assoc (:opts @curr-game) :number-of-steps (or (first steps) 1))]
     (swap! curr-game
-           #(-> ((-> opts :game-runner) (-> % :world) (-> % :player) opts)
-                gr/run-game
+           #(-> (run opts (:world %) (:player %))
                 (assoc :opts opts)))))

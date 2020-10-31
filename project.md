@@ -1,4 +1,4 @@
-## Plan - TBD FINISH IT
+# Plan - TBD FINISH IT
 
 #### Faire marcher un player pas mal : tree explo ####
 - identifier la cause du bug du joueur qui tourne en rond
@@ -9,6 +9,7 @@
 
 #### Historique des jeux conservés et rejouables
 #### Visu de jeu sur le net
+#### Fin des "player senses" (cf v0.2.1)
 #### TBD - Première version de m0
 ## Backlog
 
@@ -31,18 +32,11 @@
 - then look up DL players
 - then look up alphazero
 
-
-## Icebox
-- remove libs from vcs to avoid useless commits / searchs?
-- tab should autocomplete
-- add walls & fruits with clicks
-- let tests be pretty-printed
-- convenient way of having tests in emacs
-
 ## Done
 ### v0.2.1
+- fixed tree-exploration-player, added a faster (zipper) impl
 - refactor player cli options & player creation to fit new TE-player
-+ added tree-exploration-player
+- added tree-exploration-player
 - added modsubvec, check-spec & scaffold (to utils), get-player-senses (to player)
 
 ### AI World v0.2.0

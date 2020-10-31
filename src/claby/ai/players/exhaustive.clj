@@ -4,12 +4,12 @@
   maintains a board simulation in which walls & explored territory are
   marked (using cell value :fruit) so they are not explored multiple
   times."
-  (:require [claby.utils :as u]
+  (:require [claby.ai.player :refer [init-player Player]]
+            [claby.ai.world :as aiw]
             [claby.game.board :as gb]
-            [claby.game.state :as gs]
             [claby.game.events :as ge]
-            [claby.ai.player :refer [Player init-player]]
-            [claby.ai.world :as aiw]))
+            [claby.game.state :as gs]
+            [claby.utils.utils :as u]))
 
 (defn- wall-present?
   "Checks if a wall blocked the player on the path.

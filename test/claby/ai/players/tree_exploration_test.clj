@@ -9,7 +9,7 @@
             [clojure.spec.test.alpha :as st]
             [claby.ai.main :as aim]
             [claby.game.board :as gb]
-            [clojure.test.check.generators :as g]
+            [clojure.test.check.generators :as gen]
             [clojure.zip :as zip]))
 
 
@@ -80,13 +80,15 @@
           board-size 50, nb-steps 4, sims-per-step 80
           time-to-run-ms
           (* nb-steps sims-per-step (/ 1000 expected-sims-per-sec))
+          initial-world ;; seeded generator, always same board
+          (aiw/get-initial-world-state
+           (gen/generate (gs/game-state-generator board-size) 100 3))
           game-result
           (future
             (aim/run
               (aim/parse-run-args "-t tree-exploration -n %d -o '{:nb-sims %d}'"
                                   nb-steps sims-per-step)
-              (aiw/get-initial-world-state ;; seeded generator, always same board
-               (g/generate (gs/game-state-generator board-size) 100 3))))]
+              initial-world))]
       (is (not (nil? (deref game-result time-to-run-ms nil)))
           (str "time > than " time-to-run-ms))))) 
 
