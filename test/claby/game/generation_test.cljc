@@ -3,14 +3,14 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
-            [claby.utils
+            [claby.utils.testing
              #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
             [claby.game.state-test :refer [test-size test-state]]
             [claby.game.board-test :refer [small-test-board]]
             [claby.game.board :as gb]
             [claby.game.generation :as gg]
             [clojure.data.generators :as g]
-            [claby.utils :as u]))
+            [claby.utils.testing :as u]))
 
 (st/instrument)
 (check-all-specs claby.game.generation)

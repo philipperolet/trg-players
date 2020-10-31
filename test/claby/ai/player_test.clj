@@ -4,7 +4,7 @@
             [clojure.spec.test.alpha :as st]
             [claby.ai.world :as aiw]
             [claby.game.state :as gs]
-            [claby.utils :refer [check-spec]]
+            [claby.utils.testing :refer [check-spec]]
             [claby.game.state-test :as gst]))
 
 (st/instrument)

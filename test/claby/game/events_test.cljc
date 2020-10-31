@@ -3,7 +3,7 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.spec.test.alpha :as st]
-            [claby.utils
+            [claby.utils.testing
              #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
             [claby.game.board :as gb]
             [claby.game.state :as g]

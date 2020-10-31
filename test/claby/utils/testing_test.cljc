@@ -1,10 +1,10 @@
-(ns claby.utils-test
+(ns claby.utils.testing-test
   #?@
    (:clj
-    [(:require [claby.utils :as u] [clojure.test :refer [deftest is]])]
+    [(:require [claby.utils.testing :as u] [clojure.test :refer [deftest is]])]
     :cljs
     [(:require
-      [claby.utils :as u]
+      [claby.utils.testing :as u]
       [cljs.test :refer-macros [deftest is]])]))
 
 (deftest count-calls-test

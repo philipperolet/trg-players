@@ -1,7 +1,7 @@
 (ns claby.ai.players.exhaustive-test
   (:require [clojure.test :refer [deftest is are testing]]
             [clojure.spec.test.alpha :as st]
-            [claby.utils :refer [check-all-specs]]
+            [claby.utils.testing :refer [check-all-specs]]
             [claby.game.state :as gs]
             [claby.game.board :as gb]
             [claby.game.generation :as gg]

@@ -1,5 +1,5 @@
-(ns claby.utils
-  "A few utilities."
+(ns claby.utils.testing
+  "A few testing utilities."
   #?@
    (:clj
     [(:require
