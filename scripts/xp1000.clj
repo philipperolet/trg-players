@@ -25,7 +25,7 @@
 (defn- display-stats [title measures]
   (printf "%s (%d measures) : Mean %,4G +- %,4G || Sum %,4G\n"
           title (count measures) (mean measures) (std measures)
-          (reduce + measures)))
+          (double (reduce + measures))))
 
 (defn measure
   "Run `xp-fn` for each parameter given in `args-list`, and computes
@@ -41,20 +41,20 @@
         (cond->> measures (number? (first measures)) (map vector))
         get-nth-measures
         (fn [i] (map #(nth % i) measure-seqs))]
-    
+
     (if (valid-measure-seqs? measure-seqs)
       (map get-nth-measures (range (count (first measure-seqs))))
       nil)))
 
 (defn display-measures
-  ([measure-seqs data name]
+  ([measures data name]
    (println (format "\n---\nStarting xp '%s' with data %s\n---\n" name data))
-   (if (measure-seqs)
-     (dotimes [n (count (first measure-seqs))]
-       (display-stats (str name " " n) (nth measure-seqs n)))
+   (if measures
+     (dotimes [n (count measures)]
+       (display-stats (str name " " n) (nth measures n)))
      (throw (Exception.
-             (str "Invalid measurements, e.g. " (first measure-seqs))))))
-  
+             (str "Invalid measurements, e.g. " (first measures))))))
+
   ([measure-seqs data]
    (display-measures measure-seqs data "Measure")))
 
@@ -71,27 +71,21 @@
   somewhat similar to one random move. The speed we wish to measure is
   subsim/sec"
   [board-size nb-steps nb-sims constr nb-xps]
-  ;; seeded generator so that tests are alwys run on the same boards
-  (binding [g/*rnd* (java.util.Random. 41)]
-    (let [game-args
-          (format "-s %d -n %d -o '{:node-constructor %s :nb-sims %d}'"
-                  board-size nb-steps constr nb-sims)
-          generate-world
-          #(aiw/get-initial-world-state
-            (gs/init-game-state
-             (gg/create-nice-board board-size
-                                   {::gg/density-map {:fruit 10}}) 0))
-          ;; coerce evaluation to avoid random stuff happening
-          ;; in-between lazy calls, ensure it's always the same boards 
-          random-worlds 
-          (map list (vec (repeatedly nb-xps generate-world)))]      
-      (display-measures
-       (measure #(u/timed (aim/go (str "-v WARNING -t tree-exploration " game-args) %))
-                #(vector (/ (* board-size 2 nb-steps nb-sims 1000) (first %))
-                         (-> % second :world ::aiw/game-step))
-                random-worlds)
-       game-args
-       "Tree exploration subsims/s"))))
+  (let [game-args
+        (format "-s %d -n %d -o '{:node-constructor %s :nb-sims %d}'"
+                board-size nb-steps constr nb-sims)
+        timed-go
+        #(u/timed (aim/go (str "-v WARNING -t tree-exploration " game-args) %))
+        measure-fn
+        #(vector (/ (* board-size 2 nb-steps nb-sims 1000) (first %))
+                       (-> % second :world ::aiw/game-step))
+        random-worlds ;; seeded generation of game states, always same list
+        (map (comp list aiw/get-initial-world-state)
+             (gg/generate-game-states nb-xps board-size 41))]
+    
+    (display-measures (measure timed-go measure-fn random-worlds)
+                      game-args
+                      "Tree exploration subsims/s")))
 
 (defn -runcli [& args]
   (apply (resolve (symbol (str "xp1000/" (first args))))
