@@ -7,7 +7,7 @@
             [clojure.spec.alpha :as s]
             [claby.game.state :as gs]
             [claby.game.board :as gb]
-            [claby.utils :as u]
+            [claby.utils.modsubvec :refer [modsubvec]]
             [clojure.spec.gen.alpha :as gen]))
 
 (defprotocol Player
@@ -73,8 +73,8 @@
   (let [size (subset-size vision-depth)
         offset-row (- (first player-position) vision-depth)
         offset-col (- (second player-position) vision-depth)]
-    (->> (u/modsubvec game-board offset-row size)
-         (map #(u/modsubvec % offset-col size))
+    (->> (modsubvec game-board offset-row size)
+         (map #(modsubvec % offset-col size))
          vec)))
 
 (s/fdef get-player-senses
