@@ -5,11 +5,11 @@
     [(:require
       [clojure.spec.test.alpha :as st]
       [clojure.string :as str]
-      [clojure.test :refer [deftest is testing]])]
+      [clojure.test :refer [is testing]])]
     :cljs
     [(:require
       [cljs.spec.test.alpha :as st]
-      [cljs.test :refer-macros [deftest]]
+      [cljs.test :refer-macros [is testing]]
       [clojure.string :as str])]))
 
 (defn check-results 
@@ -65,3 +65,17 @@
       (comp (fn [x] (swap! n inc) x) f)
       {:call-count (fn [] (first (reset-vals! n 0)))
        :private false})))
+
+(defmacro deftest
+  "Like `clojure.test/deftest`, with spec instrument run before and
+  unstrument run after test body--except if the first element of body
+  is the keyword `:unstrumented`, in which case it is exactly
+  equivalent to `clojure.test/deftest`"
+  [name & body]
+  (if (= (first body) :unstrumented)
+    `(clojure.test/deftest ~name ~@(rest body))
+    `(clojure.test/deftest ~name
+       (require '[clojure.spec.test.alpha])
+       (clojure.spec.test.alpha/instrument)
+       ~@body
+       (clojure.spec.test.alpha/unstrument))))

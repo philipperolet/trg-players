@@ -4,10 +4,8 @@
             [claby.game.board :as gb]
             [claby.game.state :as gs]
             [claby.game.state-test :as gst]
-            [clojure.spec.test.alpha :as st]
-            [clojure.test :refer [deftest is testing]]))
-
-(st/instrument)
+            [claby.utils.testing :refer [deftest]]
+            [clojure.test :refer [is testing]]))
 
 (deftest parse-run-args-err-test
   (testing "should throw when an arg isn't valid"

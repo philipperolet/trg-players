@@ -1,11 +1,9 @@
 (ns claby.game.board-test
-  (:require [clojure.test :refer [testing deftest is are]]
-            [clojure.spec.test.alpha :as st]
+  (:require [clojure.test :refer [testing is are]]
             [claby.utils.testing
-             #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
+             #?(:clj :refer :cljs :refer-macros) [check-all-specs deftest]]
             [claby.game.board :as g]))
 
-(st/instrument)
 (check-all-specs claby.game.board)
 
 (def small-test-board

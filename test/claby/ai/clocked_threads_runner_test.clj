@@ -8,7 +8,8 @@
             [claby.ai.world-test :as aiwt]
             [claby.game.generation :as gg]
             [claby.utils.utils :as u]
-            [clojure.test :refer [are deftest is testing]]))
+            [claby.utils.testing :refer [deftest]]
+            [clojure.test :refer [are is testing]]))
 
 (def timed-world-state
   (assoc aiwt/world-state ::ctr/missteps 0))

@@ -1,13 +1,10 @@
 (ns claby.ai.player-test
   (:require [claby.ai.player :as sut]
-            [clojure.test :refer [deftest is]]
-            [clojure.spec.test.alpha :as st]
+            [clojure.test :refer [is]]
             [claby.ai.world :as aiw]
             [claby.game.state :as gs]
-            [claby.utils.testing :refer [check-spec]]
+            [claby.utils.testing :refer [check-spec deftest]]
             [claby.game.state-test :as gst]))
-
-(st/instrument)
 
 (check-spec `sut/get-player-senses
             {:clojure.spec.test.check/opts {:num-tests 100}})

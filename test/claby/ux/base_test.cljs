@@ -4,12 +4,9 @@
    [clojure.test.check]
    [clojure.test.check.properties]
    [cljs.spec.test.alpha
-    :refer-macros [instrument check]
+    :refer-macros [check]
     :refer [abbrev-result]]
-   #_[claby.utils.testing :refer-macros [check-all-specs]]
-   [claby.ux.base :as c]))
-
-;; (instrument)
+   #_[claby.utils.testing :refer-macros [check-all-specs]]))
 
 (deftest test-all-specs
   (is (= () (->> (check)

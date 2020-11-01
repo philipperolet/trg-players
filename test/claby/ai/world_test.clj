@@ -1,13 +1,11 @@
 (ns claby.ai.world-test
-  (:require [clojure.test :refer [testing deftest is are]]
-            [clojure.spec.test.alpha :as st]
-            [claby.utils.testing :refer [check-all-specs]]
+  (:require [clojure.test :refer [testing is are]]
+            [claby.utils.testing :refer [check-all-specs deftest]]
             [claby.game.state :as gs]
             [claby.game.board :as gb]
             [claby.game.state-test :as gst]
             [claby.ai.world :as aiw]))
 
-(st/instrument)
 (check-all-specs claby.ai.world)
 
 (def test-state

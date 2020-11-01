@@ -1,18 +1,14 @@
 (ns claby.game.generation-test
-  (:require [clojure.test :refer [testing deftest is are]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as st]
+  (:require [clojure.test :refer [testing is are]]
             [claby.utils.testing
-             #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
+             #?(:clj :refer :cljs :refer-macros) [check-all-specs deftest]
+             :as u]
             [claby.game.state-test :refer [test-size test-state]]
             [claby.game.board-test :refer [small-test-board]]
             [claby.game.board :as gb]
             [claby.game.generation :as gg]
-            [clojure.data.generators :as g]
-            [claby.utils.testing :as u]))
+            [clojure.data.generators :as g]))
 
-(st/instrument)
 (check-all-specs claby.game.generation)
 
 (deftest generate-wall-randomly

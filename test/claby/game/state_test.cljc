@@ -1,13 +1,11 @@
 (ns claby.game.state-test
-  (:require [clojure.test :refer [testing deftest is are]]
+  (:require [clojure.test :refer [testing is are]]
             [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as st]
             [claby.utils.testing
-             #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
+             #?(:clj :refer :cljs :refer-macros) [check-all-specs deftest]]
             [claby.game.board :as gb]
             [claby.game.state :as g]))
 
-(st/instrument)
 (check-all-specs claby.game.state)
 
 (def test-size 10)

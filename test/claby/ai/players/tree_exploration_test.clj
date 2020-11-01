@@ -1,12 +1,12 @@
 (ns claby.ai.players.tree-exploration-test
   (:require [claby.ai.players.tree-exploration :as sut]
-            [clojure.test :refer [deftest is testing]]
+            [clojure.test :refer [is testing]]
+            [claby.utils.testing :refer [deftest]]
             [claby.ai.world :as aiw]
             [claby.game.state-test :as gst]
             [claby.game.events :as ge]
             [claby.game.state :as gs]
             [claby.ai.player :as aip]
-            [clojure.spec.test.alpha :as st]
             [claby.ai.main :as aim]
             [claby.game.board :as gb]
             [clojure.test.check.generators :as gen]
@@ -58,7 +58,6 @@
   (testing "Player should go eat the close fruit (up then right), then reset tree
     exploration from scratch--meaning after a simulation run the
     frequency of the root will be exactly the number of simlations"
-    (st/instrument)
     (let [{:keys [world player]}
           (aim/run (aim/parse-run-args "-t tree-exploration -n 2")
             world-state initial-player)
@@ -70,6 +69,7 @@
              (:nb-sims player))))))
 
 (deftest ^:integration te-stability-test
+  :unstrumented ;; speed test would be hindered by instrumentation
   (testing "2 tests in 1 : stackoverflow bug and speed
 
     1/ ERROR: recursivity in tree-simulate should not throw

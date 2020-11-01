@@ -1,17 +1,13 @@
 (ns claby.game.events-test
-  (:require [clojure.test :refer [testing deftest is are]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.spec.test.alpha :as st]
+  (:require [clojure.test :refer [testing is are]]
             [claby.utils.testing
-             #?(:clj :refer :cljs :refer-macros) [check-all-specs]]
+             #?(:clj :refer :cljs :refer-macros) [check-all-specs deftest]]
             [claby.game.board :as gb]
             [claby.game.state :as g]
             [claby.game.events :as ge]
             [claby.game.state-test :as gst]))
 
 
-(st/instrument)
 (check-all-specs claby.game.events)
 
 (defonce test-state (assoc gst/test-state ::g/status :active))
