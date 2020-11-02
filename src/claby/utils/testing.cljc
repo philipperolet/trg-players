@@ -58,7 +58,13 @@
 
   Returns a new function that mimics `f` but counts the number of
   calls and stores it as metadata.
-  Resets count when call count is checked."
+  Resets count when call count is checked.
+  Example:
+  ```
+  (with-redefs [fn/to-count (u/count-calls fn/to-count)]
+     (fn/that-calls-to-count)
+     (is (= expected-count ((:call-count (meta fn/to-count))))))
+  ```"
   [f]
   (let [n (atom 0)]
     (with-meta

@@ -1,7 +1,7 @@
 (ns claby.ai.players.tree-exploration-test
   (:require [claby.ai.players.tree-exploration :as sut]
             [clojure.test :refer [is testing]]
-            [claby.utils.testing :refer [deftest]]
+            [claby.utils.testing :refer [deftest count-calls]]
             [claby.ai.world :as aiw]
             [claby.game.state-test :as gst]
             [claby.game.events :as ge]
@@ -10,7 +10,9 @@
             [claby.ai.main :as aim]
             [claby.game.board :as gb]
             [clojure.test.check.generators :as gen]
-            [clojure.zip :as zip]))
+            [clojure.zip :as zip]
+            [claby.game.generation :as gg]
+            [claby.utils.utils :as u]))
 
 
 (def world-state (-> gst/test-state-2
@@ -75,22 +77,31 @@
     1/ ERROR: recursivity in tree-simulate should not throw
     stackoverflow even big boards
 
-    2/ FAILURE: it should be faster than 50 sims/sec even on big boards"
-    (let [expected-sims-per-sec 80
-          board-size 50, nb-steps 4, sims-per-step 80
-          time-to-run-ms
-          (* nb-steps sims-per-step (/ 1000 expected-sims-per-sec))
-          initial-world ;; seeded generator, always same board
-          (aiw/get-initial-world-state
-           (gen/generate (gs/game-state-generator board-size) 100 3))
-          game-result
-          (future
-            (aim/run
-              (aim/parse-run-args "-t tree-exploration -n %d -o '{:nb-sims %d}'"
-                                  nb-steps sims-per-step)
-              initial-world))]
-      (is (not (nil? (deref game-result time-to-run-ms nil)))
-          (str "time > than " time-to-run-ms))))) 
+    2/ FAILURE: it should perform about 20Kops/secs, on big boards.
+    An op is ~ a call to tree-simulate. Amounts to about "
+    (with-redefs [sut/tree-simulate (count-calls sut/tree-simulate)]
+      (let [expected-sims-per-sec 1000
+            board-size 50, nb-steps 10, sims-per-step 500
+            time-to-run-ms
+            (* nb-steps sims-per-step (/ 1000 expected-sims-per-sec))
+            initial-world ;; seeded generator, always same board
+            (aiw/get-initial-world-state
+             (first (gg/generate-game-states 1 board-size 9)))
+            game-run
+            (future
+              (u/timed
+               (aim/run
+                 (aim/parse-run-args "-t tree-exploration -n %d -o '{:nb-sims %d}'"
+                                     nb-steps sims-per-step)
+                 initial-world)))
+            game-result
+            (deref game-run time-to-run-ms nil)]
+        
+        (is (not (nil? game-result)) (str "time > than " time-to-run-ms))
+        (let [nb-ops ((:call-count (meta sut/tree-simulate)))
+              time-in-s (/ (first game-result) 1000)]
+          (is (> (/ nb-ops time-in-s) 200000)
+              (str "Nb of steps " nb-ops " in time " time-in-s))))))) 
 
 #_(deftest ^:integration tree-exploration-player-run
   (testing "A game with tree-exploration be won in < 300 steps

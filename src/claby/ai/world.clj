@@ -112,4 +112,7 @@
   ;; Log every logging-steps steps, or never if 0
   (when (and (pos? logging-steps)
              (zero? (mod (@world-state-atom ::game-step) logging-steps)))
+    (log/warnf "Step %s, timestamp %d"
+               (@world-state-atom ::game-step)
+               (::step-timestamp @world-state-atom))
     (log/info (data->string @world-state-atom))))
