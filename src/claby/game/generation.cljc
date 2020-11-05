@@ -206,16 +206,23 @@
        first))
 
 (defn generate-game-states
-  "Generate a coll of game states of given `board-size`, optionally
-  seeded to get always the same coll (in which case it is coerced to
-  be evaluated while in the binding context). create-nice-game is
-  avoided because enjoyable-game detection can take a very long time "
-  ([nb-states board-size]
-   (let [level {::density-map {:fruit 10}}
-         generate-game-state 
-         #(gs/init-game-state (create-nice-board board-size level) 0)]
-     (repeatedly nb-states generate-game-state)))
+  "Generate a coll of `nb-states` game states of given `board-size`,
+  optionally with a `seed` to get always the same coll (in which case
+  it is coerced to be evaluated while in the binding
+  context). Checking games are `enjoyable?` is optional and not
+  default because enjoyable-game detection can take a very long time."
+  ([nb-states board-size seed enjoyable?]
+   (binding [g/*rnd* (if seed (java.util.Random. seed) (java.util.Random.))]
+     (let [level {::density-map {:fruit 5}}
+           generate-game-state
+           (if enjoyable?
+             #(create-nice-game board-size level)
+             #(gs/init-game-state (create-nice-board board-size level) 0))]
+       (vec (repeatedly nb-states generate-game-state)))))
   
   ([nb-states board-size seed]
-   (binding [g/*rnd* (java.util.Random. seed)]
-     (vec (generate-game-states nb-states board-size)))))
+   (generate-game-states nb-states board-size seed false))
+  
+  ([nb-states board-size]
+   (generate-game-states nb-states board-size nil false)))
+
