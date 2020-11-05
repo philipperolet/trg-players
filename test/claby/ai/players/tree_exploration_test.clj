@@ -44,6 +44,25 @@
                       (#'sut/move-to-min-child :a)
                       zip/node)))))
 
+(deftest impl-equivalence-test
+  :unstrumented
+  (testing "The 2 impls given via 'root-node' and 'root-zipper' should
+  be equivalent. We assume they are if players end up at the same
+  place after 10 steps on a board, tested on 10 different boards"
+    (let [game-args
+          (fn [impl]
+            (str "-v WARNING -n 10 -t tree-exploration "
+                    (format "-o '{:node-constructor %s}'" impl)))
+          ending-player-position
+          (fn [impl world]
+            (-> (aim/run (aim/parse-run-args (game-args impl)) world)
+                :world ::gs/game-state ::gs/player-position))
+          random-worlds
+          (map aiw/get-initial-world-state
+               (gg/generate-game-states 10 25 43))]
+      (is (= (map (partial ending-player-position "root-node") random-worlds)
+             (map (partial ending-player-position "root-zipper") random-worlds))))))
+
 (deftest tree-exploration-player-test  
   (let [tree-root (-> initial-player
                       (aip/update-player world-state)
@@ -70,6 +89,17 @@
       (is (= (sut/sum-children-frequencies root-node-after-sim)
              (:nb-sims player))))))
 
+(deftest te-blocking-bug
+  (testing "After a while, the player should not stop moving. Frequent
+  bug, reproduced on the below sample board starting at step 62 -- the
+  player stops moving"
+    (let [bugged-world-example
+          (aiw/get-initial-world-state
+           (first (gg/generate-game-states 1 20 2 true)))
+          world-and-player-states
+          (aim/run
+            (aim/parse-run-args "-t tree-exploration -n 62 -v WARNING")
+            bugged-world-example)])))
 (deftest ^:integration te-stability-test
   :unstrumented ;; speed test would be hindered by instrumentation
   (testing "2 tests in 1 : stackoverflow bug and speed
@@ -119,3 +149,4 @@
                       (swap! counter inc)
                       (nth (cycle '("" "" "" "q")) @counter))]
         (is (= (-> @game-result ::gs/game-state ::gs/status) :won))))))
+               
