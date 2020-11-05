@@ -5,16 +5,16 @@
 
   Most importantly, various implementations of articificial players
   can be specified via the `Player` protocol in `claby.ai.player`."
-  (:require [clojure.spec.alpha :as s]
+  (:gen-class)
+  (:require [claby.ai.game-runner :as gr]
+            [claby.ai.player :as aip]
+            [claby.ai.world :as aiw]
+            [claby.game.generation :as gg]
+            [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [clojure.tools.cli :as ctc]
             [clojure.tools.logging :as log]
-            [clojure.tools.logging.impl :as li]
-            [claby.ai.world :as aiw]
-            [claby.ai.player :as aip]
-            [claby.ai.game-runner :as gr]
-            [claby.game.generation :as gg])
-  (:gen-class))
+            [clojure.tools.logging.impl :as li]))
 
 (defn- parse-game-runner [runner-name]
   (if (= runner-name "ClockedThreadsRunner")
@@ -181,3 +181,14 @@
     (swap! curr-game
            #(-> (run opts (:world %) (:player %))
                 (assoc :opts opts)))))
+
+(defn gon [& args]
+  (cond
+    (empty? args)
+    (do (n) nil)
+
+    (int? (first args))
+    (do (n (first args)) nil)
+
+    :else
+    (do (apply go args) nil)))
