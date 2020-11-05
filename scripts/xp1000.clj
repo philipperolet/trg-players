@@ -4,10 +4,11 @@
   (:require [claby.ai.main :as aim]
             [claby.ai.world :as aiw]
             [claby.game.generation :as gg]
-            [claby.game.state :as gs]
             [claby.utils.utils :as u]
-            [clojure.data.generators :as g]
-            [clojure.spec.alpha :as s]))
+            [claby.utils.testing :refer [count-calls]]
+            [claby.ai.players.tree-exploration :as te]
+            [clojure.spec.alpha :as s]
+            [claby.game.events :as ge]))
 
 (defn mean
   "Mean value of a sequence of numbers"
@@ -18,33 +19,60 @@
   "Standard deviation of a sequence of numbers."
   [l]
   (let [mean-val (mean l)]
-    (Math/sqrt (-> (reduce + (map #(* % %) l))
-                   (/ (count l))
-                   (- (* mean-val mean-val))))))
+    (Math/sqrt (-> (reduce + (map #(let [val (- % mean-val)] (* val val)) l))
+                   (/ (dec (count l)))))))
+
+(defn confidence
+  "Estimation of 90% confidence interval half-size, assuming normal
+  distribution, based on an approximation of student t
+  distribution. Not exact and unreliable under 5 measures, returns -1.0
+  in this case"
+  [measures]
+  (let [nb (count measures)]
+    (if (>= nb 5)
+      (let [t-estim (+ 1.28 (/ nb))]
+        (* (std measures) t-estim (/ (Math/sqrt nb))))
+      -1.0)))
+
+(def display-string "
+%s (%d measures)
+===
+Mean %,4G +- %,4G
+Std %,4G
+Sum %,4G
+---
+")
 
 (defn- display-stats [title measures]
-  (printf "%s (%d measures) : Mean %,4G +- %,4G || Sum %,4G\n"
-          title (count measures) (mean measures) (std measures)
-          (double (reduce + measures))))
+  (printf display-string
+          title (count measures)
+          (mean measures) (confidence measures)
+          (std measures)
+          (double (reduce + measures))
+          (str measures)))
 
 (defn measure
   "Run `xp-fn` for each parameter given in `args-list`, and computes
   stats on the result via `measure-fn`, which may return either a coll
-  of measures, or a coll of coll of measures"
-  [xp-fn measure-fn args-list]
-  (let [valid-measure-seqs?
-        #(s/valid? (s/coll-of (s/coll-of number?)) %)
-        measures
-         (->> (pmap (partial apply xp-fn) args-list)
+  of measures, or a coll of coll of measures
+  `map-fn` allows to specify what function will be used to process experiments,
+  usually `map` for seq processing & `pmap` for parallel processing"
+  ([xp-fn measure-fn args-list map-fn]
+   (let [valid-measure-seqs?
+         #(s/valid? (s/coll-of (s/coll-of number?)) %)
+         measures
+         (->> (map-fn (partial apply xp-fn) args-list)
               (map measure-fn))
-        measure-seqs
-        (cond->> measures (number? (first measures)) (map vector))
-        get-nth-measures
-        (fn [i] (map #(nth % i) measure-seqs))]
+         measure-seqs
+         (cond->> measures (number? (first measures)) (map vector))
+         get-nth-measures
+         (fn [i] (map #(nth % i) measure-seqs))]
 
-    (if (valid-measure-seqs? measure-seqs)
-      (map get-nth-measures (range (count (first measure-seqs))))
-      nil)))
+     (if (valid-measure-seqs? measure-seqs)
+       (map get-nth-measures (range (count (first measure-seqs))))
+       nil)))
+  ([xp-fn measure-fn args-list]
+   (measure xp-fn measure-fn args-list pmap)))
 
 (defn display-measures
   ([measures data name]
@@ -70,23 +98,41 @@
   "A subsim is ~ an atomic operation in the tree exploration,
   somewhat similar to one random move. The speed we wish to measure is
   subsim/sec"
-  [board-size nb-steps nb-sims constr nb-xps]
+  [board-size constr nb-xps]
   (let [game-args
-        (format "-s %d -n %d -o '{:node-constructor %s :nb-sims %d}'"
-                board-size nb-steps constr nb-sims)
+        (format "-n 10 -o '{:node-constructor %s :nb-sims 100}'" constr)
         timed-go
-        #(u/timed (aim/go (str "-v WARNING -t tree-exploration " game-args) %))
+        (fn [world]
+          (with-redefs [ge/move-player (count-calls ge/move-player)]
+            (-> (aim/go (str "-v WARNING -t tree-exploration " game-args) world)
+                u/timed
+                (conj ((:call-count (meta ge/move-player)))))))
         measure-fn
-        #(vector (/ (* board-size 2 nb-steps nb-sims 1000) (first %))
-                       (-> % second :world ::aiw/game-step))
+        #(vector (/ (last %) (/ (first %) 1000))
+                 (last %))        
         random-worlds ;; seeded generation of game states, always same list
         (map (comp list aiw/get-initial-world-state)
              (gg/generate-game-states nb-xps board-size 41))]
     
-    (display-measures (measure timed-go measure-fn random-worlds)
+    (display-measures (measure timed-go measure-fn random-worlds map)
                       game-args
-                      "Tree exploration subsims/s")))
+                      "Tree exploration op/s")))
 
+(defn -compare-sht
+  "For random, an op is just the number of steps played"
+  [board-size nb-xps]
+  (doseq [player-type ["exhaustive" "random" "tree-exploration"]]
+    (let [timed-go
+          #(u/timed (aim/go (str "-l 200000 -t " player-type) %))
+          measure-fn 
+          #(vector (first %)
+                   (-> % second :world ::aiw/game-step))
+          random-worlds
+          (map (comp list aiw/get-initial-world-state)
+               (gg/generate-game-states nb-xps board-size 41))]
+      (display-measures (measure timed-go measure-fn random-worlds map)
+                        player-type
+                        "Steps and time"))))
 (defn -runcli [& args]
   (apply (resolve (symbol (str "xp1000/" (first args))))
          (map read-string (rest args))))
