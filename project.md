@@ -1,33 +1,23 @@
 # Plan - TBD FINISH IT
 
-#### Faire marcher un player pas mal : tree explo ####
-- identifier la cause du bug du joueur qui tourne en rond
-- Le test d'intégration doit tourner exactement sur 300 steps
-- complété par 1 qui tourne sur 5 secondes
+### v0.2.1 - Tree exploration
+cf notes
 
-- test & fix de ce bug
-
-#### Historique des jeux conservés et rejouables
-#### Visu de jeu sur le net
-#### Fin des "player senses" (cf v0.2.1)
-#### TBD - Première version de m0
 ## Backlog
 
-### v0.2.1
-- random player senses are only a 7*7 grid, the step and the score
-- exhaustive-player senses are only a 7*7 grid, the step and the score
+### v0.2.2 - Player senses
+- rewrite random using player senses
+- rewrite exhaustive using player senses
+- rewrite tree-exploration using player senses
 
-### v0.3.0
+### v0.3.0 - History
 - option to store game & player data in a db for random player
 - * for exhaustive player
 - tools to inspect games
 
-### v0.4.0
-- Add player using reinforcement learning - basic
-  - get back to speed on RL
-  - design algo
-
 ### Next versions
+- Add player using reinforcement learning - basic 
+- Visu de jeu sur le net
 - Then use DL in a basic way to model part of it
 - then look up DL players
 - then look up alphazero

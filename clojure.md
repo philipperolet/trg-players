@@ -6,6 +6,23 @@
 - ret specs are not checked by instrument, they are meant for doc & test.check
 - partial -> oui comme tu penses et pas comme tu veux. sur le début.
 - let values are evaluated when run; but if the value is a function, the variables in the function (e.g. derefing an atom) are not -- all the bound values are bound, not free ;)
+- don't run a global-state-changing function in a namespace you'd import, it can have unexpected effects
+
+# Common knowledge
+- vector is variadic. vec works with a coll
+
+### functions, var, dispatch
+- vars are stable references to values
+- functions are "values", they can be stored in vars. 
+- using defn, a function is stored in the var with the given name (automatically namespaced, so a fully qualified named although accessible without the full qualif in the current namespace)
+- the var object is the reference. If you type the name of a var in the repl, it evaluates it into its value. However, the dispatch operator #'x, equivalent to (var x), returns the var object
+
+### with-redef
+TLDR-> to call the original function within a with-redef, do not use its qualified name--the var has been redefed, it refers to the redefed fn. Use an enclosing `let` or any other way to bind the function (the value) to another name before the with-redef.
+
+- using with-redef, the var object will point to another function (given during with redef) within the with-redef scope. So, if the function given to with-redef (the "redefed" fn) uses said var object (global) in its definition, the call will be "recursive", it will call the redefed fn and not the original fn--usually not what we want unless the original function is recursive. 
+- But if we put the with-redef within a `(let [new-name original-fn]` scope, then during evaluation, original-fn is evaluated to the funtion it refers, and new-name directly refers now to the original fn *value*. Thus a call to `new-name` in the redefed fn will correctly call the original fn, and not call recursively the redefed one.
+- Now, trickyness, if we do `(let [new-name #'original-fn]`, thus letting new-name refer to the *var object*, not its value (which would be original-fn), then when we use with-redef, the value of the var is redefed, so if we use new-name in a function call inside the with-redef, *it will refer to the redefed fn*, not the original one.
 
 # Clojure design / function parameters
 
@@ -20,6 +37,11 @@ In FP, functions (processes) operate on data, the parameter can be added to the 
 - The data structure is passed along -- in the same way you have {this} or {self} in OO like python, so it's okay to have 1 more param;
 - you can revisit the logic of data structures to regroup them and reduce the number of parameters (e.g. street + zip + city = address);
 - another option is to have another arity for the function in which the default data is passed. This arity would not be idem potent (but can still be free of side effect).
+
+
+# Speed and profiling
+- st/instrument may slow down a lot
+- parallel timing effect : when timing execution that consumes all cpu resources, individual parallel execution times may appear slower than sequential execution times while the overall time to perform everything is smaller or equal in the case of parallel processing (the subway sandwich effect)
 
 # Specing & testing
 
