@@ -137,13 +137,16 @@
 
 (defn- move-to-min-child
   "Moves `loc` down to the child that has the minimum value according to
-  `sort-fn`"
+  `sort-fn`. If multiple chlidren have the min value, the last one is
+  selected (a.k.a. the rightmost one). This is to mimic `min-key` and
+  thus to keep the zipper implementation equivalent to the node
+  implementation."
   [loc sort-fn]
   (loop [current-loc (zip/down loc) min-loc current-loc]
     (if-let [next-loc (zip/right current-loc)]
       (recur next-loc
-             (if (< (-> next-loc zip/node sort-fn)
-                    (-> min-loc zip/node sort-fn))
+             (if (<= (-> next-loc zip/node sort-fn)
+                     (-> min-loc zip/node sort-fn))
                next-loc min-loc))
       min-loc)))
 

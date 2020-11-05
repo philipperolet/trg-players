@@ -89,7 +89,8 @@
       (is (= (sut/sum-children-frequencies root-node-after-sim)
              (:nb-sims player))))))
 
-(deftest te-blocking-bug
+(deftest ^:integration te-blocking-bug
+  :unstrumented
   (testing "After a while, the player should not stop moving. Frequent
   bug, reproduced on the below sample board starting at step 62 -- the
   player stops moving"
@@ -100,6 +101,7 @@
           (aim/run
             (aim/parse-run-args "-t tree-exploration -n 62 -v WARNING")
             bugged-world-example)])))
+
 (deftest ^:integration te-stability-test
   :unstrumented ;; speed test would be hindered by instrumentation
   (testing "2 tests in 1 : stackoverflow bug and speed
