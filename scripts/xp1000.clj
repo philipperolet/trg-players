@@ -1,14 +1,14 @@
 (ns xp1000
   "Run 1000 times games with 2 types of player and compares the results,
   giving the good stats."
-  (:require [claby.ai.main :as aim]
-            [claby.ai.world :as aiw]
-            [claby.game.generation :as gg]
-            [claby.utils.utils :as u]
-            [claby.utils.testing :refer [count-calls]]
-            [claby.ai.players.tree-exploration :as te]
+  (:require [mzero.ai.main :as aim]
+            [mzero.ai.world :as aiw]
+            [mzero.game.generation :as gg]
+            [mzero.utils.utils :as u]
+            [mzero.utils.testing :refer [count-calls]]
+            [mzero.ai.players.tree-exploration :as te]
             [clojure.spec.alpha :as s]
-            [claby.game.events :as ge]))
+            [mzero.game.events :as ge]))
 
 (defn mean
   "Mean value of a sequence of numbers"

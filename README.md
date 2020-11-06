@@ -23,9 +23,9 @@ Launching will run a single game using specified player & game-runner implementa
 
 Start game:
 - in CLI with `lein run args`;
-- in REPL by getting to the `claby.ai.main` namespace and typing `(run args)`.
+- in REPL by getting to the `mzero.ai.clocked-threads-runner.ai.main` namespace and typing `(run args)`.
 
-Run `lein run -h` to print CLI arguments. They are also described in `cli-options` at [claby.ai.main](src/claby/ai/main.clj).
+Run `lein run -h` to print CLI arguments. They are also described in `cli-options` at [mzero.ai.main](src/mzero/ai/main.clj).
 
 #### Programmatic mode - interactive mode ###
 In programmatic mode, game only displays initial and end states.
@@ -37,9 +37,9 @@ Game can be run interactively using the `--interactive/-i` flag. In that case:
 See main.clj for more details.
 
 ### Project structure
-Game models and actions are in ``claby.game``
+Game models and actions are in ``mzero.game``
 
-3 main modules in `claby.ai`:
+3 main modules in `mzero.ai`:
 - **main.clj** is responsible for launching the whole game;
 - **world.clj** is responsible for running the world;
 - **player.clj** is responsible for running the player.
