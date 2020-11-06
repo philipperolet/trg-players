@@ -9,8 +9,6 @@
             [claby.ai.player :as aip]
             [claby.ai.main :as aim]
             [claby.game.board :as gb]
-            [clojure.test.check.generators :as gen]
-            [clojure.zip :as zip]
             [claby.game.generation :as gg]
             [claby.utils.utils :as u]))
 
@@ -23,45 +21,19 @@
   (aip/init-player (sut/map->TreeExplorationPlayer {}) {:nb-sims 100} nil))
 
 (deftest sum-children-frequencies-test
-  (is (= 6 (sut/sum-children-frequencies {::sut/children
-                                          {:up {::sut/frequency 2}
-                                           :down {::sut/frequency 4}}}))))
+  (is (= 6 (sut/sum-children-frequencies (sut/map->TreeExplorationNodeImpl
+                                          {::sut/children
+                                           {:up {::sut/frequency 2}
+                                            :down {::sut/frequency 4}}})))))
 
 (deftest update-children-test
   (let [test-node (reduce
                    #(sut/append-child %1 {::sut/frequency 1 ::ge/direction %2})
-                   {::sut/frequency 3}
+                   (sut/map->TreeExplorationNodeImpl {::sut/frequency 3})
                    '(:up :down :right))
         updated-node (#'sut/update-children test-node)]
     (is (contains? (::sut/children updated-node) :right))
     (is (= (#'sut/update-children updated-node) updated-node))))
-
-(deftest move-to-min-child-test
-  (let [test-zipper
-        (zip/vector-zip [{:a 8} [{:a 1} {:a 2} {:a 0} {:a 3} {:a 1}]])]
-    (is (= {:a 0} (-> test-zipper
-                      zip/down zip/right
-                      (#'sut/move-to-min-child :a)
-                      zip/node)))))
-
-(deftest impl-equivalence-test
-  :unstrumented
-  (testing "The 2 impls given via 'root-node' and 'root-zipper' should
-  be equivalent. We assume they are if players end up at the same
-  place after 10 steps on a board, tested on 10 different boards"
-    (let [game-args
-          (fn [impl]
-            (str "-v WARNING -n 10 -t tree-exploration "
-                    (format "-o '{:node-constructor %s}'" impl)))
-          ending-player-position
-          (fn [impl world]
-            (-> (aim/run (aim/parse-run-args (game-args impl)) world)
-                :world ::gs/game-state ::gs/player-position))
-          random-worlds
-          (map aiw/get-initial-world-state
-               (gg/generate-game-states 10 25 43))]
-      (is (= (map (partial ending-player-position "root-node") random-worlds)
-             (map (partial ending-player-position "root-zipper") random-worlds))))))
 
 (deftest tree-exploration-player-test  
   (let [tree-root (-> initial-player
