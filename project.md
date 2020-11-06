@@ -1,9 +1,13 @@
 # Plan - TBD FINISH IT
 
 ### v0.2.1 - Tree exploration
-cf notes
+FINISHED
 
 ## Backlog
+### v0.2.1b - Cleaning & split
+- remove zipper impl from tree exploration
+- fix blocking bug
+- Split cljs part from core clj part in separate project
 
 ### v0.2.2 - Player senses
 - rewrite random using player senses
@@ -22,12 +26,21 @@ cf notes
 - then look up DL players
 - then look up alphazero
 
-## Done
-### v0.2.1
-- fixed tree-exploration-player, added a faster (zipper) impl
-- refactor player cli options & player creation to fit new TE-player
+## Changelog
+
+### v0.2.1 - Tree exploration player (double impl.)
 - added tree-exploration-player
+- fixed tree-exploration-player, added a faster (zipper) impl
++ determine slower impl throug xp
+ + on the same 10 boards, average time & sims/sec for 10 steps for both options
+ + change generation to use seeded random
++ add test showing both impl are ~ (equivalence test)
++ make equivalence test pass 
++ reproduce observed blocking bug
+
+#### Misc
 - added modsubvec, check-spec & scaffold (to utils), get-player-senses (to player)
+- refactor player cli options & player creation to fit new TE-player
 
 ### AI World v0.2.0
 + refactor player dependency injection to not require any more coding, + docs
