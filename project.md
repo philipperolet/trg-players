@@ -1,8 +1,4 @@
 # Plan
-- Split cljs part from core clj part in separate project
-
-### v0.2.1b - Cleaning & split
-- fix blocking bug
 
 
 ## Backlog
@@ -26,6 +22,8 @@
 
 ## Changelog
 ### v0.2.1b - Cleaning & split
+- fix blocking bug
+- Split cljs part from core clj part in separate project
 - remove zipper impl from tree exploration
 
 ### v0.2.1 - Tree exploration player (double impl.)

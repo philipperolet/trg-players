@@ -15,7 +15,8 @@
             [mzero.game.board :as gb]
             [clojure.set :as cset]
             [clojure.spec.alpha :as s]
-            [mzero.utils.utils :as u]))
+            [mzero.utils.utils :as u]
+            [clojure.data.generators :as g]))
 
 (def default-nb-sims 200)
 
@@ -171,7 +172,7 @@
   ([direction children]
    (reduce append-child (te-node direction) children)))
 
-(s/def ::options (s/map-of #{:nb-sims :node-constructor} any?))
+(s/def ::options (s/map-of #{:nb-sims :node-constructor :seed} any?))
 
 (defrecord TreeExplorationPlayer [nb-sims]
   aip/Player
@@ -180,15 +181,29 @@
           (->> (-> opts (:node-constructor "te-node"))
                (str "mzero.ai.players.tree-exploration/")
                symbol
-               resolve)]
+               resolve)
+          random-number-generator
+          (if-let [seed (-> opts :seed)]
+            (java.util.Random. seed)
+            (java.util.Random.))]
+      
       (assert (s/valid? ::options opts))
       (assert (not (nil? constructor)) "Invalid user-supplied node constructor")
       (assoc this
              :nb-sims (-> opts (:nb-sims default-nb-sims))
-             :node-constructor constructor)))
+             :node-constructor constructor
+             :rng random-number-generator)))
   
   (update-player [this world]
-    (-> this
-        (assoc :root-node (compute-root-node this world))
-        (#(assoc % :next-movement
-                 (->  % :root-node (min-child ::value) ::ge/direction))))))
+    (let [random-min-child
+          (fn [node]
+            (binding [g/*rnd* (:rng this)]
+              (let [min-value (apply min (map ::value (children node)))]
+                (->> (children node)
+                     (filter #(= (-> % ::value) min-value))
+                     g/rand-nth))))]
+      
+      (-> this
+          (assoc :root-node (compute-root-node this world))
+          (#(assoc % :next-movement
+                   (->  % :root-node random-min-child ::ge/direction)))))))
