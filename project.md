@@ -1,13 +1,11 @@
-# Plan - TBD FINISH IT
+# Plan
+- Split cljs part from core clj part in separate project
 
-### v0.2.1 - Tree exploration
-FINISHED
+### v0.2.1b - Cleaning & split
+- fix blocking bug
+
 
 ## Backlog
-### v0.2.1b - Cleaning & split
-- remove zipper impl from tree exploration
-- fix blocking bug
-- Split cljs part from core clj part in separate project
 
 ### v0.2.2 - Player senses
 - rewrite random using player senses
@@ -27,6 +25,8 @@ FINISHED
 - then look up alphazero
 
 ## Changelog
+### v0.2.1b - Cleaning & split
+- remove zipper impl from tree exploration
 
 ### v0.2.1 - Tree exploration player (double impl.)
 - added tree-exploration-player

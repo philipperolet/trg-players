@@ -1,5 +1,0 @@
-^{:watch-dirs ["test" "src"]
-  :css-dirs ["resources/public/css"]
-  :open-url "http://[[server-hostname]]:[[server-port]]/index-min.html"
-  :auto-testing {:namespaces [claby.ux.mini]}}
-{:main claby.ux.mini}
