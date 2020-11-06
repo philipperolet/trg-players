@@ -92,15 +92,23 @@
 (deftest ^:integration te-blocking-bug
   :unstrumented
   (testing "After a while, the player should not stop moving. Frequent
-  bug, reproduced on the below sample board starting at step 62 -- the
-  player stops moving"
+  bug, reproduced on the below sample board starting at step 62 in
+  which the player stops moving because it tries moving into a wall."
     (let [bugged-world-example
           (aiw/get-initial-world-state
            (first (gg/generate-game-states 1 20 2 true)))
-          world-and-player-states
-          (aim/run
-            (aim/parse-run-args "-t tree-exploration -n 62 -v WARNING")
-            bugged-world-example)])))
+          get-game-args
+          #(aim/parse-run-args "-t tree-exploration -n %d -v WARNING" %)
+          bugged-state
+          (aim/run (get-game-args 62) bugged-world-example)
+          bugged-pos
+          (-> bugged-state :world ::gs/game-state ::gs/player-position)
+          next-player-positions
+          (->> bugged-state
+               (iterate #(apply aim/run (get-game-args 1) (vals %)))
+               (take 10)
+               (map #(-> % :world ::gs/game-state ::gs/player-position)))]
+      (is (some (partial not= bugged-pos) next-player-positions)))))
 
 (deftest ^:integration te-stability-test
   :unstrumented ;; speed test would be hindered by instrumentation
@@ -135,20 +143,4 @@
           (is (> (/ nb-ops time-in-s) 200000)
               (str "Nb of steps " nb-ops " in time " time-in-s))))))) 
 
-#_(deftest ^:integration tree-exploration-player-run
-  (testing "A game with tree-exploration be won in < 300 steps
-  on a small 10*10 board"
-    (let [game-result
-          (future (aim/run
-                    (aim/parse-run-args
-                     "-t tree-exploration -s 10 -i -n 100 -o {:nb-sims 100}")))
-          counter (atom 0)]
-      ;; simulate interactivity commands to let the game run for 300 steps
-      ;; continue 3 times then quit
-      (with-redefs [clojure.core/read-line
-                    (fn []
-                      (Thread/sleep 1000)
-                      (swap! counter inc)
-                      (nth (cycle '("" "" "" "q")) @counter))]
-        (is (= (-> @game-result ::gs/game-state ::gs/status) :won))))))
                
