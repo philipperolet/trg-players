@@ -123,13 +123,13 @@ Sum %,4G
   [board-size nb-xps]
   (doseq [player-type ["exhaustive" "random" "tree-exploration"]]
     (let [timed-go
-          #(u/timed (aim/go (str "-l 200000 -t " player-type) %))
+          #(u/timed (aim/go (str "-v WARNING -l 200000 -t " player-type) %))
           measure-fn 
           #(vector (first %)
                    (-> % second :world ::aiw/game-step))
           random-worlds
           (map (comp list aiw/get-initial-world-state)
-               (gg/generate-game-states nb-xps board-size 41))]
+               (gg/generate-game-states nb-xps board-size 41 true))]
       (display-measures (measure timed-go measure-fn random-worlds map)
                         player-type
                         "Steps and time"))))
