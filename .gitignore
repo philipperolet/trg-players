@@ -19,3 +19,5 @@ pom.xml
 .clj-kondo
 /.dir-locals.el
 /flycheck_.dir-locals.elc
+/.idea/
+mzero.iml
