@@ -165,7 +165,7 @@
       (gg/create-nice-game (opts :board-size) {::gg/density-map {:fruit 5}})))))
 
 (defn -main [& args]
-  (let [opts (parse-run-args (str/join args " "))]
+  (let [opts (parse-run-args (str/join " " args))]
     (if (some? (-> opts :help))
       (println (opts :summary))
       (run opts))))
