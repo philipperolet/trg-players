@@ -158,14 +158,6 @@
 (s/def ::wall-density (-> (s/int-in 0 66)
                           (s/with-gen #(gen/choose 0 50))))
 
-(s/fdef create-nice-board
-  :args (-> (s/cat :size ::gb/board-size
-                   :level (s/keys :req [::density-map] :opt [::wall-density]))
-            (s/with-gen #(gen/tuple
-                          gb/test-board-size-generator
-                          (s/gen (s/keys :req [::density-map])))))
-  :ret ::gb/game-board)
-
 (defn- add-random-wall
   "Adds a wall of random length between 1 and board size, biased
   towards average-length wall. The bias is introduced by averaging
@@ -175,6 +167,19 @@
         rand-lengths (repeatedly 5 #(inc (g/uniform 0 (dec board-size))))
         wall-length (int (/ (reduce + rand-lengths) 5))]
     (add-wall board (generate-wall board-size wall-length))))
+
+(s/fdef create-nice-board
+  :args (-> (s/alt :unseeded
+                   (s/cat :size ::gb/board-size
+                          :level (s/keys :req [::density-map] :opt [::wall-density]))
+                   :seeded
+                   (s/cat :size ::gb/board-size
+                          :level (s/keys :req [::density-map] :opt [::wall-density])
+                          :seed (s/or :non-nil nat-int? :nil nil?)))
+            (s/with-gen #(gen/tuple
+                          gb/test-board-size-generator
+                          (s/gen (s/keys :req [::density-map])))))
+  :ret ::gb/game-board)
 
 (defn create-nice-board
   "Creates a board with randomly generated walls, fruit, cheese, etc. as
@@ -188,22 +193,31 @@
   the board, so about half the board is walled--corresponding to a
   density of 50. Max density is set to 66, since too much walls
   prevent an enjoyable game. The density is not exact, since it is
-  converted in a finite number of randomly-sized walls."
-  [size level]
-  (let [nb-of-walls (int (/ (* size (level ::wall-density 50)) 100))]
-    (-> (gb/empty-board size)
-        (as-> board (iterate add-random-wall board))
-        (nth nb-of-walls)
-        (#(reduce-kv sow-by-density % (-> level ::density-map))))))
+  converted in a finite number of randomly-sized walls.
+
+  Non-nil `seed` allows for repeatable randomness."
+  ([size level seed]
+   (binding [g/*rnd* (if seed (java.util.Random. seed) (java.util.Random.))]
+     (let [nb-of-walls (int (/ (* size (level ::wall-density 50)) 100))]
+       (-> (gb/empty-board size)
+           (as-> board (iterate add-random-wall board))
+           (nth nb-of-walls)
+           (#(reduce-kv sow-by-density % (-> level ::density-map)))))))
+  ([size level]
+   (create-nice-board size level nil)))
 
 (defn create-nice-game
-  "Creates a game state that is 'enjoyable', see state/enjoyable-game?"
-  [size level]
-  (->> #(gs/init-game-state (create-nice-board size level)
-                            (count (:enemies level [])))
-       repeatedly
-       (filter gs/enjoyable-game?)
-       first))
+  "Creates a game state that is 'enjoyable', see
+  state/enjoyable-game?. Non-nil `seed` allows for repeatable
+  randomness."
+  ([size level seed]
+   (->> #(gs/init-game-state (create-nice-board size level seed)
+                             (count (:enemies level [])))
+        repeatedly
+        (filter gs/enjoyable-game?)
+        first))
+  ([size level]
+   (create-nice-game size level nil)))
 
 (defn generate-game-states
   "Generate a coll of `nb-states` game states of given `board-size`,
@@ -212,13 +226,12 @@
   context). Checking games are `enjoyable?` is optional and not
   default because enjoyable-game detection can take a very long time."
   ([nb-states board-size seed enjoyable?]
-   (binding [g/*rnd* (if seed (java.util.Random. seed) (java.util.Random.))]
-     (let [level {::density-map {:fruit 5}}
-           generate-game-state
-           (if enjoyable?
-             #(create-nice-game board-size level)
-             #(gs/init-game-state (create-nice-board board-size level) 0))]
-       (vec (repeatedly nb-states generate-game-state)))))
+   (let [level {::density-map {:fruit 5}}
+         generate-game-state
+         (if enjoyable?
+           #(create-nice-game board-size level seed)
+           #(gs/init-game-state (create-nice-board board-size level seed) 0))]
+     (vec (repeatedly nb-states generate-game-state))))
   
   ([nb-states board-size seed]
    (generate-game-states nb-states board-size seed false))

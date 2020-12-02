@@ -71,7 +71,7 @@
 (deftest correctly-seeded-generation
   (testing "With a given seed for the random number gen, should always
   return the same nice board"
-    (let [gen-same-board
-          #(binding [g/*rnd* (java.util.Random. 20)]
-             (gg/create-nice-game 10 {::gg/density-map {:fruit 10}}))]
+    (let [seed 20
+          gen-same-board
+          #(gg/create-nice-game 10 {::gg/density-map {:fruit 10}} seed)]
       (is (every? #(= % (gen-same-board)) (repeatedly 10 gen-same-board))))))
