@@ -77,8 +77,8 @@
     :parse-fn #(Integer/parseInt %)]
    ["-h" "--help"]])
 
-(defn- parse-arg-string
-  "Convenience function to get the args map from an arg string"
+(defn- arg-array-from-string
+  "Convenience function to get the args array from an arg string"
   [arg-string & format-vars]
   (->> (apply format arg-string format-vars)
        (#(str/split % #"'"))
@@ -86,13 +86,14 @@
        (apply concat)))
 
 (defn parse-run-args
-  [args & format-vars]
+  "Return parsed map of args data given arg string."
+  [arg-string & format-vars]
   (let [parsed-data
-        (-> (apply parse-arg-string args format-vars)
+        (-> (apply arg-array-from-string arg-string format-vars)
             (ctc/parse-opts cli-options))]
     (if (some? (parsed-data :errors))
       (throw (java.lang.IllegalArgumentException.
-              (str "There were error(s) in args parsing.\n"
+              (str "There were error(s) in arg-string parsing.\n"
                    (str/join "\n" (parsed-data :errors)))))
       (:options parsed-data))))
 
@@ -164,7 +165,7 @@
       (gg/create-nice-game (opts :board-size) {::gg/density-map {:fruit 5}})))))
 
 (defn -main [& args]
-  (let [opts (parse-run-args (parse-arg-string args))]
+  (let [opts (parse-run-args (str/join args " "))]
     (if (some? (-> opts :help))
       (println (opts :summary))
       (run opts))))
