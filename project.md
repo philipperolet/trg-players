@@ -1,6 +1,6 @@
 # Plan
 
-
+- 
 ## Backlog
 
 ### v0.2.2 - Player senses
@@ -22,6 +22,7 @@
 
 ## Changelog
 ### v0.2.1b - Cleaning & split
+- remove direction from tree-node spec, keep it only as children map key spec
 - fix blocking bug
 - Split cljs part from core clj part in separate project
 - remove zipper impl from tree exploration

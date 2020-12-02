@@ -23,16 +23,13 @@
 (defprotocol TreeExplorationNode
   "Interface for tree nodes--methods to perform tree exploration.
 
-  An implementation should supply a constructor (fn ([direction
-  children] ...) ([direction] ...)). It can then replace the default
-  implementation of tree-exploration-player by providing the
-  constructor name in the player options: {:node-constructor
-  constr-name}"
-  (children [this])
-  (node [this])
-  (append-child [this child]
-    "Append `child`, any object conforming to `::tree-node`, to this
-    node, casting it appropriately")
+  An implementation should supply a constructor (fn [game-state]
+  ...). It can then replace the default implementation of
+  tree-exploration-player by providing the constructor name in the
+  player options: {:node-constructor constr-name}"
+  (append-child [this direction]
+    "Adds a new child to the given direction provided it doesn't
+    already exist. Throw if it does.")
   (-tree-simulate [this game-state sim-size]
     "Simulate `sim-size` steps of a game from `game-state`, with
   exploration data at current step stored in `tree-node`.
@@ -42,19 +39,7 @@
 
 (s/def ::frequency nat-int?)
 
-(defn sum-children-frequencies [tree-node]
-  (reduce + (map ::frequency (children tree-node))))
-
-(s/def ::tree-node
-  (-> (s/keys :req [::frequency ::children]
-              :opt [::value ::ge/direction])
-      (s/and
-       (fn [tn]
-         (comment "A tree node either has no children, or its freq is
-         the sum of freqs of its children")
-         (or (empty? (::children tn))
-          (= (::frequency tn)
-             (sum-children-frequencies tn)))))))
+(s/def ::tree-node (s/keys :req [::frequency ::children] :opt [::value]))
 
 (s/def ::children (s/map-of ::ge/direction ::tree-node :max-count 4 :distinct true))
 
@@ -68,24 +53,22 @@
   [game-state]
   (* 2 (max-sim-size game-state)))
 
-(defn- min-child
-  "Returns the child of tree-node with the minimum value."
+(defn- min-direction
+  "Returns the direction of `tree-node` whose corresponding child node
+  has `sort-key` at its min."
   ([tree-node sort-key]
-   (apply min-key sort-key (children tree-node))))
+   (apply min-key
+          #(-> tree-node ::children % sort-key)
+          ;; directions for which there are children
+          (keys (-> tree-node ::children)))))
 
 (defn- update-children
   "Adds a child if not all have been generated yet."
   [node]
-  (cond-> node
-    (< (count (children node)) 4)
-    ;; new node with direction not already in `node-children`
-    (append-child 
-     {::ge/direction
-      (-> ge/directions
-          (cset/difference (set (map ::ge/direction (children node))))
-          first)
-      ::frequency 0
-      ::children {}})))
+  (if-let [missing-child-direction
+           (first (cset/difference ge/directions (set (keys (::children node)))))]
+    (append-child node missing-child-direction)
+    node))
 
 (s/fdef tree-simulate
   :args (s/and (s/cat :tree-node ::tree-node                      
@@ -120,57 +103,65 @@
         (update-in [::children (first directions)]
                    #(apply node-path % (rest directions))))))
 
-(defn- compute-root-node [this world]
-  (let [simulate-on-each-direction
-        #(simulate-games
-          (::gs/game-state world)
-          ((:node-constructor this) %)
-          (/ (-> this :nb-sims) (count ge/directions)))]
-    (->> ge/directions
-         (pmap simulate-on-each-direction)
-         (map node)
-         ((:node-constructor this) nil)))) ;; call node constr [direction children]
+(defn- simulate-on-each-direction
+  "Run simulations on a given direction, for the purpose of parallel
+  computing with a factor 4."
+  [this world direction]
+  (let [state-at-direction (ge/move-player (::gs/game-state world) direction)]
+    (if (< (::gs/score (::gs/game-state world)) (::gs/score state-at-direction))
+      ;; if the movement to this direction in finding a fruit, it's a win
+      {direction (-> ((:node-constructor this) state-at-direction)
+                     (assoc ::value 0))}
+      ;; else, do the whole simulation
+      {direction  (simulate-games state-at-direction
+                                  ((:node-constructor this) state-at-direction)
+                                  (/ (-> this :nb-sims) (count ge/directions)))})))
 
+(defn- compute-root-node [this world]
+  (->> ge/directions
+       (pmap (partial simulate-on-each-direction this world))
+       (apply merge)
+       (assoc ((:node-constructor this) (::gs/game-state world)) ::children)))
 
 (defrecord TreeExplorationNodeImpl []
   TreeExplorationNode
 
-  (children [this] (vals (::children this)))
-
-  (node [this] this)
-
-  (append-child [this child]
-    (assoc-in this [::children (::ge/direction child)]
-              (map->TreeExplorationNodeImpl child)))
+  (append-child [this direction]
+    (assoc-in this [::children direction]
+              (map->TreeExplorationNodeImpl {::children {} ::frequency 0})))
 
   (-tree-simulate [tree-node game-state sim-size]
-    (let [next-state (ge/move-player game-state (::ge/direction tree-node))]
-      (-> (cond
-            (< (::gs/score game-state) (::gs/score next-state))
-            (assoc tree-node ::value 0)
+    (-> (cond
+          ;; score to MAX_VALUE used as flag to indicate a fruit was eaten
+          (= (::gs/score game-state) Integer/MAX_VALUE)
+          (assoc tree-node ::value 0)
 
-            (or (zero? sim-size) (not (= (::gs/status next-state) :active)))
-            (assoc tree-node ::value (worst-value game-state))
+          (or (zero? sim-size) (= (::gs/status game-state) :over))
+          (assoc tree-node ::value (worst-value game-state))
 
-            :else
-            (let [updated-node (update-children tree-node)
-                  next-node (min-child updated-node ::frequency)]
-              (-> updated-node
-                  (assoc-in [::children (::ge/direction next-node)]
-                            (tree-simulate next-node next-state (dec sim-size)))
-                  (#(assoc % ::value (inc (::value (min-child % ::value))))))))
-          (update ::frequency inc)))))
+          :else
+          (let [updated-node (update-children tree-node)
+                next-direction (min-direction updated-node ::frequency)
+                min-child-value-plus1
+                #(inc (::value ((min-direction % ::value) (::children %))))
+                next-state
+                (let [ns (ge/move-player game-state next-direction)]
+                  (cond-> ns
+                    (< (::gs/score game-state) (::gs/score ns))
+                    (assoc ::gs/score Integer/MAX_VALUE)))]
+            (-> (update-in updated-node
+                           [::children next-direction]
+                           #(tree-simulate % next-state (dec sim-size)))
+                (#(assoc % ::value (min-child-value-plus1 %))))))
+        (update ::frequency inc))))
 
 (defn te-node
   "TreeExplorationNodeImpl constructor"
-  ([direction]
-   (assoc (->TreeExplorationNodeImpl)
-          ::children {}
-          ::frequency 0
-          ::value Integer/MAX_VALUE
-          ::ge/direction direction))
-  ([direction children]
-   (reduce append-child (te-node direction) children)))
+  [game-state]
+  (assoc (->TreeExplorationNodeImpl)
+         ::children {}
+         ::frequency 0
+         ::value (worst-value game-state)))
 
 (s/def ::options (s/map-of #{:nb-sims :node-constructor :seed} any?))
 
@@ -195,15 +186,14 @@
              :rng random-number-generator)))
   
   (update-player [this world]
-    (let [random-min-child
+    (let [random-min-direction
           (fn [node]
             (binding [g/*rnd* (:rng this)]
-              (let [min-value (apply min (map ::value (children node)))]
-                (->> (children node)
-                     (filter #(= (-> % ::value) min-value))
+              (let [min-value (apply min (map ::value (vals (::children node))))]
+                (->> ge/directions
+                     (filter #(= (-> node ::children % ::value) min-value))
                      g/rand-nth))))]
       
       (-> this
           (assoc :root-node (compute-root-node this world))
-          (#(assoc % :next-movement
-                   (->  % :root-node random-min-child ::ge/direction)))))))
+          (#(assoc % :next-movement (->  % :root-node random-min-direction)))))))

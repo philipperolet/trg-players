@@ -20,30 +20,24 @@
 (def initial-player
   (aip/init-player (sut/map->TreeExplorationPlayer {}) {:nb-sims 100} nil))
 
-(deftest sum-children-frequencies-test
-  (is (= 6 (sut/sum-children-frequencies (sut/map->TreeExplorationNodeImpl
-                                          {::sut/children
-                                           {:up {::sut/frequency 2}
-                                            :down {::sut/frequency 4}}})))))
-
 (deftest update-children-test
-  (let [test-node (reduce
-                   #(sut/append-child %1 {::sut/frequency 1 ::ge/direction %2})
-                   (sut/map->TreeExplorationNodeImpl {::sut/frequency 3})
-                   '(:up :down :right))
+  (let [test-node
+        (reduce #(sut/append-child %1 %2)
+                (sut/te-node (-> world-state ::gs/game-state))
+                '(:up :down :right))
         updated-node (#'sut/update-children test-node)]
-    (is (contains? (::sut/children updated-node) :right))
+    (is (contains? (::sut/children updated-node) :left))
     (is (= (#'sut/update-children updated-node) updated-node))))
 
 (deftest tree-exploration-player-test  
-  (let [tree-root (-> initial-player
+  (let [nb-sims (:nb-sims initial-player)
+        tree-root (-> initial-player
                       (aip/update-player world-state)
-                      :root-node
-                      sut/node)]
-    (is (= (sut/sum-children-frequencies tree-root)
-           100))
+                      :root-node)]
+    (is (every? #(<= (/ nb-sims 4) (::sut/frequency %) nb-sims)
+                (-> tree-root ::sut/children vals)))
     (is (= ge/directions (set (keys (::sut/children tree-root)))))
-    (is (every? #(= (::sut/frequency %) 25) (sut/children tree-root)))
+    (is (every? #(= (::sut/frequency %) 25) (vals (::sut/children tree-root))))
     (is (= (-> tree-root ::sut/children :up ::sut/children :right ::sut/value) 0))
     (is (= (-> tree-root ::sut/children :up ::sut/value) 1))))
 
@@ -54,12 +48,12 @@
     (let [{:keys [world player]}
           (aim/run (aim/parse-run-args "-t tree-exploration -n 2")
             world-state initial-player)
-
+          nb-sims (:nb-sims player)
           root-node-after-sim
           (-> player (aip/update-player world) :root-node)]
       (is (= (-> world ::gs/game-state ::gs/player-position) [1 1]))
-      (is (= (sut/sum-children-frequencies root-node-after-sim)
-             (:nb-sims player))))))
+      (is (every? #(<= (/ nb-sims 4) (::sut/frequency %) nb-sims)
+                (-> root-node-after-sim ::sut/children vals))))))
 
 (deftest ^:integration te-blocking-bug
   :unstrumented
@@ -113,6 +107,4 @@
         (let [nb-ops ((:call-count (meta sut/tree-simulate)))
               time-in-s (/ (first game-result) 1000)]
           (is (> (/ nb-ops time-in-s) 200000)
-              (str "Nb of steps " nb-ops " in time " time-in-s))))))) 
-
-               
+              (str "Nb of steps " nb-ops " in time " time-in-s)))))))
