@@ -81,7 +81,9 @@
 
 (deftest generate-game-states-test
   (testing "Should generate a sequence of different boards"
-    (let [boards (gg/generate-game-states 10 10)]
-      (is (every? identity (map #(not= %1 %2) boards (rest boards)))))))
+    (let [boards (gg/generate-game-states 10 10)
+          seeded-boards (gg/generate-game-states 10 10 10)]
+      (is (every? identity (map #(not= %1 %2) boards (rest boards))))
+      (is (every? identity (map #(not= %1 %2) seeded-boards (rest seeded-boards)))))))
 
 

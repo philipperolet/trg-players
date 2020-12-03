@@ -197,7 +197,7 @@
 
   Non-nil `seed` allows for repeatable randomness."
   ([size level seed]
-   (binding [g/*rnd* (if seed (java.util.Random. seed) (java.util.Random.))]
+   (binding [g/*rnd* (if seed (java.util.Random. seed) g/*rnd*)]
      (let [nb-of-walls (int (/ (* size (level ::wall-density 50)) 100))]
        (-> (gb/empty-board size)
            (as-> board (iterate add-random-wall board))
@@ -230,9 +230,10 @@
    (let [level {::density-map {:fruit 5}}
          generate-game-state
          (if enjoyable?
-           #(create-nice-game board-size level seed)
-           #(gs/init-game-state (create-nice-board board-size level seed) 0))]
-     (vec (repeatedly nb-states generate-game-state))))
+           #(create-nice-game board-size level)
+           #(gs/init-game-state (create-nice-board board-size level) 0))]
+     (binding [g/*rnd* (if seed (java.util.Random. seed) (java.util.Random.))]
+       (vec (repeatedly nb-states generate-game-state)))))
   
   ([nb-states board-size seed]
    (generate-game-states nb-states board-size seed false))
