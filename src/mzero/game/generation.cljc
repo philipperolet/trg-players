@@ -209,7 +209,8 @@
 (defn create-nice-game
   "Creates a game state that is 'enjoyable', see
   state/enjoyable-game?. Non-nil `seed` allows for repeatable
-  randomness."
+  randomness. Note that while the board is randomly generated, the
+  player position is fixed (see gs/init-game-state)."
   ([size level seed]
    (->> #(gs/init-game-state (create-nice-board size level seed)
                              (count (:enemies level [])))

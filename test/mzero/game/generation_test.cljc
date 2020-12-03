@@ -74,4 +74,14 @@
     (let [seed 20
           gen-same-board
           #(gg/create-nice-game 10 {::gg/density-map {:fruit 10}} seed)]
-      (is (every? #(= % (gen-same-board)) (repeatedly 10 gen-same-board))))))
+      (is (every? #(= % (gen-same-board)) (repeatedly 10 gen-same-board)))))
+  (testing "Without seed, the generation should always be different"
+    (let [gen-board #(gg/create-nice-game 10 {::gg/density-map {:fruit 10}})]
+      (is (not= (gen-board) (gen-board))))))
+
+(deftest generate-game-states-test
+  (testing "Should generate a sequence of different boards"
+    (let [boards (gg/generate-game-states 10 10)]
+      (is (every? identity (map #(not= %1 %2) boards (rest boards)))))))
+
+

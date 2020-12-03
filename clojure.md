@@ -5,7 +5,7 @@
 - thrown? is part of is
 - ret specs are not checked by instrument, they are meant for doc & test.check
 - partial -> oui comme tu penses et pas comme tu veux. sur le début.
-- let values are evaluated when run; but if the value is a function, the variables in the function (e.g. derefing an atom) are not -- all the bound values are bound, not free ;)
+- let values are evaluated when run; but if the value is a function, the variables in the function (e.g. derefing an atom) are not -- all the bound values are bound, not free ;).
 - don't run a global-state-changing function in a namespace you'd import, it can have unexpected effects
 
 # Common knowledge
@@ -23,6 +23,8 @@ TLDR-> to call the original function within a with-redef, do not use its qualifi
 - using with-redef, the var object will point to another function (given during with redef) within the with-redef scope. So, if the function given to with-redef (the "redefed" fn) uses said var object (global) in its definition, the call will be "recursive", it will call the redefed fn and not the original fn--usually not what we want unless the original function is recursive. 
 - But if we put the with-redef within a `(let [new-name original-fn]` scope, then during evaluation, original-fn is evaluated to the funtion it refers, and new-name directly refers now to the original fn *value*. Thus a call to `new-name` in the redefed fn will correctly call the original fn, and not call recursively the redefed one.
 - Now, trickyness, if we do `(let [new-name #'original-fn]`, thus letting new-name refer to the *var object*, not its value (which would be original-fn), then when we use with-redef, the value of the var is redefed, so if we use new-name in a function call inside the with-redef, *it will refer to the redefed fn*, not the original one.
+
+- with-redefs does not impact recur calls
 
 # Clojure design / function parameters
 
