@@ -1,6 +1,6 @@
 (ns mzero.ai.players.tree-exploration-test
   (:require [mzero.ai.players.tree-exploration :as sut]
-            [clojure.test :refer [is testing]]
+            [clojure.test :refer [is testing use-fixtures]]
             [mzero.utils.testing :refer [deftest count-calls]]
             [mzero.ai.world :as aiw]
             [mzero.game.state-test :as gst]
@@ -17,21 +17,34 @@
                      (assoc ::gs/player-position [2 0])
                      (assoc-in [::gb/game-board 4 2] :fruit)
                      aiw/get-initial-world-state))
-(def initial-player
-  (aip/init-player (sut/map->TreeExplorationPlayer {}) {:nb-sims 100} nil))
+
+
+(def ^:dynamic test-player)
+(defn- multi-impl-fixture [f]
+  "Allows to run the same tests for various immplementations of
+  nodes (via the node constructor)"
+  (doseq [constructor ["te-node"]]
+    (binding [test-player
+              (aip/init-player (sut/map->TreeExplorationPlayer {})
+                               {:nb-sims 100
+                                :node-constructor constructor}
+                               world-state)]
+      (f))))
+
+(use-fixtures :each multi-impl-fixture)
 
 (deftest update-children-test
   (let [test-node
         (reduce #(sut/append-child %1 %2)
-                (sut/te-node (-> world-state ::gs/game-state))
+                ((-> test-player :node-constructor) (-> world-state ::gs/game-state))
                 '(:up :down :right))
         updated-node (#'sut/update-children test-node)]
     (is (contains? (::sut/children updated-node) :left))
     (is (= (#'sut/update-children updated-node) updated-node))))
 
 (deftest tree-exploration-player-test  
-  (let [nb-sims (:nb-sims initial-player)
-        tree-root (-> initial-player
+  (let [nb-sims (:nb-sims test-player)
+        tree-root (-> test-player
                       (aip/update-player world-state)
                       :root-node)]
     (is (every? #(<= (/ nb-sims 4) (::sut/frequency %) nb-sims)
@@ -47,7 +60,7 @@
     frequency of the root will be exactly the number of simlations"
     (let [{:keys [world player]}
           (aim/run (aim/parse-run-args "-t tree-exploration -n 2")
-            world-state initial-player)
+            world-state test-player)
           nb-sims (:nb-sims player)
           root-node-after-sim
           (-> player (aip/update-player world) :root-node)]
