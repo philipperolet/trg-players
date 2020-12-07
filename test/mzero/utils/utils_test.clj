@@ -42,6 +42,10 @@
   (is (= (u/filter-keys #(= 2 (count %)) {"a" 1 "bc" 2 "cde" 3}) {"bc" 2}))
   (is (= (u/filter-keys #(int? %) {:a 2 :b 3}) {})))
 
+(deftest filter-vals-test
+  (is (= (u/filter-vals #{1 2} {:a 1 :b 3 :d 0}) {:a 1}))
+  (is (= (u/filter-vals #(< 2 %) {:a 1 :b 3 :d 0 :c 5}) {:b 3 :c 5}))
+  (is (= (u/filter-vals some? {:a nil :b nil :d 0}) {:d 0})))
 (deftest remove-common-beginning
   (are [s1 s2 res]
       (= (u/remove-common-beginning s1 s2) res)
@@ -51,3 +55,4 @@
     '(1 2 3) '(4 5 6) '(1 2 3)
     [2 4 7] '(2 4 7 8) []
     '(2 4 7 8) [2 4 7] '(8)))
+
