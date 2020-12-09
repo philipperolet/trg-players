@@ -138,7 +138,7 @@ Sum %,4G
   "For random, an op is just the number of steps played"
   [board-size nb-xps node-type]
   (let [timed-go
-        #(u/timed (aim/go (format "-l 20 -t tree-exploration -o '{:node-constructor %s :seed 42}'" node-type) %))
+        #(u/timed (aim/go (format "-v WARNING -t tree-exploration -o '{:node-constructor %s :seed 42}'" node-type) %))
         measure-fn 
         #(vector (first %)
                  (-> % second :world ::aiw/game-step))

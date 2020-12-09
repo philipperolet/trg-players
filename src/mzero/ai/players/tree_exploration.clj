@@ -119,7 +119,7 @@
         (or (zero? sim-size) (= (::gs/status game-state) :over))
         tree-node
 
-        :else
+        :else 
         (let [updated-node (update-children tree-node)
               next-direction (min-direction updated-node frequency)
               min-child-value-plus1
@@ -166,11 +166,18 @@
   computing with a factor 4."
   [this world direction]
   (let [state-at-direction (ge/move-player (::gs/game-state world) direction)]
-    (if (< (::gs/score (::gs/game-state world)) (::gs/score state-at-direction))
-      ;; if the movement to this direction in finding a fruit, it's a win
+    (cond
+      ;; if moving to this direction gets a fruit
+      (< (::gs/score (::gs/game-state world)) (::gs/score state-at-direction))
       {direction (-> ((:node-constructor this) state-at-direction)
                      (assoc-value 0))}
-      ;; else, do the whole simulation
+      ;; if there's a wall
+      (= (::gs/player-position (::gs/game-state world))
+         (::gs/player-position state-at-direction))
+      {direction (-> ((:node-constructor this) state-at-direction)
+                     (assoc-value ##Inf))}
+
+      :else;; else, do the whole simulation
       {direction  (simulate-games state-at-direction
                                   ((:node-constructor this) state-at-direction)
                                   (/ (-> this :nb-sims) (count ge/directions)))})))
@@ -250,14 +257,14 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
           (fn [nd]
             (if nd nd (map->TreeExplorationNodeImpl
                        {::frequency 0
-                        ::value (inc (-> this value))})))]
+                        ::value ##Inf})))]
       (update this :dag-map #(update % child-position init-child-if-nil))))
   
-  (-value [this] (get-in this [:dag-map (-> this :position) ::value]))
+  (-value [this] (::value (get (-> this :dag-map) (-> this :position))))
   (-assoc-value [this val_]
     (update this :dag-map
             #(assoc-in % [(-> this :position) ::value] val_)))
-  (-frequency [this] (get-in this [:dag-map (-> this :position) ::frequency]))
+  (-frequency [this] (::frequency (get (-> this :dag-map) (-> this :position))))
   (-assoc-frequency [this freq]
     (update this :dag-map
             #(assoc-in % [(-> this :position) ::frequency] freq)))
@@ -266,7 +273,7 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
      (apply min-key
             second
             (reduce-kv (fn [acc dir pos]
-                         (if-let [child (get-in this [:dag-map pos])]
+                         (if-let [child (get (-> this :dag-map) pos)]
                            (assoc acc dir (sort-key child))
                            acc))
                        {}

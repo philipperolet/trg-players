@@ -28,7 +28,8 @@
     (binding [test-player
               (aip/init-player (sut/map->TreeExplorationPlayer {})
                                {:nb-sims 100
-                                :node-constructor constructor}
+                                :node-constructor constructor
+                                :seed 42}
                                world-state)]
       (f))))
 
@@ -88,7 +89,11 @@
                (iterate #(apply aim/run (get-game-args 1) (vals %)))
                (take 10)
                (map #(-> % :world ::gs/game-state ::gs/player-position)))]
-      (is (some (partial not= bugged-pos) next-player-positions)))
+      (is (some (partial not= bugged-pos) next-player-positions)))))
+
+(deftest ^:integration dag-blocking-bug
+  :unstrumented
+  (testing "Similar bug to above, happening with dag nodes"
     (let [bugged-world-example
           (aiw/get-initial-world-state
            (first (gg/generate-game-states 2 22 41 true)))
