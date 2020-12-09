@@ -46,6 +46,10 @@
   (is (= (u/filter-vals #{1 2} {:a 1 :b 3 :d 0}) {:a 1}))
   (is (= (u/filter-vals #(< 2 %) {:a 1 :b 3 :d 0 :c 5}) {:b 3 :c 5}))
   (is (= (u/filter-vals some? {:a nil :b nil :d 0}) {:d 0})))
+
+(deftest map-map-test
+  (is (= {:a 6 :b 4} (u/map-map #(* % 2) {:a 3 :b 2}))))
+
 (deftest remove-common-beginning
   (are [s1 s2 res]
       (= (u/remove-common-beginning s1 s2) res)

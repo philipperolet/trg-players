@@ -51,7 +51,7 @@
 (defn map-map
   "Return a map with `f` applied to each of `m`'s keys"
   [f m]
-  (reduce #(update %1 %2 f) m (keys m)))
+  (reduce-kv (fn [acc k v] (assoc acc k (f v))) {} m))
 
 (defn scaffold
   "Show all the interfaces implemented by given `iface`"
