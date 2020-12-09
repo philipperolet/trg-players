@@ -132,7 +132,22 @@ Sum %,4G
                (gg/generate-game-states nb-xps board-size 41 true))]
       (display-measures (measure timed-go measure-fn random-worlds map)
                         player-type
-                        "Steps and time"))))
+                        "1.Time 2.Steps /"))))
+
+(defn -compare-sht2
+  "For random, an op is just the number of steps played"
+  [board-size nb-xps node-type]
+  (let [timed-go
+        #(u/timed (aim/go (format "-l 20 -t tree-exploration -o '{:node-constructor %s :seed 42}'" node-type) %))
+        measure-fn 
+        #(vector (first %)
+                 (-> % second :world ::aiw/game-step))
+        random-worlds
+        (map (comp list aiw/get-initial-world-state)
+             (gg/generate-game-states nb-xps board-size 41 true))]
+    (display-measures (measure timed-go measure-fn random-worlds map)
+                      node-type
+                      "1.Time 2.Steps /")))
 (defn -runcli [& args]
   (apply (resolve (symbol (str "xp1000/" (first args))))
          (map read-string (rest args))))
