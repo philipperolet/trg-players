@@ -20,10 +20,11 @@
 
 
 (def ^:dynamic test-player)
-(defn- multi-impl-fixture [f]
+(defn- multi-impl-fixture
   "Allows to run the same tests for various immplementations of
   nodes (via the node constructor)"
-  (doseq [constructor ["te-node"]]
+  [f]
+  (doseq [constructor ["te-node" "dag-node"]]
     (binding [test-player
               (aip/init-player (sut/map->TreeExplorationPlayer {})
                                {:nb-sims 100
@@ -39,7 +40,7 @@
                 ((-> test-player :node-constructor) (-> world-state ::gs/game-state))
                 '(:up :down :right))
         updated-node (#'sut/update-children test-node)]
-    (is (contains? (::sut/children updated-node) :left))
+    (is (contains? (sut/children updated-node) :left))
     (is (= (#'sut/update-children updated-node) updated-node))))
 
 (deftest tree-exploration-player-test  
@@ -49,10 +50,10 @@
                       :root-node)]
     (is (every? #(<= (/ nb-sims 4) (::sut/frequency %) nb-sims)
                 (-> tree-root ::sut/children vals)))
-    (is (= ge/directions (set (keys (::sut/children tree-root)))))
-    (is (every? #(= (::sut/frequency %) 25) (vals (::sut/children tree-root))))
-    (is (= (-> tree-root ::sut/children :up ::sut/children :right ::sut/value) 0))
-    (is (= (-> tree-root ::sut/children :up ::sut/value) 1))))
+    (is (= ge/directions (set (keys (sut/children tree-root)))))
+    (is (every? #(>= (::sut/frequency %) 25) (vals (sut/children tree-root))))
+    (is (= (-> tree-root (sut/get-descendant [:up :right]) sut/value) 0))
+    (is (= (-> tree-root (sut/get-descendant [:up]) sut/value) 1))))
 
 (deftest te-exploration-simulation-test
   (testing "Player should go eat the close fruit (up then right), then reset tree
@@ -77,9 +78,24 @@
           (aiw/get-initial-world-state
            (first (gg/generate-game-states 1 20 2 true)))
           get-game-args
-          #(aim/parse-run-args "-t tree-exploration -n %d -v WARNING" %)
+          #(aim/parse-run-args "-n %d -v WARNING" %)
           bugged-state
-          (aim/run (get-game-args 62) bugged-world-example)
+          (aim/run (get-game-args 62) bugged-world-example test-player)
+          bugged-pos
+          (-> bugged-state :world ::gs/game-state ::gs/player-position)
+          next-player-positions
+          (->> bugged-state
+               (iterate #(apply aim/run (get-game-args 1) (vals %)))
+               (take 10)
+               (map #(-> % :world ::gs/game-state ::gs/player-position)))]
+      (is (some (partial not= bugged-pos) next-player-positions)))
+    (let [bugged-world-example
+          (aiw/get-initial-world-state
+           (first (gg/generate-game-states 2 22 41 true)))
+          get-game-args
+          #(aim/parse-run-args "-n %d -v WARNING" %)
+          bugged-state
+          (aim/run (get-game-args 62) bugged-world-example test-player)
           bugged-pos
           (-> bugged-state :world ::gs/game-state ::gs/player-position)
           next-player-positions
@@ -110,9 +126,9 @@
             (future
               (u/timed
                (aim/run
-                 (aim/parse-run-args "-t tree-exploration -n %d -o '{:nb-sims %d}'"
-                                     nb-steps sims-per-step)
-                 initial-world)))
+                 (aim/parse-run-args "-n %d" nb-steps)
+                 initial-world
+                 (assoc test-player :nb-sims sims-per-step))))
             game-result
             (deref game-run time-to-run-ms nil)]
         
