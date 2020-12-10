@@ -95,10 +95,11 @@
 (defn- update-children
   "Adds a child if not all have been generated yet."
   [node]
-  (if-let [missing-child-direction
-           (first (cset/difference ge/directions (set (keys (children node)))))]
-    (append-child node missing-child-direction)
-    node))
+  (let [node-children (children node)]
+    (if-let [missing-child-direction
+             (first (remove #(% node-children) ge/directions))]
+      (append-child node missing-child-direction)
+      node)))
 
 (s/fdef tree-simulate
   :args (s/and (s/cat :tree-node ::tree-node                      
@@ -123,7 +124,7 @@
         (let [updated-node (update-children tree-node)
               next-direction (min-direction updated-node frequency)
               min-child-value-plus1
-              #(inc (value ((min-direction % value) (children %))))
+              #(inc (apply min (map ::value (vals (children %)))))
               next-state
               (let [ns (ge/move-player game-state next-direction)]
                 (cond-> ns
@@ -280,8 +281,12 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
                        (get-children-position-map position board-size)))))
   (-children [{:as this, :keys [position board-size]}]
     (->> (get-children-position-map position board-size)
-         (u/map-map (-> this :dag-map)) ;; get associated data from dag-map         
-         (u/filter-vals some?))) ;; remove nil values (directions with no node)
+         ;; get associated data from dag-map         
+         (reduce-kv (fn [acc dir pos]
+                      (if-let [node (get (-> this :dag-map) pos)]
+                        (assoc acc dir node)
+                        acc))
+                    {})))
 
   (get-child [this direction]
     (update this :position
