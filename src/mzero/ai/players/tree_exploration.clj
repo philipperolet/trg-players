@@ -238,13 +238,23 @@
         #(ge/move-position % direction (-> this :board-size))
         update-relative-position
         (fn [acc pos node]
-          (update-in acc [:dag-map (relative-position pos)] #(merge-nodes % node)))]
-    (reduce-kv update-relative-position this (-> child :dag-map))))
+          (update acc :dag-map
+                  (fn [dm]
+                    (update-in dm (relative-position pos) #(merge-nodes % node)))))]
+    (reduce-kv (fn [acc1 row node-row]
+                 (reduce-kv (fn [acc2 col node]
+                              (update-relative-position acc2 [row col] node))
+                            acc1
+                            node-row))
+               this
+               (-> child :dag-map))))
 
 (def get-children-position-map
   (memoize
    (fn [position board-size]
-     (reduce #(assoc %1 %2 (ge/move-position position %2 board-size)) {} ge/directions))))
+     (reduce #(assoc %1 %2 (ge/move-position position %2 board-size))
+             {}
+             ge/directions))))
 
 "DagNodeImpl: nodes are shallow, no data except for position information on the
 board (incl. dag map & board size). Data is held by the `dag-map`"
@@ -259,22 +269,24 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
             (if nd nd (map->TreeExplorationNodeImpl
                        {::frequency 0
                         ::value ##Inf})))]
-      (update this :dag-map #(update % child-position init-child-if-nil))))
+      (update this :dag-map #(update-in % child-position init-child-if-nil))))
   
-  (-value [this] (::value ((-> this :dag-map) (-> this :position))))
-  (-assoc-value [this val_]
+  (-value [{:keys [dag-map], [x y] :position}]
+    (::value ((dag-map x) y)))
+  (-assoc-value [{:as  this, [x y] :position} val_]
     (update this :dag-map
-            #(assoc-in % [(-> this :position) ::value] val_)))
-  (-frequency [this] (::frequency ((-> this :dag-map) (-> this :position))))
-  (-assoc-frequency [this freq]
+            #(assoc-in % [x y ::value] val_)))
+  (-frequency [{:keys [dag-map], [x y] :position}]
+    (::frequency ((dag-map x) y)))
+  (-assoc-frequency [{:as  this, [x y] :position} freq]
     (update this :dag-map
-            #(assoc-in % [(-> this :position) ::frequency] freq)))
+            #(assoc-in % [x y ::frequency] freq)))
   (min-direction [{:as this, :keys [position board-size]} sort-key]
     (first
      (apply min-key
             second
-            (reduce-kv (fn [acc dir pos]
-                         (if-let [child ((-> this :dag-map) pos)]
+            (reduce-kv (fn [acc dir [x y]]
+                         (if-let [child (((-> this :dag-map) x) y)]
                            (assoc acc dir (sort-key child))
                            acc))
                        {}
@@ -282,8 +294,8 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
   (-children [{:as this, :keys [position board-size]}]
     (->> (get-children-position-map position board-size)
          ;; get associated data from dag-map         
-         (reduce-kv (fn [acc dir pos]
-                      (if-let [node ((-> this :dag-map) pos)]
+         (reduce-kv (fn [acc dir [x y]]
+                      (if-let [node (((-> this :dag-map) x) y)]
                         (assoc acc dir node)
                         acc))
                     {})))
@@ -306,8 +318,11 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
   "DagNodeImpl constructor"
   [game-state]
   (->DagNodeImpl
-   {[0 0] (map->TreeExplorationNodeImpl {::frequency 0
-                                         ::value ##Inf})}
+   (assoc-in (vec (repeat (count (::gb/game-board game-state))
+                          (vec (repeat (count (::gb/game-board game-state)) nil))))
+             [0 0]
+             (map->TreeExplorationNodeImpl {::frequency 0
+                                         ::value ##Inf}))
    [0 0]
    (count (-> game-state ::gb/game-board))))
 
