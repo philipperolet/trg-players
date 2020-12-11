@@ -282,15 +282,14 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
     (update this :dag-map
             #(assoc-in % [x y ::frequency] freq)))
   (min-direction [{:as this, :keys [position board-size]} sort-key]
-    (first
-     (apply min-key
-            second
+    ((apply min-key
+            #(% 1)
             (reduce-kv (fn [acc dir [x y]]
                          (if-let [child (((-> this :dag-map) x) y)]
                            (assoc acc dir (sort-key child))
                            acc))
                        {}
-                       (get-children-position-map position board-size)))))
+                       (get-children-position-map position board-size))) 0))
   (-children [{:as this, :keys [position board-size]}]
     (->> (get-children-position-map position board-size)
          ;; get associated data from dag-map         
