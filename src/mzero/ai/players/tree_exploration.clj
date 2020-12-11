@@ -261,11 +261,11 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
                         ::value ##Inf})))]
       (update this :dag-map #(update % child-position init-child-if-nil))))
   
-  (-value [this] (::value (get (-> this :dag-map) (-> this :position))))
+  (-value [this] (::value ((-> this :dag-map) (-> this :position))))
   (-assoc-value [this val_]
     (update this :dag-map
             #(assoc-in % [(-> this :position) ::value] val_)))
-  (-frequency [this] (::frequency (get (-> this :dag-map) (-> this :position))))
+  (-frequency [this] (::frequency ((-> this :dag-map) (-> this :position))))
   (-assoc-frequency [this freq]
     (update this :dag-map
             #(assoc-in % [(-> this :position) ::frequency] freq)))
@@ -274,7 +274,7 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
      (apply min-key
             second
             (reduce-kv (fn [acc dir pos]
-                         (if-let [child (get (-> this :dag-map) pos)]
+                         (if-let [child ((-> this :dag-map) pos)]
                            (assoc acc dir (sort-key child))
                            acc))
                        {}
@@ -283,7 +283,7 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
     (->> (get-children-position-map position board-size)
          ;; get associated data from dag-map         
          (reduce-kv (fn [acc dir pos]
-                      (if-let [node (get (-> this :dag-map) pos)]
+                      (if-let [node ((-> this :dag-map) pos)]
                         (assoc acc dir node)
                         acc))
                     {})))
