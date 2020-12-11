@@ -10,7 +10,7 @@
 (deftest parse-run-args-err-test
   (testing "should throw when an arg isn't valid"
     (is (thrown-with-msg? java.lang.IllegalArgumentException
-                          #"There were error\(s\) in args parsing.*"
+                          #"There were error\(s\) in arg.*parsing.*"
                           (aim/parse-run-args "-l WARNING")))))
 (defn basic-run
   "Runs a basic game (removing cheese & enemies), expects the

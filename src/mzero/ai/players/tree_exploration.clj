@@ -282,22 +282,34 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
     (update this :dag-map
             #(assoc-in % [x y ::frequency] freq)))
   (min-direction [{:as this, :keys [position board-size]} sort-key]
-    ((apply min-key
-            #(% 1)
-            (reduce-kv (fn [acc dir [x y]]
-                         (if-let [child (((-> this :dag-map) x) y)]
-                           (assoc acc dir (sort-key child))
-                           acc))
-                       {}
-                       (get-children-position-map position board-size))) 0))
+    (let [positions-map
+          (get-children-position-map position board-size)
+          get-value-from-position
+          #(some-> (((-> this :dag-map) (% 0)) (% 1)) sort-key)
+          trim-nil
+          #(if (nil? %) ##Inf %)]
+      (apply min-key
+             #(-> %
+                  positions-map
+                  get-value-from-position
+                  trim-nil)
+             ge/directions)))
+  
   (-children [{:as this, :keys [position board-size]}]
-    (->> (get-children-position-map position board-size)
-         ;; get associated data from dag-map         
-         (reduce-kv (fn [acc dir [x y]]
-                      (if-let [node (((-> this :dag-map) x) y)]
-                        (assoc acc dir node)
-                        acc))
-                    {})))
+    (let [positions-map
+          (get-children-position-map position board-size)
+          add-child-from-direction
+          #(let [[x y] (positions-map %2)]
+             (if-let [child (((-> this :dag-map) x) y)]
+               (assoc %1 %2 child)
+               %1))]
+      (add-child-from-direction
+       (add-child-from-direction
+        (add-child-from-direction
+         (add-child-from-direction {} :up)
+         :right)
+        :down)
+       :left)))
 
   (get-child [this direction]
     (update this :position
