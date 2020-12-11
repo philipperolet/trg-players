@@ -22,8 +22,8 @@
   [[(g/uniform 0 board-size) (g/uniform 0 board-size)]
    ;; random directions length times
    (take length (iterate
-                 #(g/rand-nth (-> (vec ge/directions) (conj %) (conj %)))
-                 (g/rand-nth (vec ge/directions))))])
+                 #(g/rand-nth (-> ge/directions (conj %) (conj %)))
+                 (g/rand-nth ge/directions)))])
 
 (def wall-generator
   (gen/fmap #(apply generate-wall %)

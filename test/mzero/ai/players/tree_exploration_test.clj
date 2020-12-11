@@ -51,7 +51,7 @@
                       :root-node)]
     (is (every? #(<= (/ nb-sims 4) (::sut/frequency %) nb-sims)
                 (-> tree-root ::sut/children vals)))
-    (is (= ge/directions (set (keys (sut/children tree-root)))))
+    (is (= ge/directions (keys (sut/children tree-root))))
     (is (every? #(>= (::sut/frequency %) 25) (vals (sut/children tree-root))))
     (is (= (-> tree-root (sut/get-descendant [:up :right]) sut/value) 0))
     (is (= (-> tree-root (sut/get-descendant [:up]) sut/value) 1))))
@@ -140,5 +140,5 @@
         (is (not (nil? game-result)) (str "time > than " time-to-run-ms))
         (let [nb-ops ((:call-count (meta sut/tree-simulate)))
               time-in-s (/ (first game-result) 1000)]
-          (is (> (/ nb-ops time-in-s) 200000)
+          (is (> (/ nb-ops time-in-s) 300000)
               (str "Nb of steps " nb-ops " in time " time-in-s)))))))

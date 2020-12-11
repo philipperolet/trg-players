@@ -11,9 +11,9 @@
 
 ;;; Movement on board
 ;;;;;;;
-(def directions #{:up :right :down :left})
+(def directions [:up :right :down :left])
 
-(s/def ::direction directions)
+(s/def ::direction (set directions))
 
 (s/def ::being (s/or :player #{:player}
                      :enemy (s/int-in 0 10)))
@@ -29,10 +29,14 @@
 (defn move-position
   "Given a board position, returns the new position when moving in
   provided direction, by adding direction to position modulo size of board"
-  [position direction board-size]
-  (->> (case direction :up [-1 0] :right [0 1] :down [1 0] :left [0 -1])
-       (map #(mod (+ %1 %2) board-size) position)
-       vec))
+  [[x y] direction board-size]
+  (let [move-inc #(mod (unchecked-inc %) board-size)
+        move-dec #(mod (unchecked-dec %) board-size)]
+    (->> (case direction
+           :up [(move-dec x) y]
+           :right [x (move-inc y)]
+           :down [(move-inc x) y]
+           :left [x (move-dec y)]))))
 
 (s/fdef move-player
   :args (-> (s/cat :state ::gs/game-state :direction ::direction)
