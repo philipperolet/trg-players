@@ -24,7 +24,7 @@
   "Allows to run the same tests for various immplementations of
   nodes (via the node constructor)"
   [f]
-  (doseq [constructor ["te-node" "dag-node"]]
+  (doseq [constructor ["tree-exploration/te-node" "dag-node/dag-node"]]
     (binding [test-player
               (aip/init-player (sut/map->TreeExplorationPlayer {})
                                {:nb-sims 100
