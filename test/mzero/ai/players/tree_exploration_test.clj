@@ -53,7 +53,6 @@
                 (-> tree-root ::sut/children vals)))
     (is (= ge/directions (keys (sut/children tree-root))))
     (is (every? #(>= (::sut/frequency %) 25) (vals (sut/children tree-root))))
-    (is (= (-> tree-root (sut/get-descendant [:up :right]) sut/value) 0))
     (is (= (-> tree-root (sut/get-descendant [:up]) sut/value) 1))))
 
 (deftest te-exploration-simulation-test

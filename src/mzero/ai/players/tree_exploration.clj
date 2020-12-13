@@ -15,7 +15,8 @@
             [mzero.game.board :as gb]
             [clojure.spec.alpha :as s]
             [mzero.utils.utils :as u]
-            [clojure.data.generators :as g]))
+            [clojure.data.generators :as g]
+            [clojure.string :as str]))
 
 (def default-nb-sims 200)
 
@@ -222,24 +223,26 @@
 
 (s/def ::options (s/map-of #{:nb-sims :node-constructor :seed} any?))
 
+(defn- get-constructor-from-opts [opts]
+  (let [constructor-string
+          (->> (-> opts (:node-constructor "tree-exploration/te-node"))
+               (str "mzero.ai.players."))]
+    (#'clojure.core/serialized-require
+     (symbol (first (str/split constructor-string #"/"))))
+    (or (resolve (symbol constructor-string))
+        (throw (Exception. "Invalid user-supplied node constructor")))))
+
 (defrecord TreeExplorationPlayer [nb-sims]
   aip/Player
   (init-player [this opts world]
-    (let [constructor
-          (->> (-> opts (:node-constructor "tree-exploration/te-node"))
-               (str "mzero.ai.players.")
-               symbol
-               resolve)
-          random-number-generator
+    (assert (s/valid? ::options opts))
+    (let [random-number-generator
           (if-let [seed (-> opts :seed)]
             (java.util.Random. seed)
             (java.util.Random.))]
-      
-      (assert (s/valid? ::options opts))
-      (assert (not (nil? constructor)) "Invalid user-supplied node constructor")
       (assoc this
              :nb-sims (-> opts (:nb-sims default-nb-sims))
-             :node-constructor constructor
+             :node-constructor (get-constructor-from-opts opts)
              :rng random-number-generator)))
   
   (update-player [this world]

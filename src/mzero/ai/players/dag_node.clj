@@ -40,6 +40,27 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
              {}
              ge/directions))))
 
+(defn- get-node-to-aggregate [direction1 direction2 children]
+  (let [opposed-directions {:up :down, :down :up, :right :left, :left :right}]
+    (-> children
+        direction1
+        (te/get-descendant [(opposed-directions direction1) direction2]))))
+
+(defn- compute-merged-node-in-direction [direction children]
+  (let [compute-frequency
+        (fn [child-dir]
+          (reduce
+           #(+ %1 (or (te/frequency (get-node-to-aggregate %2 child-dir children)) 0))
+           0 ge/directions))
+        compute-value
+        (fn [child-dir]
+          (reduce #(min %1 (or (te/value (get-node-to-aggregate %2 child-dir children)) ##Inf))
+                  ##Inf
+                  ge/directions))]
+    (te/map->TreeExplorationNodeImpl
+     {::te/frequency (compute-frequency direction)
+      ::te/value (compute-value direction)})))
+
 (defrecord DagNodeImpl [dag-map position board-size]
   te/TreeExplorationNode
 
@@ -105,7 +126,14 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
       (assoc this :dag-map (-> (f next-node) :dag-map))))
 
   (-create-root-node [this children]
-    (reduce update-this-dag-node this children)))
+    (assoc (te/->TreeExplorationNodeImpl)
+           ::te/value 0
+           ::te/frequency Integer/MAX_VALUE
+           ::te/children
+           (reduce #(assoc %1 %2 (compute-merged-node-in-direction %2 children))
+                   {}
+                   ge/directions))
+    #_(reduce update-this-dag-node this children)))
 
 (defn dag-node
   "DagNodeImpl constructor"
