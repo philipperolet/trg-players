@@ -20,6 +20,8 @@
 
 (def default-nb-sims 200)
 
+(def tuning (atom {}))
+
 (defprotocol TreeExplorationNode
   "Interface for tree nodes--methods to perform tree exploration.
 
@@ -34,7 +36,7 @@
   (-assoc-value [this val_])
   (-frequency [this] "Get node freq")
   (-assoc-frequency [this freq])
-  (-children [this] "Get node children")
+  (-children [this] "Get node children, as a map {:direction Tree")
   (update-children-in-direction [this direction f])
   (get-child [this direction]
     "Get the child of this node in  `direction`")
@@ -48,9 +50,11 @@
     have a defined value. Used for the purpose of 4-fold //ization
     with each direction, as done in `compute-root-node`"))
 
-(s/def ::value (s/or :natural nat-int? :infinite #(= % ##Inf)))
+(s/def ::value (s/or :natural nat-int?
+                     :double (s/and double? pos?))) ;; potentially infinite
 
-(s/def ::frequency nat-int?)
+(s/def ::frequency (s/or :natural nat-int?
+                         :double (s/and double? pos?))) ;; potentially infinite
 
 (s/def ::tree-node (partial satisfies? TreeExplorationNode))
 
@@ -95,11 +99,15 @@
 (defn- update-children
   "Adds a child if not all have been generated yet."
   [node]
-  (let [node-children (children node)]
-    (if-let [missing-child-direction
-             (first (remove #(% node-children) ge/directions))]
-      (append-child node missing-child-direction)
-      node)))
+  (if (:values node) ;; ignore call for JavaDagImpl
+    node
+    (let [node-children (children node)
+          child-select (if (:random-min @tuning) g/rand-nth first)
+          missing-child-directions
+          (remove #(% node-children) ge/directions)]
+      (if (not-empty missing-child-directions)
+        (append-child node (child-select missing-child-directions))
+        node))))
 
 (s/fdef tree-simulate
   :args (s/and (s/cat :tree-node ::tree-node                      
@@ -117,7 +125,13 @@
         (= (::gs/score game-state) Integer/MAX_VALUE)
         (assoc-value tree-node 0)
         ;; status :over used as flag to indicate a wall is here
-        (or (zero? sim-size) (= (::gs/status game-state) :over))
+        ;; infinity frequency means it will never again be selected to move
+        (= (::gs/status game-state) :over)
+        (if (:wall-fix @tuning)
+          (assoc-frequency tree-node ##Inf)
+          tree-node)
+        
+        (zero? sim-size)
         tree-node
 
         :else 
@@ -155,7 +169,12 @@
   [tree-node & directions]
   (if (empty? directions)
     ;; remove "children" fields from the node's children
-    (update tree-node ::children (partial u/map-map #(dissoc % ::children)))
+    (update tree-node ::children
+            (partial u/map-map
+                     #(-> %
+                          (assoc :v (::value %)
+                                 :f (::frequency %))
+                          (dissoc ::children ::value ::frequency))))
     
     (-> tree-node
         (update ::children #(select-keys % (list (first directions))))
@@ -205,7 +224,8 @@
     (apply min-key
            #(-> this children % sort-key)
            ;; directions for which there are children
-           (keys (-> this children))))
+           (cond-> (keys (-> this children))
+             (:random-min @tuning) g/shuffle)))
   (update-children-in-direction [this direction f]
     (update-in this [::children direction] f))
   (get-child [this direction]
@@ -221,7 +241,7 @@
          ::frequency 0
          ::value ##Inf))
 
-(s/def ::options (s/map-of #{:nb-sims :node-constructor :seed} any?))
+(s/def ::options (s/map-of #{:nb-sims :node-constructor :seed :tuning} any?))
 
 (defn- get-constructor-from-opts [opts]
   (let [constructor-string
@@ -240,6 +260,7 @@
           (if-let [seed (-> opts :seed)]
             (java.util.Random. seed)
             (java.util.Random.))]
+      (reset! tuning (:tuning opts))
       (assoc this
              :nb-sims (-> opts (:nb-sims default-nb-sims))
              :node-constructor (get-constructor-from-opts opts)
