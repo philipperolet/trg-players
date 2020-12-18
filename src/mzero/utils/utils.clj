@@ -20,9 +20,11 @@
   (<= (abs (- a b)) precision))
 
 (defmacro timed
-  "Returns the time in miliseconds to run the expression, as a
+  "Returns a vector with 2 values:
+  -  time in miliseconds to run the expression, as a
   float--that is, taking into account micro/nanoseconds, subject to
-  the underlying platform's precision."
+  the underlying platform's precision;
+  - expression return value."
   [expr]
   `(let [start-time# (System/nanoTime)
          result# ~expr]
