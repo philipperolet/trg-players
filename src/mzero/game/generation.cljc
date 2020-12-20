@@ -229,11 +229,15 @@
   ([nb-states board-size seed enjoyable?]
    (let [level {::density-map {:fruit 5}}
          generate-game-state
-         (if enjoyable?
-           #(create-nice-game board-size level)
-           #(gs/init-game-state (create-nice-board board-size level) 0))]
-     (binding [g/*rnd* (if seed (java.util.Random. seed) (java.util.Random.))]
-       (vec (repeatedly nb-states generate-game-state)))))
+         (fn [new-seed]
+           (binding [g/*rnd* (java.util.Random. new-seed)]
+             (if enjoyable?
+               (create-nice-game board-size level)
+               (gs/init-game-state (create-nice-board board-size level) 0))))
+         seeds-list
+         (binding [g/*rnd* (if seed (java.util.Random. seed) (java.util.Random.))]
+           (vec (repeatedly nb-states g/int)))]
+     (pmap generate-game-state seeds-list)))
   
   ([nb-states board-size seed]
    (generate-game-states nb-states board-size seed false))
