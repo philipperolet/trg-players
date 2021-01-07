@@ -88,7 +88,9 @@
         (aip/update-player player world)
         next-world
         (update-in world [::gs/game-state ::gs/player-position]
-                  ge/move-position (-> next-player :next-movement) 8)
+                   ;; move-position may be a macro
+                   (fn [pos dir bs] (ge/move-position pos dir bs))
+                   (-> next-player :next-movement) 8)
         next-player-2
         (aip/update-player next-player next-world)
         next-world-2 ;; world with pending movement not yet executed

@@ -1,6 +1,5 @@
 # Plan
 
-- 
 ## Backlog
 
 ### v0.2.2 - Player senses
