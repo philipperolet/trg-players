@@ -1,6 +1,4 @@
 (ns mzero.ai.players.java-dag
-  "DagNodeImpl: nodes are shallow, no data except for position information on the
-board (incl. dag map & board size). Data is held by the `dag-map`"
   (:require [mzero.game.events :as ge]
             [mzero.game.board :as gb]
             [mzero.ai.players.tree-exploration :as te]))
@@ -30,25 +28,17 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
   te/TreeExplorationNode
 
   (append-child [this direction]
-    (assert false "Should not be called.")
-    #_(let [child-position
-          (ge/move-position (-> this :position) direction (-> this :board-size))
-          init-child-if-nil
-          (fn [nd]
-            (if nd nd (te/map->TreeExplorationNodeImpl
-                       {::te/frequency 0
-                        ::te/value ##Inf})))]
-      (update this :dag-map #(update-in % child-position init-child-if-nil))))
+    (assert false "Should not be called."))
   
   (-value [{:keys [values], [x y] :position}]
-    (aget values x y))
+    (aget ^doubles (aget ^"[[D" values ^int x) ^int y))
   (-assoc-value [{:as this, :keys [values], [x y] :position} val_]
-    (aset values x y val_)
+    (aset ^doubles (aget ^"[[D" values ^int x) ^int y ^double val_)
     this)
   (-frequency [{:keys [frequencies], [x y] :position}]
-    (aget frequencies x y))
+    (aget ^doubles (aget ^"[[D" frequencies ^int x) ^int y))
   (-assoc-frequency [{:as  this, :keys [frequencies], [x y] :position} freq]
-    (aset frequencies x y freq)
+    (aset ^doubles (aget ^"[[D" frequencies ^int x) ^int y ^double freq)
     this)
   (min-direction [{:as this, :keys [position board-size]} sort-key]
     (let [get-value-from-direction
@@ -100,7 +90,9 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
   (let [board-size (count (::gb/game-board game-state))]
     (->JavaDagImpl
      (let [arr (make-array Double/TYPE board-size board-size)]
-       (map #(java.util.Arrays/fill (aget arr %) ##Inf) (range board-size))
+       (doseq [i (range board-size)
+               j (range board-size)]
+         (aset ^doubles (aget ^"[[D" arr ^int i) ^int j ##Inf))
        arr)
      (make-array Double/TYPE board-size board-size)
      [0 0]
