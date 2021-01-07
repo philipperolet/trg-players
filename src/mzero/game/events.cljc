@@ -20,23 +20,32 @@
 
 (s/def ::movement (s/tuple ::being ::direction))
 
-(s/fdef move-position
-  :args (s/cat :position ::gb/position
-               :direction ::direction
-               :board-size ::gb/board-size)
-  :ret ::gb/position)
+(def move-position-java false)
 
-(defn move-position
-  "Given a board position, returns the new position when moving in
+(if move-position-java
+  (defmacro move-position
+    [position direction board-size]
+    `(vec (mzero.game.MovePosition/movePosition (~position 0)
+                                                (~position 1)
+                                                ~direction
+                                                ~board-size)))
+  (do
+    (s/fdef move-position
+      :args (s/cat :position ::gb/position
+                   :direction ::direction
+                   :board-size ::gb/board-size)
+      :ret ::gb/position)
+    (defn move-position
+      "Given a board position, returns the new position when moving in
   provided direction, by adding direction to position modulo size of board"
-  [[x y] direction board-size]
-  (let [move-inc #(mod (unchecked-inc %) board-size)
-        move-dec #(mod (unchecked-dec %) board-size)]
-    (->> (case direction
-           :up [(move-dec x) y]
-           :right [x (move-inc y)]
-           :down [(move-inc x) y]
-           :left [x (move-dec y)]))))
+      [[x y] direction board-size]
+      (let [move-inc #(mod (unchecked-inc %) board-size)
+            move-dec #(mod (unchecked-dec %) board-size)]
+        (->> (case direction
+               :up [(move-dec x) y]
+               :right [x (move-inc y)]
+               :down [(move-inc x) y]
+               :left [x (move-dec y)]))))))
 
 (s/fdef move-player
   :args (-> (s/cat :state ::gs/game-state :direction ::direction)

@@ -55,11 +55,11 @@
 (defn add-wall
   "Adds a wall to a board"
   [board [position directions :as wall]]  
-  ((reduce (fn [[brd pos] dir] ;; for each direction update board and position
-            (let [new-pos (ge/move-position pos dir (count brd))]
-              [(assoc-in brd pos :wall) new-pos]))
-          [board position]
-          (conj directions :up)) 0)) ;; add a dummy direction to add the last wall
+  (first (reduce (fn [[brd pos] dir] ;; for each direction update board and position
+                   (let [new-pos (ge/move-position pos dir (count brd))]
+                     [(assoc-in brd pos :wall) new-pos]))
+                 [board position]
+                 (conj directions :up)))) ;; add a dummy direction to add the last wall
 
 
 ;;; Adding other elements to board
