@@ -12,6 +12,15 @@
 
 (defonce test-state (assoc gst/test-state ::g/status :active))
 
+(deftest move-position-t
+  (are [x d y] (= y (ge/move-position x d 7))
+    [0 0] :up [6 0]
+    [0 0] :down [1 0]
+    [0 0] :left [0 6]
+    [0 0] :right [0 1]
+    [6 6] :up [5 6]
+    [6 6] :left [6 5]))
+
 (deftest move-player-basic
   (testing "Moves correctly up, down, right, left on canonical
     board (see create game)"
