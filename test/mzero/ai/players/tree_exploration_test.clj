@@ -26,7 +26,7 @@
   [f]
   (doseq [constructor ["tree-exploration/te-node"
                        "java-dag/java-dag-node"
-                       #_"dag-node/dag-node"]]
+                       "dag-node/dag-node"]]
     (binding [test-player
               (aip/init-player (sut/map->TreeExplorationPlayer {})
                                {:nb-sims 100
@@ -38,13 +38,17 @@
 (use-fixtures :each multi-impl-fixture)
 
 (deftest update-children-test
-  (let [test-node
-        (reduce #(sut/append-child %1 %2)
-                ((-> test-player :node-constructor) (-> world-state ::gs/game-state))
-                '(:up :down :right))
-        updated-node (#'sut/update-children test-node)]
-    (is (contains? (sut/children updated-node) :left))
-    (is (= (#'sut/update-children updated-node) updated-node))))
+  ;; test only valid for te-node & dag-node
+  (let [java-dag-node-player?
+        (= (str(:node-constructor test-player)) "#'mzero.ai.players.java-dag/java-dag-node")]
+    (or java-dag-node-player? 
+        (let [test-node
+              (reduce #(sut/append-child %1 %2)
+                      ((-> test-player :node-constructor) (-> world-state ::gs/game-state))
+                      '(:up :down :right))
+              updated-node (#'sut/update-children test-node)]
+          (is (contains? (sut/children updated-node) :left))
+          (is (= (#'sut/update-children updated-node) updated-node))))))
 
 (deftest tree-exploration-player-test  
   (let [nb-sims (:nb-sims test-player)
@@ -55,7 +59,7 @@
                 (-> tree-root ::sut/children vals)))
     (is (= ge/directions (keys (sut/children tree-root))))
     (is (every? #(>= (::sut/frequency %) 25) (vals (sut/children tree-root))))
-    (is (= (-> tree-root (sut/get-descendant [:up]) sut/value) 1))))
+    (is (= (int (-> tree-root (sut/get-descendant [:up]) sut/value)) 1))))
 
 (deftest te-exploration-simulation-test
   (testing "Player should go eat the close fruit (up then right), then reset tree
@@ -118,8 +122,8 @@
     1/ ERROR: recursivity in tree-simulate should not throw
     stackoverflow even big boards
 
-    2/ FAILURE: it should perform about 20Kops/secs, on big boards.
-    An op is ~ a call to tree-simulate. Amounts to about "
+    2/ FAILURE: it should perform about 100Kops/secs, on big boards.
+    An op is ~ a call to tree-simulate. Also, at least 1000 sims per secs."
     (with-redefs [sut/tree-simulate (count-calls sut/tree-simulate)]
       (let [expected-sims-per-sec 1000
             board-size 50, nb-steps 10, sims-per-step 500
@@ -141,5 +145,5 @@
         (is (not (nil? game-result)) (str "time > than " time-to-run-ms))
         (let [nb-ops ((:call-count (meta sut/tree-simulate)))
               time-in-s (/ (first game-result) 1000)]
-          (is (> (/ nb-ops time-in-s) 300000)
+          (is (> (/ nb-ops time-in-s) 100000)
               (str "Nb of steps " nb-ops " in time " time-in-s)))))))
