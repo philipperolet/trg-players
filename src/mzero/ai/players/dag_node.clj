@@ -1,37 +1,10 @@
 (ns mzero.ai.players.dag-node
   "DagNodeImpl: nodes are shallow, no data except for position information on the
-board (incl. dag map & board size). Data is held by the `dag-map`"
+  board (incl. dag map & board size). Data is held by the `dag-map`"
   (:require [mzero.game.events :as ge]
             [mzero.game.board :as gb]
-            [mzero.ai.players.tree-exploration :as te]))
-
-(defn- merge-nodes
-  "Given 2 nodes with freq/value data, return a new node with merged data."
-  [node node2]
-  (if (and node node2)
-    (-> node
-        (update ::te/frequency #(+ % (-> node2 ::te/frequency)))
-        (update ::te/value #(min % (-> node2 ::te/value))))
-    (if node node node2)))
-
-(defn- update-this-dag-node
-  "For all elts of the child's dag map, update the root node dag-map's
-  corresponding elt"
-  [this [direction child]]
-  (let [relative-position
-        #(ge/move-position % direction (-> this :board-size))
-        update-relative-position
-        (fn [acc pos node]
-          (update acc :dag-map
-                  (fn [dm]
-                    (update-in dm (relative-position pos) #(merge-nodes % node)))))]
-    (reduce-kv (fn [acc1 row node-row]
-                 (reduce-kv (fn [acc2 col node]
-                              (update-relative-position acc2 [row col] node))
-                            acc1
-                            node-row))
-               this
-               (-> child :dag-map))))
+            [mzero.ai.players.tree-exploration :as te]
+            [clojure.data.generators :as g]))
 
 (def get-children-position-map
   (memoize
@@ -96,7 +69,9 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
                   positions-map
                   get-value-from-position
                   trim-nil)
-             ge/directions)))
+             (if (:random-min @te/tuning)
+               (g/shuffle ge/directions)
+               ge/directions))))
   
   (-children [{:as this, :keys [position board-size]}]
     (let [positions-map
@@ -132,8 +107,7 @@ board (incl. dag map & board size). Data is held by the `dag-map`"
            ::te/children
            (reduce #(assoc %1 %2 (compute-merged-node-in-direction %2 children))
                    {}
-                   ge/directions))
-    #_(reduce update-this-dag-node this children)))
+                   ge/directions))))
 
 (defn dag-node
   "DagNodeImpl constructor"
