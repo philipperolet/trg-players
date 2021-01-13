@@ -183,30 +183,42 @@
 
 (defn- simulate-on-each-direction
   "Run simulations on a given direction, for the purpose of parallel
-  computing with a factor 4."
-  [this world direction]
-  (let [state-at-direction (ge/move-player (::gs/game-state world) direction)]
-    (cond
-      ;; if moving to this direction gets a fruit
-      (< (::gs/score (::gs/game-state world)) (::gs/score state-at-direction))
-      {direction (-> ((:node-constructor this) state-at-direction)
-                     (assoc-value 0))}
-      ;; if there's a wall
-      (= (::gs/player-position (::gs/game-state world))
-         (::gs/player-position state-at-direction))
-      {direction (-> ((:node-constructor this) state-at-direction)
-                     (assoc-value ##Inf))}
+  computing with a factor 4. Simulations make use of randomness,
+  `seed` allows for repeatability"
+  [this world seed direction]
+  (binding [g/*rnd* (java.util.Random. seed)]
+    (let [state-at-direction (ge/move-player (::gs/game-state world) direction)]
+      (cond
+        ;; if moving to this direction gets a fruit
+        (< (::gs/score (::gs/game-state world)) (::gs/score state-at-direction))
+        {direction (-> ((:node-constructor this) state-at-direction)
+                       (assoc-value 0))}
+        ;; if there's a wall
+        (= (::gs/player-position (::gs/game-state world))
+           (::gs/player-position state-at-direction))
+        {direction (-> ((:node-constructor this) state-at-direction)
+                       (assoc-value ##Inf))}
 
-      :else;; else, do the whole simulation
-      {direction  (simulate-games state-at-direction
-                                  ((:node-constructor this) state-at-direction)
-                                  (/ (-> this :nb-sims) (count ge/directions)))})))
+        :else ;; else, do the whole simulation
+        {direction  (simulate-games state-at-direction
+                                    ((:node-constructor this) state-at-direction)
+                                    (/ (-> this :nb-sims) (count ge/directions)))}))))
 
-(defn- compute-root-node [this world]
-  (->> ge/directions
-       (pmap (partial simulate-on-each-direction this world))
-       (apply merge)
-       (create-root-node ((:node-constructor this) (::gs/game-state world)))))
+(defn- compute-root-node
+  "Compute best next move by running game simulations from the root node.
+  Simulations are run sequentially on each direction, and in // for
+  the 4 directions, each on 1 thread. Proper random seeding requires
+  g/*rnd* to be bound thread-locally, otherwise random concurrent
+  access would make the seeding useless. Therefore 4 seeds are
+  computed from the players' rng to be passed to
+  `simulate-on-each-direction`"
+  [this world]
+  (let [direction-seeds
+        (binding [g/*rnd* (:rng this)] (vec (repeatedly 4 g/int)))]
+    (->> ge/directions
+         (pmap (partial simulate-on-each-direction this world) direction-seeds)
+         (apply merge)
+         (create-root-node ((:node-constructor this) (::gs/game-state world))))))
 
 (defrecord TreeExplorationNodeImpl []
   TreeExplorationNode
