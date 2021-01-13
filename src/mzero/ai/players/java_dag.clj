@@ -1,7 +1,8 @@
 (ns mzero.ai.players.java-dag
   (:require [mzero.game.events :as ge]
             [mzero.game.board :as gb]
-            [mzero.ai.players.tree-exploration :as te]))
+            [mzero.ai.players.tree-exploration :as te]
+            [clojure.data.generators :as g]))
 
 (defn- get-node-to-aggregate [direction1 direction2 children]
   (let [opposed-directions {:up :down, :down :up, :right :left, :left :right}]
@@ -42,8 +43,10 @@
     this)
   (min-direction [{:as this, :keys [position board-size]} sort-key]
     (let [get-value-from-direction
-          #(sort-key (te/get-child this %))]
-      (apply min-key get-value-from-direction ge/directions)))
+          #(sort-key (te/get-child this %))
+          directions
+          (cond-> ge/directions (:random-min @te/tuning) g/shuffle)]
+      (apply min-key get-value-from-direction directions)))
   
   (-children [{:as this, :keys [position board-size]}]
     (let [add-child-from-direction
