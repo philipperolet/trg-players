@@ -21,18 +21,21 @@
 
 (def ^:dynamic test-player)
 (defn- multi-impl-fixture
-  "Allows to run the same tests for various immplementations of
-  nodes (via the node constructor)"
+  "Allows to run the same tests for various parameters of tree
+  exploration, namely implementations of nodes (via the node
+  constructor), and random-min tuning flag."
   [f]
   (doseq [constructor ["tree-exploration/te-node"
                        "java-dag/java-dag-node"
-                       "dag-node/dag-node"]]
+                       "dag-node/dag-node"]
+          random-min-val [false true]]
     (binding [test-player
               (aip/init-player (sut/map->TreeExplorationPlayer {})
                                {:nb-sims 100
                                 :node-constructor constructor
-                                :seed 42}
+                                :seed 43}
                                world-state)]
+      (swap! sut/tuning assoc :random-min random-min-val)
       (f))))
 
 (use-fixtures :each multi-impl-fixture)
@@ -147,3 +150,30 @@
               time-in-s (/ (first game-result) 1000)]
           (is (> (/ nb-ops time-in-s) 100000)
               (str "Nb of steps " nb-ops " in time " time-in-s)))))))
+
+(deftest ^:integration proper-random-seeding
+  :unstrumented
+  (let [game-world
+        (aiw/get-initial-world-state
+         (gg/create-nice-game 15 {::gg/density-map {:fruit 5}} 42))
+        steps-for-run-with-player
+        #(-> (aim/run (aim/parse-run-args "-v WARNING") game-world %)
+             :world
+             ::aiw/game-step)]
+    (testing "On the same board with same initial conditions, 2 games
+  running with same seeding should have same number of steps."
+      (let [test-player1 (assoc test-player :rng (java.util.Random. 44))
+            test-player1-bis (assoc test-player :rng (java.util.Random. 44))
+            test-player2 (assoc test-player :rng (java.util.Random. 45))
+            test-player2-bis (assoc test-player :rng (java.util.Random. 45))]
+          (is (= (steps-for-run-with-player test-player1)
+                 (steps-for-run-with-player test-player1-bis)))
+          (is (= (steps-for-run-with-player test-player2)
+               (steps-for-run-with-player test-player2-bis)))))
+    (testing "Games with different seeding should have different
+  number of steps (with and without random-min flag as per
+  multi-impl-fixture)"
+      (let [test-player1 (assoc test-player :rng (java.util.Random. 44))
+            test-player2 (assoc test-player :rng (java.util.Random. 45))]
+        (is (not= (steps-for-run-with-player test-player1)
+                 (steps-for-run-with-player test-player2)))))))
