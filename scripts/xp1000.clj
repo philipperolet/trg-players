@@ -11,7 +11,8 @@
             [mzero.game.events :as ge]
             [mzero.game.state :as gs]
             [mzero.ai.player :as aip]
-            [mzero.game.board :as gb]))
+            [mzero.game.board :as gb]
+            [clojure.string :as str]))
 
 (defn mean
   "Mean value of a sequence of numbers"
@@ -67,7 +68,8 @@ Sum %,4G
          (->> (map-fn (partial apply xp-fn) args-list)
               (map measure-fn))
          measure-seqs
-         (cond->> measures (number? (first measures)) (map vector))
+         (cond->> measures
+           (number? (first measures)) (map vector))
          get-nth-measures
          (fn [i] (map #(nth % i) measure-seqs))]
 
@@ -140,7 +142,7 @@ Sum %,4G
 (defn -compare-sht2
   "For random, an op is just the number of steps played"
   [board-size nb-xps node-type & tunings]
-  (prn "Starting")
+  (prn "XP: " (str/join "/" (into [board-size nb-xps node-type] tunings)))
   (let [player-opts
         (reduce #(assoc-in %1 [:tuning (keyword %2)] true)
                 {:node-constructor node-type
@@ -150,18 +152,27 @@ Sum %,4G
         option-string
         (format "-v WARNING -t tree-exploration -o '%s'" player-opts)
         measure-fn 
-        #(vector (first %)
-                 (-> % second :world ::aiw/game-step))
+        #(vector (-> % second :world ::aiw/game-step))
         timed-go
         (fn [world]
           (-> (u/timed (aim/go option-string world))
               (#(or (prn (measure-fn %)) %))))
         random-worlds
         (map (comp list aiw/get-initial-world-state)
-             (gg/generate-game-states nb-xps board-size 41 true))]
-    (display-measures (measure timed-go measure-fn random-worlds map)
-                      node-type
-                      "1.Time 2.Steps /")))
+             (gg/generate-game-states nb-xps board-size 41 true))
+        measures
+        (measure timed-go measure-fn random-worlds map)
+        timing
+        (first (u/timed (display-measures measures "Steps")))]
+    (prn "Time: " timing " / Average per game: " (/ timing nb-xps))))
+
+(defn -xp-
+  "Experiment with 3 node types for tree-exploration: te-node, dag-node,
+  java-dag-node. For each, tries no tuning, random-min tuning,
+  wall-fix, and both."
+  [board-size nb-xps node-type & tunings]
+  ())
+
 (defn -runcli [& args]
   (apply (resolve (symbol (str "xp1000/" (first args))))
          (map read-string (rest args))))
