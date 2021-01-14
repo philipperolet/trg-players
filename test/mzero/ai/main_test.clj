@@ -21,7 +21,7 @@
                        (assoc-in [::gb/game-board 3 3] :fruit)
                        (assoc ::gs/enemy-positions []))
         game-result (:world (aim/run
-                             (aim/parse-run-args (str "-r " game-runner))
+                             (aim/parse-run-args "-r %s -v WARNING" game-runner)
                              (aiw/get-initial-world-state test-state)))]      
     (is (= :won (-> game-result ::gs/game-state ::gs/status)))
     
@@ -32,7 +32,8 @@
                    '([1 1] [3 2] [3 3]))
            (-> game-result ::gs/game-state ::gb/game-board)))
     (testing "If number of steps is given, stops after said number of steps"
-      (is (= 50 (->> (aim/run (aim/parse-run-args (str "-n 50 -r " game-runner)))
+      (is (= 50 (->> (aim/run
+                       (aim/parse-run-args "-v WARNING -n 50 -r %s" game-runner))
                      :world
                      ::aiw/game-step))))))
 
@@ -43,7 +44,9 @@
   (testing "Interactive mode : after going through 2 loops then
   quitting, there should be 3*STEPS performed"
     (with-in-str "\n\nq\n"
-      (is (= (-> (aim/run (aim/parse-run-args "-i -n 33")) :world ::aiw/game-step)
+      (is (= (-> (aim/run (aim/parse-run-args "-i -n 33 -v WARNING"))
+                 :world
+                 ::aiw/game-step)
              99)))))
 
 (deftest run-test-interactive-quit

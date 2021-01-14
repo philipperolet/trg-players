@@ -69,7 +69,7 @@
     exploration from scratch--meaning after a simulation run the
     frequency of the root will be exactly the number of simlations"
     (let [{:keys [world player]}
-          (aim/run (aim/parse-run-args "-t tree-exploration -n 2")
+          (aim/run (aim/parse-run-args "-t tree-exploration -n 2 -v WARNING")
             world-state test-player)
           nb-sims (:nb-sims player)
           root-node-after-sim
@@ -139,7 +139,7 @@
             (future
               (u/timed
                (aim/run
-                 (aim/parse-run-args "-n %d" nb-steps)
+                 (aim/parse-run-args "-n %d -v WARNING" nb-steps)
                  initial-world
                  (assoc test-player :nb-sims sims-per-step))))
             game-result

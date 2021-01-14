@@ -37,7 +37,7 @@
         (atom (-> (aiw/get-initial-world-state
                    (gg/create-nice-game 8 {::gg/density-map {:fruit 5}}))
                   (assoc ::ctr/missteps 0)))
-        opts (parse-run-args "-p 50 -g 50 -r ClockedThreadsRunner")]
+        opts (parse-run-args "-p 50 -g 50 -r ClockedThreadsRunner -v WARNING")]
     (testing "When running a step takes less time to run than game
     step duration, it waits for the remaining time (at ~3ms resolution)"
       (let [player-state (atom (->RandomPlayer))
@@ -75,5 +75,5 @@
       (is (thrown-with-msg?
            java.lang.Exception
            #".*I crashed!.*"
-           (aim/run (aim/parse-run-args "-r ClockedThreadsRunner")))))))
+           (aim/run (aim/parse-run-args "-v WARNING -r ClockedThreadsRunner")))))))
 
