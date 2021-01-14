@@ -1,5 +1,13 @@
 # Plan
 
+### v0.2.1c
+- nouvelle branche v0.2.1c
+- java-dag game tourne indéfiniement dans les tests de seeding : investiguer
+- coder l'xp correspondant à experiments.md
+  - la lancer, consigner les résultats
+- retirer le move-position le moins performant
+- retirer ou nettoyer les elts de tuning
+
 ## Backlog
 
 ### v0.2.2 - Player senses
@@ -19,12 +27,28 @@
 - then look up DL players
 - then look up alphazero
 
+
+
 ## Changelog
 ### v0.2.1b - Cleaning & split
+- tree-exploration behaviour flags
+  - wall-fix : mark a move with a wall as already infinitely explored
+  - random-min : randomness in choosing simulation path between directions explored with same frequency
+- performance improvements / experiments
+  - dag-node to use an underlyin
+  - java-dag to use java arrays rather than vectors
+  - movePosition as compiled java method
+  - micro-optims : direct coll calls rather than get, min-direction tuning...
+- repeatable randomness via seeding of random-using functions
 - remove direction from tree-node spec, keep it only as children map key spec
-- fix blocking bug
-- Split cljs part from core clj part in separate project
+- multiple bugfixes (blocking bugs while running games)
+- Split cljs part from core clj part in separate project : claby / mzero
 - remove zipper impl from tree exploration
+
+#### Notes : repeatable randomness
+- Décision d'utiliser `clojure.data.generators`
+  -> attention, le générateur est seedé à 42 par défaut et donc par défaut suit toujours la même séquence de hasard
+- Tricky bug : même seedé, le hasard n'est pas répétable si plusieurs exécutions parallèles utilisent la même instance de RNG
 
 ### v0.2.1 - Tree exploration player (double impl.)
 - added tree-exploration-player
