@@ -40,6 +40,7 @@
 ref: séparer les utils des xps de xp1000
 fix: mzero.utils.xp/std retourne -1.0 au lieu d'une erreur lorsqu'il n'y a qu'une mesure
 fix: assure qu'utils.xp/measure exécute les mesures lorsqu'on l'appelle
+fix: MovePosition.java en dur et pas en lien
 
 ### v0.2.1b - Cleaning & split
 - tree-exploration behaviour flags
