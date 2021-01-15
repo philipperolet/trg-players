@@ -30,7 +30,7 @@
 
 (def display-string "
 %s (%d measures)
-===
+---
 Mean %,4G +- %,4G
 Std %,4G
 Sum %,4G
@@ -72,7 +72,7 @@ Sum %,4G
 
 (defn display-measures
   ([measures data name]
-   (println (format "\n---\nXp '%s' with data %s\n---\n" name data))
+   (println (format "---\nXp '%s'\nData %s\n---" name data))
    (if measures
      (dotimes [n (count measures)]
        (display-stats (str name " " n) (nth measures n)))
