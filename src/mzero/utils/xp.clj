@@ -64,7 +64,8 @@ Sum %,4G
          (fn [i] (map #(nth % i) measure-seqs))]
 
      (if (valid-measure-seqs? measure-seqs)
-       (map get-nth-measures (range (count (first measure-seqs))))
+       ;; vec used to realize lazy seq
+       (vec (map get-nth-measures (range (count (first measure-seqs)))))
        nil)))
   ([xp-fn measure-fn args-list]
    (measure xp-fn measure-fn args-list pmap)))
