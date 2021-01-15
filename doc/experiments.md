@@ -1,30 +1,20 @@
-# 18/12/2020 - 07/01/2020
+# 2021-01 : te-impl-speed
 
-## Set 1
-Experiments on :
+3 implémentations du fonctionnement du tree-exploration player existent: te-node, dag-node, java-dag-node
+
+Il y a 3 tunings possibles :
 - wall-fix = if wall encountered, set freq to infinity so this path is never again selected
 - random-min = chose randomly what child to explore when they have the same frequency
+- move-position = is implemented in Clojure and in Java
 
-Observation : 
-- size 26, 10 xps : wall fix should reduce number of steps but instead increases it
+L'xp doit trouver quel est le plus rapide en temps et en nombre de steps.
+Par rapport à la baseline :
+- wall-fix devrait < le nb de steps sans augmenter le temps/step
+- random-min devrait < le nb de steps en augmentant le temps/step suffisamment faiblement donc diminution
+- movePosition en java devrait diminuer le temps total sans baisser le nb de steps
 
-Hypothesis :
-- Deterministic behaviour in choosing children leads to excessive required steps on some boards, skewing results if done on not enough boards
+L'ordre de rapidité des implems devrait théoriquement être te-node (lent) < dag-node < java-node (rapide).
 
-Confirmation #1 : this should not be observed on larger nb of xps, i.e. 100 xps
-Confirmation #2 : randomizing children selection should lead back to wall fix dominance over non-wall fix
+On va faire toutes les expériences correspondantes. 
 
-Test #1 : 100 boards of size 27, on cloud, with & without wall fix
-Test #2 : same but with randmin activated
-
-## Set 2
-Experiment on speed improvement with java implementation of move-position.
-Hypotheses :
-- Should not alter game results (with same seed)
-- Should go substantially faster
-
-Experiments to confirm : same as set 1 but with java-posi
-- check step numbers are the same
-- check speed numbers match
-
-
+Les expériences groupées par paramètres identiques étant parallélisées, une mesure de temps sur une expérience individuelle n'a pas de valeur (car le temps peut être arbitrairement court ou long selon le temps accordé par l'os au thread de l'xp). La seule mesure pertinente est de prendre le temps total et diviser par le nombre d'expériences.
