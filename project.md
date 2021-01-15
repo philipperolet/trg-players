@@ -4,10 +4,9 @@
   - ne se produit significativement qu'avec dag-node, pas java-dag ni te-node
   - décision : wall-fix est mis permanent (éliminant les occurences du pb)
 
-- définir le flot git pour les xps
-
-- définir nouvelle branche v0.2.2
-
++ définir le flot git pour les xps
++ définir nouvelle branche v0.2.2
++ fixer l'auth git emacs magit
 ### v0.2.2
 - séparer les utils des xps dans xp1000
 - coder l'xp correspondant à experiments.md
