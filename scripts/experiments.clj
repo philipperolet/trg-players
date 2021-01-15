@@ -42,7 +42,7 @@
             (map (comp list aiw/get-initial-world-state)
                  (gg/generate-game-states nb-xps board-size 41 true))
             measures
-            (u/timed (measure timed-go measure-fn random-worlds map))
+            (u/timed (measure timed-go measure-fn random-worlds pmap))
             timing
             (first measures)]
         (display-measures (second measures)
