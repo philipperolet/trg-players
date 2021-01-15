@@ -1,5 +1,5 @@
-(ns xp1000-test
-  (:require [xp1000 :as x]
+(ns mzero.utils.xp-test
+  (:require [mzero.utils.xp :as x]
             [clojure.test :refer [deftest is]]))
 
 (deftest measure-test
