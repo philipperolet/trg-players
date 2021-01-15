@@ -1,16 +1,23 @@
 # Plan
++ dag-node impl.: jeu régulièrement bloqué (player fait des aller-retours)
+  - wall-fix & random-min off
+  - ne se produit significativement qu'avec dag-node, pas java-dag ni te-node
+  - décision : wall-fix est mis permanent (éliminant les occurences du pb)
 
-### v0.2.1c
-- nouvelle branche v0.2.1c
-- java-dag game tourne indéfiniement dans les tests de seeding : investiguer
+- définir le flot git pour les xps
+
+- définir nouvelle branche v0.2.2
+
+### v0.2.2
+- séparer les utils des xps dans xp1000
 - coder l'xp correspondant à experiments.md
-  - la lancer, consigner les résultats
+- la lancer, consigner les résultats
 - retirer le move-position le moins performant
-- retirer ou nettoyer les elts de tuning
+- retirer ou nettoyer wall-fix & random-min selon sélection
 
 ## Backlog
 
-### v0.2.2 - Player senses
+### v0.2.3 - Player senses
 - rewrite random using player senses
 - rewrite exhaustive using player senses
 - rewrite tree-exploration using player senses
@@ -32,7 +39,7 @@
 ## Changelog
 ### v0.2.1b - Cleaning & split
 - tree-exploration behaviour flags
-  - wall-fix : mark a move with a wall as already infinitely explored
+  - wall-fix : mark a move with a wall as already infinitely explored, so it won't be selected in next sims
   - random-min : randomness in choosing simulation path between directions explored with same frequency
 - performance improvements / experiments
   - dag-node to use an underlyin
