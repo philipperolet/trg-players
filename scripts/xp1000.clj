@@ -1,5 +1,5 @@
 (ns xp1000
-  "Run 1000 times games with 2 types of player and compares the results,
+  "Legacy. Run 1000 times games with 2 types of player and compares the results,
   giving the good stats."
   (:require [mzero.ai.main :as aim]
             [mzero.ai.world :as aiw]
@@ -90,12 +90,6 @@
         (first (u/timed (display-measures measures "Steps")))]
     (prn "Time: " timing " / Average per game: " (/ timing nb-xps))))
 
-(defn -xp-
-  "Experiment with 3 node types for tree-exploration: te-node, dag-node,
-  java-dag-node. For each, tries no tuning, random-min tuning,
-  wall-fix, and both."
-  [board-size nb-xps node-type & tunings]
-  ())
 
 (defn -runcli [& args]
   (apply (resolve (symbol (str "xp1000/" (first args))))

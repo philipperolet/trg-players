@@ -4,11 +4,13 @@
   - ne se produit significativement qu'avec dag-node, pas java-dag ni te-node
   - décision : wall-fix est mis permanent (éliminant les occurences du pb)
 
+
+### v0.2.2
 + définir le flot git pour les xps
 + définir nouvelle branche v0.2.2
 + fixer l'auth git emacs magit
-### v0.2.2
-- séparer les utils des xps dans xp1000
++ séparer les utils des xps de xp1000
+
 - coder l'xp correspondant à experiments.md
 - la lancer, consigner les résultats
 - retirer le move-position le moins performant
@@ -33,9 +35,11 @@
 - then look up DL players
 - then look up alphazero
 
-
-
 ## Changelog
+### v0.2.2
++ séparer les utils des xps de xp1000
++ mzero.utils.xp/std retourne -1.0 au lieu d'une erreur lorsqu'il n'y a qu'une mesure
+
 ### v0.2.1b - Cleaning & split
 - tree-exploration behaviour flags
   - wall-fix : mark a move with a wall as already infinitely explored, so it won't be selected in next sims
@@ -177,4 +181,5 @@
 - create game with empty board, working test
 - allow magit auth with 2fa outside emacs
 - Hello world in a browser
+
 

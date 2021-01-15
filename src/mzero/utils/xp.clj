@@ -8,11 +8,13 @@
   (double (/ (reduce + l) (count l))))
 
 (defn std
-  "Standard deviation of a sequence of numbers."
+  "Standard deviation of a sequence of numbers. Returns -1.0 if only 1 measure"
   [l]
-  (let [mean-val (mean l)]
-    (Math/sqrt (-> (reduce + (map #(let [val (- % mean-val)] (* val val)) l))
-                   (/ (dec (count l)))))))
+  (if (= (count l) 1)
+    -1.0
+    (let [mean-val (mean l)]
+      (Math/sqrt (-> (reduce + (map #(let [val (- % mean-val)] (* val val)) l))
+                     (/ (dec (count l))))))))
 
 (defn confidence
   "Estimation of 90% confidence interval half-size, assuming normal
