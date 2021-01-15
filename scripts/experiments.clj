@@ -31,7 +31,7 @@
                      :tuning {}}
                     tunings)
             option-string
-            (format "-v WARNING -t tree-exploration -o '%s'" player-opts)
+            (format "-v WARNING -t tree-exploration -o '%s' -n 50000" player-opts)
             measure-fn 
             #(vector (-> % second :world ::aiw/game-step))
             timed-go
