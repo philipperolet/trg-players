@@ -20,7 +20,7 @@
 
 (s/def ::movement (s/tuple ::being ::direction))
 
-(def move-position-java false)
+(def move-position-java true)
 
 (if move-position-java
   (defmacro move-position
