@@ -51,7 +51,7 @@
 
 (deftest run-test-interactive-quit
   (with-in-str "q\n"
-    (let [game-result (aim/run (aim/parse-run-args "-i -n 15"))]
+    (let [game-result (aim/run (aim/parse-run-args "-i -n 15 -v WARNING"))]
       (is (= (-> game-result :world ::aiw/game-step) 15)))))
 
 

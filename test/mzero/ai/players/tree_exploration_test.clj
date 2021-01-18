@@ -26,8 +26,7 @@
   constructor), and random-min tuning flag."
   [f]
   (doseq [constructor ["tree-exploration/te-node"
-                       "java-dag/java-dag-node"
-                       "dag-node/dag-node"]
+                       "java-dag/java-dag-node"]
           random-min-val [false true]]
     (binding [test-player
               (aip/init-player (sut/map->TreeExplorationPlayer {})
@@ -41,7 +40,7 @@
 (use-fixtures :each multi-impl-fixture)
 
 (deftest update-children-test
-  ;; test only valid for te-node & dag-node
+  ;; test only valid for te-node
   (let [java-dag-node-player?
         (= (str(:node-constructor test-player)) "#'mzero.ai.players.java-dag/java-dag-node")]
     (or java-dag-node-player? 
@@ -125,7 +124,7 @@
     1/ ERROR: recursivity in tree-simulate should not throw
     stackoverflow even big boards
 
-    2/ FAILURE: it should perform about 100Kops/secs, on big boards.
+    2/ FAILURE: it should more than 75Kops/secs, on big boards.
     An op is ~ a call to tree-simulate. Also, at least 1000 sims per secs."
     (with-redefs [sut/tree-simulate (count-calls sut/tree-simulate)]
       (let [expected-sims-per-sec 1000
@@ -148,7 +147,7 @@
         (is (not (nil? game-result)) (str "time > than " time-to-run-ms))
         (let [nb-ops ((:call-count (meta sut/tree-simulate)))
               time-in-s (/ (first game-result) 1000)]
-          (is (> (/ nb-ops time-in-s) 100000)
+          (is (> (/ nb-ops time-in-s) 75000)
               (str "Nb of steps " nb-ops " in time " time-in-s)))))))
 
 (deftest ^:integration proper-random-seeding

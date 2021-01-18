@@ -257,7 +257,7 @@
 
 (defn- get-constructor-from-opts [opts]
   (let [constructor-string
-          (->> (-> opts (:node-constructor "tree-exploration/te-node"))
+          (->> (-> opts (:node-constructor "java-dag/java-dag-node"))
                (str "mzero.ai.players."))]
     (#'clojure.core/serialized-require
      (symbol (first (str/split constructor-string #"/"))))
