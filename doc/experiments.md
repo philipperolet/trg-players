@@ -44,10 +44,23 @@ cat 2021-01-15-te-impl-speed-1.txt | grep "Data\|Time \|Mean"
 ### Performances
 #### Fréquents bloquages de dag-node & java-dag
 Si random-min n'est pas activé, 2 à 10% des parties "bloquent" (toujours rien après 50000 steps). Ça n'est pas observé avec te-node
+
+Encore plus observé avec dag-node (d'où l'absence d'xp dag node sans random-min ou wall-fix). Sur les 1-2 jeux observés, le player fait des aller-retours
+
 #### Java-dag impl la plus rapide
 Lorsque les blocages sont évités (random-min), java-dag clairement la plus rapide, facteur 2 sur le temps p/rap à dag-node (qui a sensiblement le mm nombre de steps)
+
+##### Bizzarrerie
+En revanche, java-dag va plus vite que te-node **parce qu'il a 3 fois moins de steps**. Le temps par step est bizarrement plus élevé que celui de te-node.
+
+##### Rogue XPs
+En augmentant la taille du board, pour comparer te-impl sans optim VS java-dag avec random-min + wall-fix (taille de board 40)
+	- on se maintient à en gros 3 fois plus rapide
+	- alors que bizarrement l'écart de steps augmente : 9 * plus de steps pour te-node (donc les steps sont 3 * plus lentes...)
+
 #### Random-min bonne optiomisation
 Step unique moins performante, mais réduction du nombre total de steps suffisant pour au global réduire le temps d'éxécution (divise par 2 ou 3 le nb de steps)
+
 #### Wall-fix bonne optimisation
 Remarque similaire à random-min bien que moins tranchés
 

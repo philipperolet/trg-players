@@ -7,9 +7,13 @@
 - partial -> oui comme tu penses et pas comme tu veux. sur le début.
 - let values are evaluated when run; but if the value is a function, the variables in the function (e.g. derefing an atom) are not -- all the bound values are bound, not free ;).
 - don't run a global-state-changing function in a namespace you'd import, it can have unexpected effects
+- Macro ~ inline pour les parties de code à vraiment optimiser
+- lein run & fails because of stdin, add </dev/null
 
 # Common knowledge
 - vector is variadic. vec works with a coll
+- How does one do a cartesian product in clojure?
+  - ```doseq```
 
 ### functions, var, dispatch
 - vars are stable references to values

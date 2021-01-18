@@ -1,12 +1,4 @@
 # Plan
-+ dag-node impl.: jeu régulièrement bloqué (player fait des aller-retours)
-  - wall-fix & random-min off
-  - ne se produit significativement qu'avec dag-node, pas java-dag ni te-node
-  - décision : wall-fix est mis permanent (éliminant les occurences du pb)
-
-
-### v0.2.2
-
 
 ## Backlog
 
