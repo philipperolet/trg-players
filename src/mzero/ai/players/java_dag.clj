@@ -43,10 +43,10 @@
     this)
   (min-direction [{:as this, :keys [position board-size]} sort-key]
     (let [get-value-from-direction
-          #(sort-key (te/get-child this %))
-          directions
-          (cond-> ge/directions (:random-min @te/tuning) g/shuffle)]
-      (apply min-key get-value-from-direction directions)))
+          #(sort-key (te/get-child this %))]
+      ;; random selection among multiple mins, better performance
+      ;; see te-speed-impl xp in v0.2.2 (random-min flag)
+      (apply min-key get-value-from-direction (g/shuffle ge/directions))))
   
   (-children [{:as this, :keys [position board-size]}]
     (let [add-child-from-direction

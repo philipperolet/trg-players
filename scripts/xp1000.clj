@@ -63,52 +63,9 @@
                         player-type
                         "1.Time 2.Steps /"))))
 
-(defn -compare-sht2
-  "For random, an op is just the number of steps played"
-  [board-size nb-xps node-type & tunings]
-  (prn "XP: " (str/join "/" (into [board-size nb-xps node-type] tunings)))
-  (let [player-opts
-        (reduce #(assoc-in %1 [:tuning (keyword %2)] true)
-                {:node-constructor node-type
-                 :seed 42
-                 :tuning {}}
-                tunings)
-        option-string
-        (format "-v WARNING -t tree-exploration -o '%s'" player-opts)
-        measure-fn 
-        #(vector (-> % second :world ::aiw/game-step))
-        timed-go
-        (fn [world]
-          (-> (u/timed (aim/go option-string world))
-              (#(or (prn (measure-fn %)) %))))
-        random-worlds
-        (map (comp list aiw/get-initial-world-state)
-             (gg/generate-game-states nb-xps board-size 41 true))
-        measures
-        (measure timed-go measure-fn random-worlds map)
-        timing
-        (first (u/timed (display-measures measures "Steps")))]
-    (prn "Time: " timing " / Average per game: " (/ timing nb-xps))))
-
-
 (defn -runcli [& args]
   (apply (resolve (symbol (str "xp1000/" (first args))))
          (map read-string (rest args))))
-
-(defn run-until-score [score tuning-opts]
-  (let [world
-        (aiw/get-initial-world-state
-         (first (gg/generate-game-states 1 26 41 true)))
-        player
-        (aip/init-player (te/map->TreeExplorationPlayer {})
-                         {:nb-sims 100
-                          :node-constructor "tree-exploration/te-node"
-                          :seed 42
-                          :tuning tuning-opts}
-                         (-> world ::gs/game-state))]
-    (aim/gon "-v WARNING -t tree-exploration -n 1" world player)
-    (while (< (-> (aim/n) :world ::gs/game-state ::gs/score) score))
-    (-> @aim/curr-game :world aiw/data->string)))
 
 (def node-path (atom []))
 
@@ -136,8 +93,3 @@
              update-in [:player :root-node]
              te/tree-simulate state (#'te/max-sim-size state))
       (println (gs/state->string @copied-state)))))
-
-(defn job [score]
-  [(println (run-until-score score {}))
-   (println (run-until-score score {:wall-fix true}))]
-  (swap! aim/curr-game assoc-in [:player :root-node] (te/te-node nil)))

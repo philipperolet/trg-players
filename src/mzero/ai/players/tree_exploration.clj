@@ -20,8 +20,6 @@
 
 (def default-nb-sims 200)
 
-(def tuning (atom {}))
-
 (defprotocol TreeExplorationNode
   "Interface for tree nodes--methods to perform tree exploration.
 
@@ -102,11 +100,12 @@
   (if (:values node) ;; ignore call for JavaDagImpl
     node
     (let [node-children (children node)
-          child-select (if (:random-min @tuning) g/rand-nth first)
           missing-child-directions
           (remove #(% node-children) ge/directions)]
       (if (not-empty missing-child-directions)
-        (append-child node (child-select missing-child-directions))
+        ;; random selection among next children, better perf
+        ;; see te-speed-impl xp in v0.2.2 (random-min flag)
+        (append-child node (g/rand-nth missing-child-directions))
         node))))
 
 (s/fdef tree-simulate
@@ -127,9 +126,7 @@
         ;; status :over used as flag to indicate a wall is here
         ;; infinity frequency means it will never again be selected to move
         (= (::gs/status game-state) :over)
-        (if (:wall-fix @tuning)
-          (assoc-frequency tree-node ##Inf)
-          tree-node)
+        (assoc-frequency tree-node ##Inf)
         
         (zero? sim-size)
         tree-node
@@ -236,8 +233,8 @@
     (apply min-key
            #(-> this children % sort-key)
            ;; directions for which there are children
-           (cond-> (keys (-> this children))
-             (:random-min @tuning) g/shuffle)))
+           ;; randomly selected for better perf see update-children
+           (g/shuffle (keys (-> this children)))))
   (update-children-in-direction [this direction f]
     (update-in this [::children direction] f))
   (get-child [this direction]
@@ -253,7 +250,7 @@
          ::frequency 0
          ::value ##Inf))
 
-(s/def ::options (s/map-of #{:nb-sims :node-constructor :seed :tuning} any?))
+(s/def ::options (s/map-of #{:nb-sims :node-constructor :seed} any?))
 
 (defn- get-constructor-from-opts [opts]
   (let [constructor-string
@@ -272,7 +269,6 @@
           (if-let [seed (-> opts :seed)]
             (java.util.Random. seed)
             (java.util.Random.))]
-      (reset! tuning (:tuning opts))
       (assoc this
              :nb-sims (-> opts (:nb-sims default-nb-sims))
              :node-constructor (get-constructor-from-opts opts)

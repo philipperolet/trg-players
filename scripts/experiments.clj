@@ -1,4 +1,10 @@
 (ns experiments
+  "Experiments.
+
+  WARNING: xp code written here SHOULD ONLY BE EXPECTED TO WORK WHEN
+  IT WAS COMMITTED. They MAY work on the whole xp branch to which they
+  belong, and probably won't work elsewhere. This is by design, this
+  code is not meant to be maintained."
   (:require [mzero.ai.main :as aim]
             [mzero.ai.world :as aiw]
             [mzero.game.generation :as gg]

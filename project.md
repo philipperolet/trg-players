@@ -13,8 +13,6 @@
 + coder l'xp correspondant à experiments.md
 + la lancer, consigner les résultats
 + xp: résultats formatés pour comparaison simple, conclusions notées
-+ ref: dag-node est supprimé, le défaut pour tree-exploration est java-dag
-- feat: wall-fix & random-min sont intégrés, l'option de tuning est cleanée
 - ref: move-position java est supprimé
 
 ## Backlog
@@ -38,6 +36,8 @@
 
 ## Changelog
 ### v0.2.2
+feat: wall-fix & random-min sont intégrés, l'option de tuning est cleanée
+ref: supprime dag-node, met java-dag impl par défaut pour tree-xplo
 xp: java-dag, random-min, wall-fix, clojure-based move-position sont les plus rapides
 ref: séparer les utils des xps de xp1000
 fix: mzero.utils.xp/std retourne -1.0 au lieu d'une erreur lorsqu'il n'y a qu'une mesure

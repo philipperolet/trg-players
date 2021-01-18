@@ -22,19 +22,17 @@
 (def ^:dynamic test-player)
 (defn- multi-impl-fixture
   "Allows to run the same tests for various parameters of tree
-  exploration, namely implementations of nodes (via the node
-  constructor), and random-min tuning flag."
+  exploration. Here various implementations of nodes (via the node
+  constructor)."
   [f]
   (doseq [constructor ["tree-exploration/te-node"
-                       "java-dag/java-dag-node"]
-          random-min-val [false true]]
+                       "java-dag/java-dag-node"]]
     (binding [test-player
               (aip/init-player (sut/map->TreeExplorationPlayer {})
                                {:nb-sims 100
                                 :node-constructor constructor
                                 :seed 43}
                                world-state)]
-      (swap! sut/tuning assoc :random-min random-min-val)
       (f))))
 
 (use-fixtures :each multi-impl-fixture)
