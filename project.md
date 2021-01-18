@@ -6,14 +6,7 @@
 
 
 ### v0.2.2
-+ définir le flot git pour les xps
-+ définir nouvelle branche v0.2.2
-+ fixer l'auth git emacs magit
-+ séparer les utils des xps de xp1000
-+ coder l'xp correspondant à experiments.md
-+ la lancer, consigner les résultats
-+ xp: résultats formatés pour comparaison simple, conclusions notées
-- ref: move-position java est supprimé
+
 
 ## Backlog
 
@@ -36,13 +29,14 @@
 
 ## Changelog
 ### v0.2.2
-feat: wall-fix & random-min sont intégrés, l'option de tuning est cleanée
-ref: supprime dag-node, met java-dag impl par défaut pour tree-xplo
-xp: java-dag, random-min, wall-fix, clojure-based move-position sont les plus rapides
-ref: séparer les utils des xps de xp1000
-fix: mzero.utils.xp/std retourne -1.0 au lieu d'une erreur lorsqu'il n'y a qu'une mesure
-fix: assure qu'utils.xp/measure exécute les mesures lorsqu'on l'appelle
-fix: MovePosition.java en dur et pas en lien
+- ref: move-position java est supprimé
+- feat: supprime param tuning, intègre wall-fix & random-min par défaut
+- ref: supprime dag-node, met java-dag impl par défaut pour tree-xplo
+- xp: java-dag, random-min, wall-fix, clojure-based move-position sont les plus rapides
+- ref: séparer les utils des xps de xp1000
+- fix: mzero.utils.xp/std retourne -1.0 au lieu d'une erreur lorsqu'il n'y a qu'une mesure
+- fix: assure qu'utils.xp/measure exécute les mesures lorsqu'on l'appelle
+- fix: MovePosition.java en dur et pas en lien
 
 ### v0.2.1b - Cleaning & split
 - tree-exploration behaviour flags

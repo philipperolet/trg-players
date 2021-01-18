@@ -16,5 +16,4 @@
 
   :jvm-opts ["-Xss1g"]
   :source-paths ["src" "scripts"]
-  :java-source-paths ["src/mzero/game"]
   :main mzero.ai.main)
