@@ -5,24 +5,9 @@
             [mzero.utils.utils :as u]
             [mzero.utils.xp :refer [measure display-measures]]))
 
-
-(defn te-impl-speed
-  "Experiment with 3 node types for tree-exploration: te-node, dag-node,
-  java-dag-node. For each, tries no tuning, random-min tuning,
-  wall-fix, and both.
-
-  For dag-node either wall-fix or random-min is kept on since
-  otherwise it may block."
-  [board-size nb-xps]
-  (println "Te-impl-speed Experiment - " (java.util.Date.))
-  (println "Board size " board-size)
-  (println "Nb xps per param " nb-xps "\n\n")
-  (doseq [node-type ["tree-exploration/te-node"
-                     "java-dag/java-dag-node"
-                     "dag-node/dag-node"]
-          tunings [[] ["wall-fix"] ["random-min"] ["wall-fix" "random-min"]]]
-    (when (not (and (= node-type "dag-node/dag-node") (empty? tunings)))
-      (let [board-size (read-string board-size)
+(defn te-impl-speed-single-run
+  [board-size nb-xps node-type & tunings]
+  (let [board-size (read-string board-size)
             nb-xps (read-string nb-xps)
             player-opts
             (reduce #(assoc-in %1 [:tuning (keyword %2)] true)
@@ -42,11 +27,29 @@
             (map (comp list aiw/get-initial-world-state)
                  (gg/generate-game-states nb-xps board-size 41 true))
             measures
-            (u/timed (measure timed-go measure-fn random-worlds pmap))
+            (u/timed (measure timed-go measure-fn random-worlds map))
             timing
             (first measures)]
         (display-measures (second measures)
                           (str node-type " " tunings)
                           "Steps")
         (println "Time: " timing)
-        (println "Time (Average per game): " (/ timing nb-xps) "\n\n")))))
+        (println "Time (Average per game): " (/ timing nb-xps) "\n\n")))
+
+(defn te-impl-speed
+  "Experiment with 3 node types for tree-exploration: te-node, dag-node,
+  java-dag-node. For each, tries no tuning, random-min tuning,
+  wall-fix, and both.
+
+  For dag-node either wall-fix or random-min is kept on since
+  otherwise it may block."
+  [board-size nb-xps]
+  (println "Te-impl-speed Experiment - " (java.util.Date.))
+  (println "Board size " board-size)
+  (println "Nb xps per param " nb-xps "\n\n")
+  (doseq [node-type ["tree-exploration/te-node"
+                     "java-dag/java-dag-node"
+                     "dag-node/dag-node"]
+          tunings [[] ["wall-fix"] ["random-min"] ["wall-fix" "random-min"]]]
+    (when (not (and (= node-type "dag-node/dag-node") (empty? tunings)))
+      (apply te-impl-speed-single-run board-size nb-xps node-type tunings))))
