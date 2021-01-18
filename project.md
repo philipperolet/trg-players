@@ -10,11 +10,12 @@
 + définir nouvelle branche v0.2.2
 + fixer l'auth git emacs magit
 + séparer les utils des xps de xp1000
-
-- coder l'xp correspondant à experiments.md
-- la lancer, consigner les résultats
-- retirer le move-position le moins performant
-- retirer ou nettoyer wall-fix & random-min selon sélection
++ coder l'xp correspondant à experiments.md
++ la lancer, consigner les résultats
++ xp: résultats formatés pour comparaison simple, conclusions notées
+- fix: dag-node est supprimé, le défaut pour test java-dag 
+- wall-fix & random-min sont intégrés, l'option de tuning est cleanée
+- move-position java est supprimé
 
 ## Backlog
 
