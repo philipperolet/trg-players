@@ -1,8 +1,8 @@
 # Plan
 
-## Backlog
 
-### v0.2.3 - Player senses
+## Backlog
+### v0.2.4 - Player senses
 - rewrite random using player senses
 - rewrite exhaustive using player senses
 - rewrite tree-exploration using player senses

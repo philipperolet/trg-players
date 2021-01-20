@@ -54,6 +54,11 @@
     :default {}
     :parse-fn read-string
     :validate [map?]]
+   ["-L" "--level LEVEL"
+    "Level of game, conforming to `:mzero.game.generation/level`"
+    :default {::gg/density-map {:fruit 5}}
+    :parse-fn read-string
+    :validate [#(s/valid? ::gg/level %)]]
    ["-r" "--game-runner GAME-RUNNER"
     "Game runner function to use. ATTOW, ClockedThreadsRunner,
     MonoThreadRunner or WatcherRunner (which breaks for board sizes > 10)"
@@ -162,7 +167,7 @@
   ([opts]
    (run opts
      (aiw/get-initial-world-state
-      (gg/create-nice-game (opts :board-size) {::gg/density-map {:fruit 5}})))))
+      (gg/create-nice-game (opts :board-size) (opts :level))))))
 
 (defn -main [& args]
   (let [opts (parse-run-args (str/join " " args))]

@@ -168,13 +168,18 @@
         wall-length (int (/ (reduce + rand-lengths) 5))]
     (add-wall board (generate-wall board-size wall-length))))
 
+(s/def ::level (s/keys
+                :req [::density-map]
+                :opt [::wall-density]
+                :opt-unq [:enemies :message :message-color]))
+
 (s/fdef create-nice-board
   :args (-> (s/alt :unseeded
                    (s/cat :size ::gb/board-size
-                          :level (s/keys :req [::density-map] :opt [::wall-density]))
+                          :level ::level)
                    :seeded
                    (s/cat :size ::gb/board-size
-                          :level (s/keys :req [::density-map] :opt [::wall-density])
+                          :level ::level
                           :seed (s/or :non-nil nat-int? :nil nil?)))
             (s/with-gen #(gen/tuple
                           gb/test-board-size-generator
