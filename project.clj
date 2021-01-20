@@ -1,4 +1,4 @@
-(defproject mzero "0.1.0-SNAPSHOT"
+(defproject mzero "0.2.2"
   :description "A simple game of eating fruits in a maze, avoiding
   unpasteurized cheese and moving enemies. Implementations of various
   artificial algorithms to play this game (`players`)."
