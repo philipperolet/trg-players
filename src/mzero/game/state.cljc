@@ -143,14 +143,14 @@
          (-> i (+ size) (mod (* size size)))]]
   (cond 
     (and (or (= value :empty) (= value :fruit))
-         (some #(or (= (nth board %) :mark) (= (nth board %) :marked))
+         (some #(or (= (board %) :mark) (= (board %) :marked))
                positions-to-check))
     :mark
 
     (= value :mark)
     :marked
 
-    true
+    :else
     value)))
     
 ;; No specs because generative testing is too expensive (and doesn't add much to case-based)
@@ -169,15 +169,18 @@
          ;; start explo from player pos
          (#(assoc-in % player-position :mark))
          ;; flatten
-         (reduce into))]
+         (reduce into)
+         vec)]
     
     (loop [board explorable-board]
       ;; if no more exploration return true iff no fruit left
       (if (not (some #{:mark} board))
         (= ((frequencies board) :fruit) nil)
         
-        ;; else go on exploring, marking new elements according 
-        (recur (map-indexed #(explore-cell board size %1 %2) board))))))
+        ;; else go on exploring, marking new elements according
+        ;; collapse to vector, since use of lazy seq adds a power to the complexity exponent
+        ;; making the function very slow
+        (recur (vec (map-indexed #(explore-cell board size %1 %2) board)))))))
 
 ;;; Conversion of state to Hiccup HTML
 ;;;;
