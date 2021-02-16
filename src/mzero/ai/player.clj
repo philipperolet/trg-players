@@ -1,7 +1,7 @@
 (ns mzero.ai.player
   "Player protocol, and player-related functions: `request-movement` to
-  ask the world for it to move, and `get-player-senses` to get the
-  subset of world data that the player is allowed to access."
+  request a move, and `get-player-senses` to get the subset of world data that
+  non-trivial players may limit themselves to."
   (:require [mzero.ai.world :as aiw]
             [clojure.string :as str]
             [clojure.spec.alpha :as s]
@@ -13,7 +13,8 @@
 (defprotocol Player
   "A Player updates its state every time it needs via `update-player`.
   It can move by putting a non-nil direction for its move in its
-  `:next-movement` field.
+  `:next-movement` field. `update-player` is called by
+  `request-movement` and should probably not be called elsewhere.
 
   The 'world' will then execute the movement, which will reflect in
   the world state. It is possible that the player updates again
@@ -36,8 +37,8 @@
   overriden. Opts are implementation-specific and thus should be
   documented by implementations.
 
-  Therefore, the idiomatic way to create a player of any given
-  impl should be `(init-player (map->GivenImplPlayer {}) opts world)`")
+  Therefore, the recommended way to create a player of any given
+  impl is `(init-player (map->GivenImplPlayer {}) opts world)`")
 
   (update-player [player world] "Updates player state, and ultimately
   the :next-movement field, every time a movement is requested."))
@@ -103,6 +104,7 @@
                                           vision-depth)})
 
 (defn request-movement
+  "Updates the player state, and indicates the player wishes "
   [player-state world-state]
   (swap! player-state update-player @world-state)
   (when (-> @player-state :next-movement)

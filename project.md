@@ -1,8 +1,19 @@
 # Plan
-
+### v0.2.4
+- under 1ms per computation on board size 50
+- under 0.1ms per computation on board size 50
+- use fixtures for test instr/uninstr
+- seedability of dummy-luno by moving up :seed option from tree-exp to player
+- get-test-world in all tests
+- multiplication of senses vector by a first "layer" : matrix of random weights
+  - and so on for 4 "layers"
+  - should be able to do it once every ms per core - so 8 layers at once if well coded
+  - last move is modulo 4 of 8th decimal of base dot prod
+  - ensure that all is done every ms
+  - get down to all 0.1ms
 
 ## Backlog
-### v0.2.4 - Player senses
+
 - rewrite random using player senses
 - rewrite exhaustive using player senses
 - rewrite tree-exploration using player senses
@@ -20,6 +31,11 @@
 - then look up alphazero
 
 ## Changelog
+### v0.2.4
+- feat: dummy-luno player impl
+
+### v0.2.3
+- feat: add game level to run options
 ### v0.2.2
 - ref: move-position java est supprimé
 - feat: supprime param tuning, intègre wall-fix & random-min par défaut
