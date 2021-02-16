@@ -21,6 +21,16 @@
         (* 100)
         int)))
 
+(defn- get-real-valued-senses
+  "Turns the board subset visible by the player (senses) from keyword
+  matrix to real-valued vector"
+  [world vision-depth]
+  (->> (aip/get-player-senses world vision-depth)
+       ::aip/board-subset
+       (reduce into [])
+       (map {:wall 1.0 :empty 0.0 :fruit 0.5})
+       vec))
+
 (defrecord DummyLunoPlayer []
   aip/Player
   (init-player [player _ world]
@@ -29,14 +39,8 @@
       (assoc player :vector-size (Math/pow edge-length 2))))
   
   (update-player [player world]
-    (let [senses-data
-          (aip/get-player-senses world vision-depth)
-
-          real-valued-senses
-          (->> senses-data ::aip/board-subset
-               (reduce into [])
-               (map {:wall 1.0 :empty 0.0 :fruit 0.5})
-               vec)
+    (let [real-valued-senses
+          (get-real-valued-senses world vision-depth)
 
           random-vector
           (vec (repeatedly (-> player :vector-size) g/float))

@@ -6,7 +6,8 @@
             [mzero.game.events :as ge]
             [mzero.ai.player :as aip]
             [mzero.ai.world :as aiw]
-            [mzero.game.generation :as gg]))
+            [mzero.game.generation :as gg]
+            [mzero.ai.main :as aim]))
 
 (deftest get-int-from-decimals
   (is (= 33 (#'sut/get-int-from-decimals 32.13325)))
@@ -24,19 +25,32 @@
       (recur player (dec size) next-world (conj acc next-movement)))
     acc))
 
-(defn run-dummy-luno []
+(deftest get-real-valued-senses-test
+  (let [test-world
+        (aiw/get-initial-world-state (first (gg/generate-game-states 1 25 41)))]
+    (is (= (#'sut/get-real-valued-senses test-world 2)
+           (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
+
+(deftest dummy-luno-works
   (let [test-world
         (aiw/get-initial-world-state (first (gg/generate-game-states 1 25 41)))
         dummy-luno
-        (aip/init-player (sut/->DummyLunoPlayer) nil test-world)]
-    (u/timed (run-n-steps dummy-luno 1000 test-world []))))
-
-(deftest dummy-luno-works
-  (let [dl-updates (run-dummy-luno)]
+        (aip/init-player (sut/->DummyLunoPlayer) nil test-world)
+        dl-updates
+        (u/timed (run-n-steps dummy-luno 1000 test-world []))]
+    
     (testing "Random direction approximately correct, about 250 of each dir"
-      (is (every? #(> % 220) (map (frequencies (dl-updates 1)) ge/directions))))
+      (is (every? #(> % 220) (map (frequencies (dl-updates 1)) ge/directions))))))
 
-    (testing "Timing all right, less than 1 step per ms to run"
-      (is (< (dl-updates 0) 1000)))))
+(deftest ^:integration dummy-luno-fast-enough
+  :unstrumented
+  (testing "Fast enough, more than 10K cycles/s on a size 50 board"
+    (let [initial-world
+          (aiw/get-initial-world-state
+           (first (gg/generate-game-states 1 50 41)))
+          get-game-args
+          #(aim/parse-run-args "-t dummy-luno -n %d -v WARNING" %)]
+      (is (< (first (u/timed (aim/run (get-game-args 10000) initial-world)))
+             1000)))))
 
 
