@@ -4,7 +4,8 @@
   - `get-player-senses` to get the subset of world
   data that non-trivial players may limit
   themselves to,
-  - `load-player` to load a player."
+  - `load-player` to load a player given its string name,
+  with a seeding option."
   (:require [mzero.ai.world :as aiw]
             [clojure.string :as str]
             [clojure.spec.alpha :as s]
@@ -115,8 +116,19 @@
            assoc-in [::aiw/requested-movements :player]
            (-> @player-state :next-movement))))
 
+(defn- seed-player
+  [player opts]
+  (let [random-number-generator
+          (if-let [seed (-> opts :seed)]
+            (java.util.Random. seed)
+            (java.util.Random.))]
+    (assoc player :rng random-number-generator)))
 
 (defn load-player
+  "Load a player given its string type `player-type`.
+
+  `opts` may contain `:seed` in which case the player will be
+  initialized with a field `:rng` (random number generator)"
   [player-type opts world]
   (let [player-ns-string (str "mzero.ai.players." player-type)
         player-constructor-string
@@ -131,7 +143,10 @@
       ;; require not being thread safe ATTOW
       ;; see https://clojure.atlassian.net/browse/CLJ-1876
       (#'clojure.core/serialized-require (symbol player-ns-string))
-      (init-player ((resolve (symbol player-constructor-string)) {}) opts world)
+      (-> ((resolve (symbol player-constructor-string)) {})
+          (seed-player opts) ;; seed before init (in case init needs seeding
+          (init-player opts world))
+      
       (catch java.io.FileNotFoundException _
         (throw (RuntimeException.
                 (format "Couldn't load player %s. Check player type matches a

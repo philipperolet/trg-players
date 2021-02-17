@@ -265,14 +265,9 @@
   aip/Player
   (init-player [this opts world]
     (assert (s/valid? ::options opts))
-    (let [random-number-generator
-          (if-let [seed (-> opts :seed)]
-            (java.util.Random. seed)
-            (java.util.Random.))]
-      (assoc this
-             :nb-sims (-> opts (:nb-sims default-nb-sims))
-             :node-constructor (get-constructor-from-opts opts)
-             :rng random-number-generator)))
+    (assoc this
+           :nb-sims (-> opts (:nb-sims default-nb-sims))
+           :node-constructor (get-constructor-from-opts opts)))
   
   (update-player [this world]
     (let [random-min-direction
@@ -282,7 +277,6 @@
                 (->> ge/directions
                      (filter #(= (-> node children % value) min-value))
                      g/rand-nth))))]
-      
       (-> this
           (assoc :root-node (compute-root-node this world))
           (#(assoc % :next-movement (->  % :root-node random-min-direction)))))))
