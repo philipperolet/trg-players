@@ -31,11 +31,17 @@
     (is (= (#'sut/get-real-valued-senses test-world 2)
            (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
 
-(deftest dummy-luno-works
+(deftest forward-pass-correctness
+  (let [input [1.0 0.5 2.0]
+        hidden [[0 0 0] [1 1 1] [-1 0.5 3.2] [0 0 0]]
+        output [0.5 -0.5 3 -7]]
+    (is (u/almost= (#'sut/forward-pass input hidden output) 15.2 0.00001))))
+
+(deftest dummy-luno-randomness
   (let [test-world
         (aiw/get-initial-world-state (first (gg/generate-game-states 1 25 41)))
         dummy-luno
-        (aip/init-player (sut/->DummyLunoPlayer) nil test-world)
+        (aip/load-player "dummy-luno" {:seed 40} test-world)
         dl-updates
         (u/timed (run-n-steps dummy-luno 1000 test-world []))]
     

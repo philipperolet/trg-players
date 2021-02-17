@@ -1,7 +1,9 @@
 # Plan
 ### v0.2.4
-- under 1ms per computation on board size 50
-- under 0.1ms per computation on board size 50
+- feat : make it 100 times faster using Neanderthal
+- feat : make it 30 times faster using GPU
+- uses IOMR to compute 
+
 - use fixtures for test instr/uninstr
 - seedability of dummy-luno by moving up :seed option from tree-exp to player
 - get-test-world in all tests
@@ -33,6 +35,9 @@
 ## Changelog
 ### v0.2.4
 - feat: dummy-luno player impl
+- ref: replace calls to init-player by calls to load-player
+- ref: all players can use :seed options (done via load-player)
+- feat: added hidden layer of N units
 
 ### v0.2.3
 - feat: add game level to run options

@@ -9,6 +9,7 @@
             [mzero.game.board :as gb]))
 
 (def vision-depth 4)
+(def default-hidden-layer-size 6)
 
 (defn- get-int-from-decimals
   " Gets an int in [0,100[ by using 2nd & 3rd numbers past
@@ -31,27 +32,50 @@
        (map {:wall 1.0 :empty 0.0 :fruit 0.5})
        vec))
 
-(defrecord DummyLunoPlayer []
+(defn- create-hidden-layer
+  "`rng`: random number generator"
+  [input-size layer-size rng]
+  (binding [g/*rnd* rng]
+    (->> #(vec (repeatedly input-size g/float)) ;; single unit
+         (repeatedly layer-size)
+         vec)))
+
+(defn- dot-prod
+  [coll1 coll2]
+  (assert (= (count coll1) (count coll2)))
+  (reduce + (map * coll1 coll2)))
+
+(defn- forward-pass
+  [input-vector hidden-layer output-vector]
+  (->> hidden-layer
+       (map #(dot-prod input-vector %))
+       (dot-prod output-vector)))
+
+(defrecord DummyLunoPlayer [hidden-layer-size]
   aip/Player
-  (init-player [player _ world]
-    (let [edge-length (aip/subset-size vision-depth)]
-      (assert (< edge-length (-> world ::gs/game-state ::gb/game-board count)))
-      (assoc player :vector-size (Math/pow edge-length 2))))
+  (init-player [player opts world]
+    (let [edge-length (aip/subset-size vision-depth)
+          board-size (-> world ::gs/game-state ::gb/game-board count)
+          input-size (Math/pow edge-length 2)
+          hl-size (:hidden-layer-size opts default-hidden-layer-size)
+          hidden-layer (create-hidden-layer input-size hl-size (:rng player))]
+      
+      (assert (< edge-length board-size))
+      (assoc player :hidden-layer hidden-layer)))
   
   (update-player [player world]
-    (let [real-valued-senses
+    (let [input-vector
           (get-real-valued-senses world vision-depth)
 
-          random-vector
-          (vec (repeatedly (-> player :vector-size) g/float))
+          output-vector
+          (binding [g/*rnd* (:rng player)]
+            (vec (repeatedly (count (-> player :hidden-layer)) g/float)))]
 
-          dot-producted-value
-          (reduce + (map * real-valued-senses random-vector))
-
-          ;; next move is selected by getting the 2nd/3rd decimals of
-          ;; dot product to get an int in [0, 100[, then the remainder
-          ;; of the division by 4 is the index of the selected direction
-          direction-from-int 
-          (nth ge/directions (mod (get-int-from-decimals dot-producted-value) 4))]
-      
-      (assoc player :next-movement direction-from-int))))
+      ;; next move is selected by getting the 2nd/3rd decimals of
+      ;; forward pass to get an int in [0, 100[, then the remainder
+      ;; of the division by 4 is the index of the selected direction
+      (->> (forward-pass input-vector (-> player :hidden-layer) output-vector)
+           get-int-from-decimals
+           (#(mod % 4))
+           (nth ge/directions)
+           (assoc player :next-movement)))))
