@@ -1,7 +1,11 @@
 (ns mzero.ai.players.dummy-luno
-  "Dummy player that gets the input senses, turns them into a
-  real-valued vector, dot-prods them with a random vector and computes
-  a movement according to it."
+  "Player that gets the input senses, turns them into a real-valued
+  vector, and uses a dummy 'ANN' on which it makes a 'forward pass',
+  using the real-valued result to compute a random movement.
+
+  The network comprises a hidden layer and an output vector.
+  The number of units in the hidden layer can be set via
+  the `:hidden-layer-size` option"
   (:require [mzero.ai.player :as aip]
             [mzero.game.events :as ge]
             [clojure.data.generators :as g]

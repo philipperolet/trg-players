@@ -54,8 +54,11 @@
     (let [initial-world
           (aiw/get-initial-world-state
            (first (gg/generate-game-states 1 50 41)))
+          player-options
+          "{:hidden-layer-size 6 :seed 40}"
           get-game-args
-          #(aim/parse-run-args "-t dummy-luno -n %d -v WARNING" %)]
+          #(aim/parse-run-args
+            "-t dummy-luno -n %d -v WARNING -o '%s'" % player-options)]
       (is (< (first (u/timed (aim/run (get-game-args 10000) initial-world)))
              1000)))))
 
