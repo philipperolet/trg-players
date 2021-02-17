@@ -28,7 +28,7 @@
   (doseq [constructor ["tree-exploration/te-node"
                        "java-dag/java-dag-node"]]
     (binding [test-player
-              (aip/init-player (sut/map->TreeExplorationPlayer {})
+              (aip/load-player "tree-exploration"
                                {:nb-sims 100
                                 :node-constructor constructor
                                 :seed 43}

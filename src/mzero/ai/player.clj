@@ -1,7 +1,10 @@
 (ns mzero.ai.player
-  "Player protocol, and player-related functions: `request-movement` to
-  request a move, and `get-player-senses` to get the subset of world data that
-  non-trivial players may limit themselves to."
+  "Player protocol, and player-related functions:
+  - `request-movement` to request a move,
+  - `get-player-senses` to get the subset of world
+  data that non-trivial players may limit
+  themselves to,
+  - `load-player` to load a player."
   (:require [mzero.ai.world :as aiw]
             [clojure.string :as str]
             [clojure.spec.alpha :as s]
@@ -30,15 +33,15 @@
   {name}, e.g. the random player implementation will be `RandomPlayer`
   and will reside at `mzero.ai.players.random`, see `load-player`."
   
-  (init-player [player opts world] "Returns a fully initialized
-  player. Should be called before the first call to
-  update-player. Intended to be called with all fields of player
-  record set to nil, callers should expect fields to be ignored /
-  overriden. Opts are implementation-specific and thus should be
-  documented by implementations.
+  (init-player [player opts world] "Implementation-specific
+  initialization. Meant to be used by `load-player`, 
+  and intended to be called with all fields of player
+  record set to nil (any caller should expect fields to be ignored /
+  overriden). Some opts may be implementation-specific and thus should
+  be documented by implementations.
 
-  Therefore, the recommended way to create a player of any given
-  impl is `(init-player (map->GivenImplPlayer {}) opts world)`")
+  The recommended way to create a player of any given
+  impl is via `load-player`")
 
   (update-player [player world] "Updates player state, and ultimately
   the :next-movement field, every time a movement is requested."))
@@ -111,6 +114,7 @@
     (swap! world-state
            assoc-in [::aiw/requested-movements :player]
            (-> @player-state :next-movement))))
+
 
 (defn load-player
   [player-type opts world]

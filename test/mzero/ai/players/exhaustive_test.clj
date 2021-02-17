@@ -83,7 +83,7 @@
              (#(update % ::gb/game-board
                        assoc-in (update (% ::gs/player-position) 0 dec) :empty))))
         player
-        (aip/init-player (sut/map->ExhaustivePlayer {}) {} world)
+        (aip/load-player "exhaustive" {} world)
         next-player
         (aip/update-player player world)
         next-world
