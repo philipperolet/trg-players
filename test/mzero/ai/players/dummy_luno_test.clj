@@ -7,7 +7,8 @@
             [mzero.ai.player :as aip]
             [mzero.ai.world :as aiw]
             [mzero.game.generation :as gg]
-            [mzero.ai.main :as aim]))
+            [mzero.ai.main :as aim]
+            [uncomplicate.neanderthal.native :refer [dge]]))
 
 (deftest get-int-from-decimals
   (is (= 33 (#'sut/get-int-from-decimals 32.13325)))
@@ -32,9 +33,9 @@
            (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
 
 (deftest forward-pass-correctness
-  (let [input [1.0 0.5 2.0]
-        hidden [[0 0 0] [1 1 1] [-1 0.5 3.2] [0 0 0]]
-        output [0.5 -0.5 3 -7]]
+  (let [input (dge 1 3 [1.0 0.5 2.0])
+        hidden (dge 3 4 [0 0 0 1 1 1 -1 0.5 3.2 0 0 0])
+        output (dge 4 1 [0.5 -0.5 3 -7])]
     (is (u/almost= (#'sut/forward-pass input hidden output) 15.2 0.00001))))
 
 (deftest dummy-luno-randomness
@@ -50,16 +51,16 @@
 
 (deftest ^:integration dummy-luno-fast-enough
   :unstrumented
-  (testing "Fast enough, more than 10K cycles/s on a size 50 board"
+  (testing "Fast enough, more than 1K cycles/s on a size 50 board for 1 layer"
     (let [initial-world
           (aiw/get-initial-world-state
            (first (gg/generate-game-states 1 50 41)))
           player-options
-          "{:hidden-layer-size 6 :seed 40}"
+          "{:hidden-layer-size 10000 :seed 40}"
           get-game-args
           #(aim/parse-run-args
             "-t dummy-luno -n %d -v WARNING -o '%s'" % player-options)]
-      (is (< (first (u/timed (aim/run (get-game-args 10000) initial-world)))
+      (is (< (first (u/timed (aim/run (get-game-args 1000) initial-world)))
              1000)))))
 
 

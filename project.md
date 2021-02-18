@@ -1,6 +1,6 @@
 # Plan
 ### v0.2.4
-- feat : make it 100 times faster using Neanderthal
+
 - feat : make it 30 times faster using GPU
 - uses IOMR to compute 
 
@@ -34,6 +34,7 @@
 
 ## Changelog
 ### v0.2.4
+- feat : use Neanderthal lib for Luno (> 1000 times faster)
 - feat: dummy-luno player impl
 - ref: replace calls to init-player by calls to load-player
 - ref: all players can use :seed options (done via load-player)

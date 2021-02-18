@@ -12,8 +12,13 @@
                  [org.clojure/test.check "1.0.0"]
                  [org.clojure/data.generators "1.0.0"]
                  [org.clojure/tools.cli "1.0.194"]
-                 [org.clojure/tools.logging "1.1.0"]]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [uncomplicate/neanderthal "0.39.0"]
+                 [org.bytedeco/mkl-platform-redist "2020.3-1.5.4"]]
 
-  :jvm-opts ["-Xss1g"]
+  :jvm-opts
+  ["-Xss1g"
+   "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED"
+   "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/jul-factory"]
   :source-paths ["src" "scripts"]
   :main mzero.ai.main)
