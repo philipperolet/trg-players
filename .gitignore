@@ -21,3 +21,4 @@ pom.xml
 /flycheck_.dir-locals.elc
 /.idea/
 mzero.iml
+/doc/arch*.md
