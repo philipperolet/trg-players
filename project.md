@@ -1,38 +1,67 @@
-# Plan
-### v0.2.4
+# Todo - v0.2.4 - M0.0.1
+## Senses
++ doc: 9*9 = 81 units for the board, values 0 empty, 0.5 fruit, 1 wall
+- feat: 1 unit "satiété" fruit mangé 
 
+
+## Layers
+- 10 layers
+
+## Activation
+### IOMR
+  - principe : je m'active à minima à 0.2, lorsque je suis à distance d'activation 0.2. Et je m'active à 1 lorsque je suis à distance d'activation 0
+	- 1/(1+20*x) ou 0 si x < 0.2
+
+## Génération
+- *Shape Mech*
+  - min(10000 - activable neurons, max(100,0.1*|activables|)) new neurons
+  - chaque nouveau neurone : synapse avec ~ 2 à 3% des neurones précédents (sparsité)
+  - poids non-nuls initialisés à 1
+  - unités de patterns non-nulles initialisées à la valeur d'activation de leurs neurones
+
+## Renforcement / Dégradation
+- Annuler tous les poids < e.g. 0.2
+- poids synaptiques non-nuls multipliés selon leur IOMR
+  - poids non-activants divisés e.g (0.2)^1/N
+	- ainsi un poids utilisé 1 seule fois disparait au bout de N=1000 itérations (1s)
+  - poids activants multipliés e.g. 1.1
+	- selon leur force d'activation (1 + activation power/5), jusqu'à 1.2
+
+## Motoneurones
+- Dev initial : couche activée préexistante
+
+## Renforcement supervisé
+- Poids activants descendants multipliés par (facteur non-supervisé * 3) ** (1-1/num couche) * force d'activation du poids
+
+
+# Backlog
+
+
+
+# Icebox
+- compare speed on aws machine vs on your machine
 - feat : make it 30 times faster using GPU
-- uses IOMR to compute 
-
-- use fixtures for test instr/uninstr
-- seedability of dummy-luno by moving up :seed option from tree-exp to player
-- get-test-world in all tests
-- multiplication of senses vector by a first "layer" : matrix of random weights
-  - and so on for 4 "layers"
-  - should be able to do it once every ms per core - so 8 layers at once if well coded
-  - last move is modulo 4 of 8th decimal of base dot prod
-  - ensure that all is done every ms
-  - get down to all 0.1ms
-
-## Backlog
-
-- rewrite random using player senses
-- rewrite exhaustive using player senses
-- rewrite tree-exploration using player senses
-
-### v0.3.0 - History
 - option to store game & player data in a db for random player
+  - do it via the seed it's better
 - * for exhaustive player
 - tools to inspect games
 
-### Next versions
+## Refactorings
+- get-test-world in all tests
+- use fixtures for test instr/uninstr
+
+## Colder
 - Add player using reinforcement learning - basic 
 - Visu de jeu sur le net
 - Then use DL in a basic way to model part of it
 - then look up DL players
 - then look up alphazero
+- rewrite random using player senses
+- rewrite exhaustive using player senses
+- rewrite tree-exploration using player senses
 
-## Changelog
+
+# Changelog
 ### v0.2.4
 - feat : use Neanderthal lib for Luno (> 1000 times faster)
 - feat: dummy-luno player impl

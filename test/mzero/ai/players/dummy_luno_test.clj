@@ -29,7 +29,7 @@
 (deftest get-real-valued-senses-test
   (let [test-world
         (aiw/get-initial-world-state (first (gg/generate-game-states 1 25 41)))]
-    (is (= (#'sut/get-real-valued-senses test-world 2)
+    (is (= (#'sut/board-subset-vector (::aip/board-subset (aip/get-player-senses test-world 2)))
            (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
 
 (deftest forward-pass-correctness
