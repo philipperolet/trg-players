@@ -13,14 +13,10 @@
             [mzero.game.state :as gs]
             [mzero.game.board :as gb]
             [uncomplicate.neanderthal
-             [core :refer [mm entry ncols matrix?]]
+             [core :refer [mm entry ncols]]
              [native :refer [dge native-float]]
-             [random :as rnd]
-             [vect-math :as vm]]
-            [clojure.spec.alpha :as s]))
-
-(def vision-depth 4)
-(def default-hidden-layer-size 6)
+             [random :as rnd]]
+            [mzero.ai.players.senses :as ps]))
 
 (defn- get-int-from-decimals
   " Gets an int in [0,100[ by using 2nd & 3rd numbers past
@@ -31,23 +27,6 @@
         get-decimal-part
         (* 100)
         int)))
-
-(defn- board-subset-vector
-  "Turn the board subset visible by the player from keyword
-  matrix to a real-valued vector.
-
-  Each type of elt on the board has a corresponding float value
-  between 0.0 - 1.0, as described below"
-  [board-subset]
-  (->> board-subset
-       (reduce into [])
-       (map {:wall 1.0 :empty 0.0 :fruit 0.5})
-       vec))
-
-(defn- real-valued-senses
-  "Compute real-valued vector of player senses"
-  [player-senses]
-  (board-subset-vector (::aip/board-subset player-senses)))
 
 (defn- create-hidden-layer
   "`rng`: random number generator"
@@ -81,22 +60,33 @@
   (let [board-size (-> world ::gs/game-state ::gb/game-board count)]
     (assert (< edge-length board-size))))
 
+(def dl-default-vision-depth 4)
+(def dl-default-hidden-layer-size 6)
+
 (defrecord DummyLunoPlayer [hidden-layer-size]
   aip/Player
-  (init-player [player opts world]
-    (let [edge-length (aip/subset-size vision-depth)
-          input-size (Math/pow edge-length 2)
-          hl-size (:hidden-layer-size opts default-hidden-layer-size)
+  (init-player [player opts {{:keys [::gb/game-board]} ::gs/game-state}]
+    (let [vision-depth (:vision-depth opts dl-default-vision-depth)
+          input-size (ps/senses-vector-size vision-depth)
+          hl-size (:hidden-layer-size opts dl-default-hidden-layer-size)
           rng (if-let [seed (:seed opts)]
                 (rnd/rng-state native-float seed)
                 (rnd/rng-state native-float))]
-      (validate-edge-length world edge-length)
+      (ps/vision-depth-fits-game? vision-depth game-board)
       (assoc player
              :rng rng
-             :hidden-layer (create-hidden-layer input-size hl-size rng))))
+             :hidden-layer (create-hidden-layer input-size hl-size rng)
+             :senses-data (ps/initial-senses-data vision-depth))))
   
   (update-player [player world]
-    (let [player-senses (aip/get-player-senses world vision-depth)
-          real-valued-senses (real-valued-senses player-senses)
-          input-vector (dge 1 (count real-valued-senses) real-valued-senses)]
-      (assoc player :next-movement (new-direction player input-vector)))))
+    (let [input-vector #(dge 1 (count %) %)
+          update-movement-from-senses-vector
+          (fn [player]
+            (->> (get-in player [:senses-data ::ps/senses-vector])
+                 input-vector
+                 (new-direction player)
+                 (assoc player :next-movement)))]
+      
+      (-> player
+          (update :senses-data ps/update-senses-data world)
+          update-movement-from-senses-vector))))

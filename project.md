@@ -1,7 +1,7 @@
 # Todo - v0.2.4 - M0.0.1
 ## Senses
 + doc: 9*9 = 81 units for the board, values 0 empty, 0.5 fruit, 1 wall
-- feat: 1 unit "satiété" fruit mangé 
++ feat: 1 unit "satiété" fruit mangé 
 
 
 ## Layers

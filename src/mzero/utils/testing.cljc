@@ -33,6 +33,7 @@
        :failure))
   ([sym] (check-failure sym {})))
 
+
 (defmacro check-spec
   "Creates a test with deftest for a given symbol, with given options."
   ([sym opts]

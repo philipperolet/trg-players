@@ -1,5 +1,12 @@
 (ns mzero.utils.utils)
 
+(defn is_square
+  "Return `true` iff n is a perfect square
+
+  WARNING: may fail for large numbers due to rounding errors"
+  [n]
+  (= (Math/pow (Math/round (Math/sqrt n)) 2) (float n)))
+
 (defn reduce-until
   "Like clojure.core/reduce, but stops reduction when `pred` is
   true. `pred` takes one argument, the current reduction value, before

@@ -8,7 +8,14 @@
             [mzero.ai.world :as aiw]
             [mzero.game.generation :as gg]
             [mzero.ai.main :as aim]
+            [mzero.ai.players.senses :as ps]
             [uncomplicate.neanderthal.native :refer [dge]]))
+
+(defn world
+  "Get a test world given board `size`, and `seed`"
+  [size seed]
+  (aiw/get-initial-world-state
+   (first (gg/generate-game-states 1 size seed))))
 
 (deftest get-int-from-decimals
   (is (= 33 (#'sut/get-int-from-decimals 32.13325)))
@@ -26,12 +33,6 @@
       (recur player (dec size) next-world (conj acc next-movement)))
     acc))
 
-(deftest get-real-valued-senses-test
-  (let [test-world
-        (aiw/get-initial-world-state (first (gg/generate-game-states 1 25 41)))]
-    (is (= (#'sut/board-subset-vector (::aip/board-subset (aip/get-player-senses test-world 2)))
-           (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
-
 (deftest forward-pass-correctness
   (let [input (dge 1 3 [1.0 0.5 2.0])
         hidden (dge 3 4 [0 0 0 1 1 1 -1 0.5 3.2 0 0 0])
@@ -39,8 +40,7 @@
     (is (u/almost= (#'sut/forward-pass input hidden output) 15.2 0.00001))))
 
 (deftest dummy-luno-randomness
-  (let [test-world
-        (aiw/get-initial-world-state (first (gg/generate-game-states 1 25 41)))
+  (let [test-world (world 25 41)
         dummy-luno
         (aip/load-player "dummy-luno" {:seed 40} test-world)
         dl-updates
@@ -52,15 +52,31 @@
 (deftest ^:integration dummy-luno-fast-enough
   :unstrumented
   (testing "Fast enough, more than 1K cycles/s on a size 50 board for 1 layer"
-    (let [initial-world
-          (aiw/get-initial-world-state
-           (first (gg/generate-game-states 1 50 41)))
-          player-options
+    (let [player-options
           "{:hidden-layer-size 10000 :seed 40}"
-          get-game-args
-          #(aim/parse-run-args
-            "-t dummy-luno -n %d -v WARNING -o '%s'" % player-options)]
-      (is (< (first (u/timed (aim/run (get-game-args 1000) initial-world)))
-             1000)))))
+          run-args
+          (aim/parse-run-args "-v WARNING -t dummy-luno -n 1000 -o'%s'"
+                              player-options)
+          runtime
+          (first (u/timed (aim/run run-args (world 50 41))))]
+      (is (< runtime 1000)))))
 
-
+(deftest dl-update-player-test
+  (let [player-options "{:seed 40 :vision-depth 2}"
+        run-args
+        (aim/parse-run-args "-v WARNING -t dummy-luno -n 18 -o'%s'" player-options)
+        {:keys [world player]} (aim/run run-args (world 25 41))]
+    (testing "Correct update of senses data in player"
+      ;; new vision is as follows
+      ;; |     |
+      ;; |     |
+      ;; |  @  |
+      ;; | ####|
+      ;; |###  |
+      (is (= (:senses-data (aip/update-player player world))
+             #::ps{:senses-vector (vec (concat (repeat 16 0.0)
+                                               (repeat 7 1.0)
+                                               [0.0 0.0]
+                                               [0.3]))
+                   :vision-depth 2
+                   :previous-score 1})))))
