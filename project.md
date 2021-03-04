@@ -1,17 +1,4 @@
 # Todo - v0.2.4 - M0.0.1
-## Senses
-+ doc: 9*9 = 81 units for the board, values 0 empty, 0.5 fruit, 1 wall
-+ feat: 1 unit "satiété" fruit mangé 
-
-
-## Layers
-- 10 layers
-
-## Activation
-### IOMR
-  - principe : je m'active à minima à 0.2, lorsque je suis à distance d'activation 0.2. Et je m'active à 1 lorsque je suis à distance d'activation 0
-	- 1/(1+20*x) ou 0 si x < 0.2
-
 ## Génération
 - *Shape Mech*
   - min(10000 - activable neurons, max(100,0.1*|activables|)) new neurons
@@ -63,6 +50,10 @@
 
 # Changelog
 ### v0.2.4
+- feat: m00 player, using activation (with randomness for movements)
+- ref: utility function 'world' for tests
+- feat: activation 
+- feat : senses (vision + satiety)
 - feat : use Neanderthal lib for Luno (> 1000 times faster)
 - feat: dummy-luno player impl
 - ref: replace calls to init-player by calls to load-player
