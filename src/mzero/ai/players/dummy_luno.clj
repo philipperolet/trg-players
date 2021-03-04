@@ -16,7 +16,7 @@
              [core :refer [mm entry ncols]]
              [native :refer [dge native-float]]
              [random :as rnd]]
-            [mzero.ai.players.senses :as ps]))
+            [mzero.ai.players.senses :as mzs]))
 
 (defn- get-int-from-decimals
   " Gets an int in [0,100[ by using 2nd & 3rd numbers past
@@ -55,11 +55,6 @@
   (let [output-vector (rnd/rand-uniform! rng (dge (ncols hidden-layer) 1))]
     (direction-from-real (forward-pass input-vector hidden-layer output-vector))))
 
-(defn- validate-edge-length
-  [world edge-length]
-  (let [board-size (-> world ::gs/game-state ::gb/game-board count)]
-    (assert (< edge-length board-size))))
-
 (def dl-default-vision-depth 4)
 (def dl-default-hidden-layer-size 6)
 
@@ -67,26 +62,26 @@
   aip/Player
   (init-player [player opts {{:keys [::gb/game-board]} ::gs/game-state}]
     (let [vision-depth (:vision-depth opts dl-default-vision-depth)
-          input-size (ps/senses-vector-size vision-depth)
+          input-size (mzs/senses-vector-size vision-depth)
           hl-size (:hidden-layer-size opts dl-default-hidden-layer-size)
           rng (if-let [seed (:seed opts)]
                 (rnd/rng-state native-float seed)
                 (rnd/rng-state native-float))]
-      (ps/vision-depth-fits-game? vision-depth game-board)
+      (mzs/vision-depth-fits-game? vision-depth game-board)
       (assoc player
              :rng rng
              :hidden-layer (create-hidden-layer input-size hl-size rng)
-             :senses-data (ps/initial-senses-data vision-depth))))
+             :senses-data (mzs/initial-senses-data vision-depth))))
   
   (update-player [player world]
     (let [input-vector #(dge 1 (count %) %)
           update-movement-from-senses-vector
           (fn [player]
-            (->> (get-in player [:senses-data ::ps/senses-vector])
+            (->> (get-in player [:senses-data ::mzs/senses-vector])
                  input-vector
                  (new-direction player)
                  (assoc player :next-movement)))]
       
       (-> player
-          (update :senses-data ps/update-senses-data world)
+          (update :senses-data mzs/update-senses-data world)
           update-movement-from-senses-vector))))

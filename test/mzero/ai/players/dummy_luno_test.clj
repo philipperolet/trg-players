@@ -5,17 +5,9 @@
             [mzero.utils.utils :as u]
             [mzero.game.events :as ge]
             [mzero.ai.player :as aip]
-            [mzero.ai.world :as aiw]
-            [mzero.game.generation :as gg]
+            [mzero.ai.world :as aiw :refer [world]]
             [mzero.ai.main :as aim]
-            [mzero.ai.players.senses :as ps]
             [uncomplicate.neanderthal.native :refer [dge]]))
-
-(defn world
-  "Get a test world given board `size`, and `seed`"
-  [size seed]
-  (aiw/get-initial-world-state
-   (first (gg/generate-game-states 1 size seed))))
 
 (deftest get-int-from-decimals
   (is (= 33 (#'sut/get-int-from-decimals 32.13325)))
@@ -61,22 +53,4 @@
           (first (u/timed (aim/run run-args (world 50 41))))]
       (is (< runtime 1000)))))
 
-(deftest dl-update-player-test
-  (let [player-options "{:seed 40 :vision-depth 2}"
-        run-args
-        (aim/parse-run-args "-v WARNING -t dummy-luno -n 18 -o'%s'" player-options)
-        {:keys [world player]} (aim/run run-args (world 25 41))]
-    (testing "Correct update of senses data in player"
-      ;; new vision is as follows
-      ;; |     |
-      ;; |     |
-      ;; |  @  |
-      ;; | ####|
-      ;; |###  |
-      (is (= (:senses-data (aip/update-player player world))
-             #::ps{:senses-vector (vec (concat (repeat 16 0.0)
-                                               (repeat 7 1.0)
-                                               [0.0 0.0]
-                                               [0.3]))
-                   :vision-depth 2
-                   :previous-score 1})))))
+

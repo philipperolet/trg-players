@@ -13,7 +13,8 @@
             [mzero.utils.utils :as u]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [mzero.game.generation :as gg]))
 
 ;;; Full game state spec & helpers
 ;;;;;;;
@@ -116,3 +117,9 @@
                (@world-state-atom ::game-step)
                (::step-timestamp @world-state-atom))
     (log/info (data->string @world-state-atom))))
+
+(defn world
+  "Get a world given board `size`, and `seed`"
+  [size seed]
+  (get-initial-world-state
+   (first (gg/generate-game-states 1 size seed))))
