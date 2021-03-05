@@ -80,7 +80,7 @@
   (update-player [player world]
     (let [player-forward-pass
           #(mza/forward-pass! (-> % :layers)
-                              (-> % :senses-data ::mzs/senses-vector))
+                              (-> % :senses-data ::mzs/senses))
           update-direction
           #(assoc % :next-movement (direction-from-output (player-forward-pass %)))]
       (-> player

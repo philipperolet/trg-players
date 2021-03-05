@@ -77,7 +77,7 @@
     (let [input-vector #(dge 1 (count %) %)
           update-movement-from-senses-vector
           (fn [player]
-            (->> (get-in player [:senses-data ::mzs/senses-vector])
+            (->> (get-in player [:senses-data ::mzs/senses])
                  input-vector
                  (new-direction player)
                  (assoc player :next-movement)))]

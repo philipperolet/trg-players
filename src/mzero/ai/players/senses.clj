@@ -1,8 +1,9 @@
 (ns mzero.ai.players.senses
   "Module to compute player senses given world data at a given time, as
-  a float-valued `::senses-vector`
+  a float-valued `::senses` vector containing valid neural values (see
+  activation.clj).
 
-  Computation of the senses requires the previous senses-vector value,
+  Computation of the senses requires the previous senses value,
   as well as a `vision-depth` and the previous `score`, both of which
   are kept in `::senses-data`.
 
@@ -32,19 +33,18 @@
             [mzero.ai.world :as aiw]
             [mzero.utils.modsubvec :refer [modsubvec]]
             [mzero.game.state :as gs]
-            [clojure.spec.gen.alpha :as gen]))
-
-(s/def ::sense-value (s/double-in :min 0.0 :max 1.0 :infinity? false :NaN? false))
+            [clojure.spec.gen.alpha :as gen]
+            [mzero.ai.players.activation :as mza]))
 
 (def minimal-satiety-value 0.04)
 
-(s/def ::satiety (-> ::sense-value
+(s/def ::satiety (-> ::mza/neural-value
                      (s/and #(or (>= % minimal-satiety-value) (= % 0.0)))
                      (s/with-gen (fn [] (gen/fmap
                                          #(if (< % minimal-satiety-value) 0.0 %)
-                                         (s/gen ::sense-value))))))
+                                         (s/gen ::mza/neural-value))))))
 
-(defn- satiety [senses-vector] (last senses-vector))
+(defn- satiety [senses] (last senses))
 
 (s/fdef new-satiety
   :args (-> (s/cat :old-satiety ::satiety
@@ -85,7 +85,7 @@
   [vision-depth]
   (let [min-count (senses-vector-size (or vision-depth min-vision-depth))
         max-count (senses-vector-size (or vision-depth max-vision-depth))
-        spec-def (s/every ::sense-value
+        spec-def (s/every ::mza/neural-value
                           :kind vector?
                           :min-count min-count
                           :max-count max-count)
@@ -99,19 +99,19 @@
                  (s/valid? ::satiety (satiety sv))))
         (s/with-gen generator-function))))
 
-(s/def ::senses-vector (senses-vector-spec nil))
+(s/def ::senses (senses-vector-spec nil))
 (s/def ::previous-score ::gs/score)
 
 (defn- senses-data-generator [vision-depth]
   (gen/hash-map ::previous-score (s/gen ::previous-score)
                 ::vision-depth (gen/return vision-depth)
-                ::senses-vector (s/gen (senses-vector-spec vision-depth))))
+                ::senses (s/gen (senses-vector-spec vision-depth))))
 
 (s/def ::senses-data
-  (-> (s/keys :req [::senses-vector ::previous-score ::vision-depth])
-      (s/and (fn [{:keys [::vision-depth ::senses-vector]}]
+  (-> (s/keys :req [::senses ::previous-score ::vision-depth])
+      (s/and (fn [{:keys [::vision-depth ::senses]}]
                (comment "Senses vector size depends on vision depth")
-               (= (count senses-vector) (senses-vector-size vision-depth))))
+               (= (count senses) (senses-vector-size vision-depth))))
       (s/with-gen #(gen/bind (s/gen ::vision-depth) senses-data-generator))))
 
 (defn- visible-matrix  
@@ -145,7 +145,7 @@
 
 (defn initial-senses-data
   [vision-depth]
-  {::senses-vector (vec (repeat (senses-vector-size vision-depth) 0.0))
+  {::senses (vec (repeat (senses-vector-size vision-depth) 0.0))
    ::vision-depth vision-depth
    ::previous-score 0})
 
@@ -167,5 +167,5 @@
   updating score with the previous score"
   [senses-data {:as world, :keys [::gs/game-state]}]
   (-> senses-data
-      (update ::senses-vector update-senses-vector senses-data game-state)
+      (update ::senses update-senses-vector senses-data game-state)
       (assoc ::previous-score (game-state ::gs/score))))

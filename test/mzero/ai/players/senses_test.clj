@@ -52,7 +52,7 @@
       ;; | ####|
       ;; |###  |
       (is (= (sut/update-senses-data (:senses-data player) world)
-             #::sut{:senses-vector (vec (concat (repeat 16 0.0)
+             #::sut{:senses (vec (concat (repeat 16 0.0)
                                                (repeat 7 1.0)
                                                [0.0 0.0]
                                                [0.3]))

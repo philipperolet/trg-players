@@ -9,9 +9,10 @@
              [vect-math :as nvm]
              [random :as rnd]]
             [clojure.spec.alpha :as s]
-            [mzero.ai.players.common :refer [values-in? ones]]
-            [mzero.ai.players.senses :as mzs]
+            [mzero.ai.players.common :refer [values-in? ones per-element-spec]]
             [clojure.spec.gen.alpha :as gen]))
+
+(s/def ::neural-value (s/double-in :min 0.0 :max 1.0 :infinity? false :NaN? false))
 
 (s/def ::weights
   (-> nc/matrix?
@@ -22,15 +23,16 @@
 
 (s/def ::patterns
   (-> nc/matrix?
-      (s/and #(values-in? % 0.0 1.0))))
+      (s/and (per-element-spec ::neural-value))))
 
 (s/def ::working-matrix (-> nc/matrix?
                             (s/and #(values-in? % 0.0 Float/MAX_VALUE))))
 
-(s/def ::inputs (-> nc/vctr?
-                    (s/and #(values-in? % 0.0 1.0))))
+(s/def ::neural-vector (-> nc/vctr?
+                           (s/and (per-element-spec ::neural-value))))
 
-(s/def ::outputs ::inputs)
+(s/def ::inputs ::neural-vector)
+(s/def ::outputs ::neural-vector)
 
 (s/def ::layer
   (-> (s/keys :req [::weights ::patterns ::inputs ::outputs ::working-matrix])
@@ -150,7 +152,7 @@
 
 (s/fdef forward-pass!
   :args (-> (s/cat :layers ::layers
-                   :inputs (s/every ::mzs/sense-value))
+                   :inputs (s/every ::neural-value))
             (s/and (fn [{:keys [inputs layers]}]
                      (comment "Input dimension fits first layer")
                      (= (count inputs) (nc/dim (::inputs (first layers)))))))
