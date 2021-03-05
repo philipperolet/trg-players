@@ -1,4 +1,7 @@
 # Todo - v0.2.4 - M0.0.1
+## Motoneurones
+- Dev initial : couche activée préexistante
+
 ## Génération
 - *Shape Mech*
   - min(10000 - activable neurons, max(100,0.1*|activables|)) new neurons
@@ -13,9 +16,6 @@
 	- ainsi un poids utilisé 1 seule fois disparait au bout de N=1000 itérations (1s)
   - poids activants multipliés e.g. 1.1
 	- selon leur force d'activation (1 + activation power/5), jusqu'à 1.2
-
-## Motoneurones
-- Dev initial : couche activée préexistante
 
 ## Renforcement supervisé
 - Poids activants descendants multipliés par (facteur non-supervisé * 3) ** (1-1/num couche) * force d'activation du poids

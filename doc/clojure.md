@@ -9,6 +9,8 @@
 - don't run a global-state-changing function in a namespace you'd import, it can have unexpected effects
 - Macro ~ inline pour les parties de code à vraiment optimiser
 - lein run & fails because of stdin, add </dev/null
+- sometimes cider-ns-refresh fails -> try `lein clean`
+- update-in / get-in work on vec but not on other colls
 
 # Common knowledge
 - vector is variadic. vec works with a coll
