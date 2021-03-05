@@ -2,12 +2,11 @@
   (:require [clojure.test :refer [testing is are]]
             [mzero.utils.testing
              #?(:clj :refer :cljs :refer-macros) [check-all-specs deftest]
-             :as u]
+             :as ut]
             [mzero.game.state-test :refer [test-size test-state]]
             [mzero.game.board-test :refer [small-test-board]]
             [mzero.game.board :as gb]
-            [mzero.game.generation :as gg]
-            [clojure.data.generators :as g]))
+            [mzero.game.generation :as gg]))
 
 (check-all-specs mzero.game.generation)
 
@@ -35,7 +34,7 @@
 
 (deftest create-nice-board-test
   (testing "Appropriate densities in board"
-    (with-redefs [gg/add-wall (u/count-calls gg/add-wall)]
+    (with-redefs [gg/add-wall (ut/count-calls gg/add-wall)]
       (let [board (gg/create-nice-board 6 {::gg/density-map {:fruit 5 :cheese 10}})]
         (is (gg/valid-density board :fruit 5))
         (is (gg/valid-density board :cheese 10))

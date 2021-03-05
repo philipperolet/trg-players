@@ -1,11 +1,11 @@
 (ns mzero.utils.modsubvec-test
-  (:require [mzero.utils.modsubvec :as u]
+  (:require [mzero.utils.modsubvec :as sut]
             [clojure.test :refer [are deftest is]]))
 
 (deftest modsubvec-test
-  (let [msv (u/modsubvec [1 2 3 4 5] 3 3)
-        msv2 (u/modsubvec [9 11 14 13 8 16] -2 4)
-        msv3 (u/modsubvec [9 11 14 13 8 16] -8 4)]
+  (let [msv (sut/modsubvec [1 2 3 4 5] 3 3)
+        msv2 (sut/modsubvec [9 11 14 13 8 16] -2 4)
+        msv3 (sut/modsubvec [9 11 14 13 8 16] -8 4)]
     (are [index res] (= (nth msv index) res)
       0 4
       1 5
