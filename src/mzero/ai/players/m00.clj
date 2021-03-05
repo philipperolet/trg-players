@@ -26,6 +26,10 @@
        (nth ge/directions)))
 
 (defn- sparsify-weights
+  "Nullify most of the weights so that patterns have a chance to match.
+
+  A pattern's proba to match gets smaller as the number of non-nil
+  weights increases."
   [layers]
   (let [rand-nonzeros ; random number of non-zero weights for a column
         #(max 2 (g/uniform 0 (* 0.25 (Math/sqrt (nc/dim %)))))

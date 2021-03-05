@@ -29,8 +29,6 @@
       (recur player (dec size) next-world (conj acc next-movement)))
     acc))
 
-
-
 (deftest m00-randomness
   (let [test-world (world 25 42)
         m00-opts
