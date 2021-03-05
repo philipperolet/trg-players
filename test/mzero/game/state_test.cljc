@@ -4,7 +4,7 @@
             [mzero.utils.testing
              #?(:clj :refer :cljs :refer-macros) [check-all-specs deftest]]
             [mzero.game.board :as gb]
-            [mzero.game.state :as g]))
+            [mzero.game.state :as gs]))
 
 (check-all-specs mzero.game.state)
 
@@ -16,19 +16,19 @@
   (-> (gb/empty-board test-size)
       (assoc (- test-size 2) (vec (repeat test-size :fruit)))
       (assoc (- test-size 1) (vec (repeat test-size :wall)))
-      (g/init-game-state 0)
-      (assoc ::g/player-position [0 0])))
+      (gs/init-game-state 0)
+      (assoc ::gs/player-position [0 0])))
 
 (def test-state-2
-  {::g/status :active
-   ::g/score 10
-   ::g/enemy-positions [[0 0] [1 4]]
+  {::gs/status :active
+   ::gs/score 10
+   ::gs/enemy-positions [[0 0] [1 4]]
    ::gb/game-board [[:empty :empty :wall :empty :empty]
                     [:empty :fruit :empty :empty :empty]
                     [:empty :empty :wall :empty :empty]
                     [:empty :empty :cheese :cheese :empty]
                     [:empty :empty :empty :empty :empty]]
-   ::g/player-position [1 2]})
+   ::gs/player-position [1 2]})
 
 (def test-state-2-string
   (str "-------" \newline
@@ -41,8 +41,8 @@
 
 (deftest board-spec-test
   (testing "Player should not be able to be on a wall"
-    (is (not (s/valid? ::g/game-state
-                       (assoc test-state ::g/player-position [9 9]))))))
+    (is (not (s/valid? ::gs/game-state
+                       (assoc test-state ::gs/player-position [9 9]))))))
 
 (deftest get-html-for-state-t
   (testing "Converts appropriately a board to reagent html"
@@ -78,7 +78,7 @@
              [:td.empty {:key "mzero-4-3"}]
              [:td.empty {:key "mzero-4-4"}]]]
 
-           (g/get-html-for-state test-state-2)))))
+           (gs/get-html-for-state test-state-2)))))
 
 (deftest enjoyable-game-test
   (let [fully-accessible-board-1                     
@@ -111,28 +111,28 @@
          [[2 1] [1 3] [0 1]]]
         create-state-from-positions
         (fn [b pos]
-          (-> (g/init-game-state b 0)
-              (assoc ::g/player-position (first pos))
-              (assoc ::g/enemy-positions (vec (rest pos)))))]
+          (-> (gs/init-game-state b 0)
+              (assoc ::gs/player-position (first pos))
+              (assoc ::gs/enemy-positions (vec (rest pos)))))]
         
-    (is (every? g/enjoyable-game?
+    (is (every? gs/enjoyable-game?
                 (map #(create-state-from-positions (first %) (second %))
                      (for [board [fully-accessible-board-1
                                   fully-accessible-board-2]
                            pos player-and-enemy-positions]
                        [board pos]))))
-    (is (not-any? g/enjoyable-game?
+    (is (not-any? gs/enjoyable-game?
                 (map #(create-state-from-positions (first %) (second %))
                      (for [board [board-with-locked-player-or-enemies
                                   board-with-locked-fruit]
                            pos player-and-enemy-positions]
                        [board pos]))))
-    (is (g/enjoyable-game? (create-state-from-positions
+    (is (gs/enjoyable-game? (create-state-from-positions
                           board-with-locked-player-or-enemies
                           [[0 0] [0 1] [1 0]])))
-    (is (not (g/enjoyable-game? (create-state-from-positions
+    (is (not (gs/enjoyable-game? (create-state-from-positions
                                board-with-locked-fruit
                                [[0 0] [0 1] [1 0]]))))))    
     
 (deftest state->string-test
-  (is (= test-state-2-string (g/state->string test-state-2))))
+  (is (= test-state-2-string (gs/state->string test-state-2))))
