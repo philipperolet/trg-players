@@ -131,8 +131,8 @@
   (let [[input-dim first-dim & next-dims] dimensions
         new-unplugged-layer
         #(hash-map ::inputs nil
-                   ::weights (rnd/rand-uniform! (nn/dge %1 %2))
-                   ::patterns (nn/dge %1 %2)
+                   ::weights (rnd/rand-uniform! rng (nn/dge %1 %2))
+                   ::patterns (rnd/rand-uniform! rng (nn/dge %1 %2))
                    ::working-matrix (nn/dge %1 %2)
                    ::outputs (nn/dv %2))
 
