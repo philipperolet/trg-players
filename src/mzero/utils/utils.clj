@@ -79,3 +79,13 @@
       (println
         (str "    "
           (list name (into ['this] (take argcount (repeatedly gensym)))))))))
+
+;; Demonic stuff because I want to use prr without adding a require
+(ns clojure.core)
+(defn prr
+  "Prints v & returns v"
+  ([f v]
+   (println (str (f v)))
+   v)
+  ([v]
+   (prr identity v)))

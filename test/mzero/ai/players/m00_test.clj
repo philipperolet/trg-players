@@ -5,17 +5,7 @@
             [mzero.utils.utils :as u]
             [mzero.game.events :as ge]
             [mzero.ai.player :as aip]
-            [mzero.ai.world :as aiw :refer [world]]
-            [uncomplicate.neanderthal.native :refer [dge dv]]
-            [uncomplicate.neanderthal.core :as nc]))
-
-(deftest direction-from-output-test
-  (is (= (#'sut/direction-from-output (dv 1.3 0.32 0.11))
-         :right)) ;; 0.73 => 1 => right
-  (is (= (#'sut/direction-from-output (dv 0.33 0.34 0.33 0.0 1.0))
-         :up))
-  (is (= (#'sut/direction-from-output (dv 0.13 0.14))
-         :left)))
+            [mzero.ai.world :as aiw :refer [world]]))
 
 (defn run-n-steps
   [player size world acc]
@@ -32,7 +22,7 @@
 (deftest m00-randomness
   (let [test-world (world 25 42)
         m00-opts
-        {:seed 40 :vision-depth 4 :layer-dims [18 30 30]}
+        {:seed 40 :vision-depth 4 :layer-dims [18 30]}
         m00-player
         (-> (aip/load-player "m00" m00-opts test-world))
         dl-updates

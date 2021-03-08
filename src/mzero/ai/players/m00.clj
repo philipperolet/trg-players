@@ -3,6 +3,7 @@
   (:require [mzero.ai.player :as aip]
             [mzero.ai.players.senses :as mzs]
             [mzero.ai.players.activation :as mza]
+            [mzero.ai.players.motoneurons :as mzm]
             [mzero.game.state :as gs]
             [mzero.game.board :as gb]
             [uncomplicate.neanderthal
@@ -12,18 +13,11 @@
             [mzero.game.events :as ge]
             [clojure.spec.alpha :as s]
             [uncomplicate.neanderthal.vect-math :as nvm]
-            [clojure.data.generators :as g]))
+            [clojure.data.generators :as g]
+            [mzero.utils.utils :as u]
+            [mzero.utils.testing :as ut]))
 
 (def dl-default-vision-depth 4)
-
-(defn- direction-from-output
-  [output-vector]
-  (->> (nc/sum output-vector)
-       (#(- % (int %))) ;; decimal part
-       (* 100)
-       int
-       (#(mod % 4))
-       (nth ge/directions)))
 
 (defn- sparsify-weights
   "Nullify most of the weights so that patterns have a chance to match.
@@ -46,29 +40,27 @@
 
     (vec (map sparsify-layer layers))))
 
-(defn- youprint [layers]
-  (doall (map #(do (println (-> % ::mza/patterns))
-                   (println (-> % ::mza/weights) "||||||\n")) layers))
-  layers)
-
-(defrecord M00Player [layer-dims]
+(defrecord M00Player []
   aip/Player
   (init-player [player opts {{:keys [::gb/game-board]} ::gs/game-state}]
+    (comment "`layer-dims` contains dimensions of hidden layers. The
+    number of inputs is determined by the player's `vision-depth`. The
+    number of outputs is the number of motoneurons")
     (let [vision-depth (:vision-depth opts dl-default-vision-depth)
           input-size (mzs/senses-vector-size vision-depth)
-          layer-dims (:layer-dims opts)
+          all-layer-dims (conj (into [input-size] (:layer-dims opts)) mzm/motoneuron-number)
           thal-rng (if-let [seed (:seed opts)]
                      (rnd/rng-state nn/native-float seed)
                      (rnd/rng-state nn/native-float))
           seeded-sparsify-weights
           #(binding [g/*rnd* (:rng player)] (sparsify-weights %))]
       (mzs/vision-depth-fits-game? vision-depth game-board)
-      (assert (s/valid? (s/+ ::mza/layer-dimension) layer-dims))
+      (assert (s/valid? (s/every ::mza/layer-dimension) all-layer-dims))
       (assoc player
              ;; neanderthal needs its own rng-state in addition to the
              ;; player's regular rng
              :thal-rng thal-rng 
-             :layers (-> (mza/new-layers thal-rng (into [input-size] layer-dims))
+             :layers (-> (mza/new-layers thal-rng all-layer-dims)
                          ;; initializing weights and patterns so that
                          ;; movements vary (otherwise the same
                          ;; direction is always picked)
@@ -81,8 +73,12 @@
     (let [player-forward-pass
           #(mza/forward-pass! (-> % :layers)
                               (-> % :senses-data ::mzs/senses))
-          update-direction
-          #(assoc % :next-movement (direction-from-output (player-forward-pass %)))]
+          make-move
+          #(->> (player-forward-pass %)
+                seq
+                mzm/next-direction
+                (assoc % :next-movement))]
+      
       (-> player
           (update :senses-data mzs/update-senses-data world)
-          update-direction))))
+          make-move))))
