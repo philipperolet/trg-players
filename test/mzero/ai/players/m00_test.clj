@@ -5,7 +5,10 @@
             [mzero.utils.utils :as u]
             [mzero.game.events :as ge]
             [mzero.ai.player :as aip]
-            [mzero.ai.world :as aiw :refer [world]]))
+            [mzero.ai.world :as aiw :refer [world]]
+            [uncomplicate.neanderthal.random :as rnd]
+            [uncomplicate.neanderthal.native :as nn]
+            [uncomplicate.neanderthal.vect-math :as nvm]))
 
 (defn run-n-steps
   [player size world acc]
@@ -34,11 +37,11 @@
     this property, for testing purposes."
       (is (every? #(> % 200) (map (frequencies (dl-updates 1)) ge/directions))))))
 
-#_(deftest ^:integration dummy-luno-fast-enough
+#_(deftest ^:integration m00-fast-enough
   :unstrumented
   (testing "Fast enough, more than 1K cycles/s on a size 50 board for 1 layer"
     (let [player-options
-          "{:hidden-layer-size 10000 :seed 40}"
+          {:seed 40 :vision-depth 4 :layer-dims [50 50]}
           run-args
           (aim/parse-run-args "-v WARNING -t dummy-luno -n 1000 -o'%s'"
                               player-options)

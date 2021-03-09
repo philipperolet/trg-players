@@ -6,7 +6,7 @@
             [clojure.spec.alpha :as s]))
 
 (def max-ones-size 10000)
-(def ones-vector (nn/dv (repeat max-ones-size 1.0)))
+(def ones-vector (nn/fv (repeat max-ones-size 1.0)))
 
 (defn ones
   "Return a vector of `size` ones (double).

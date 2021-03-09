@@ -28,7 +28,7 @@
   (let [rand-nonzeros ; random number of non-zero weights for a column
         #(max 2 (g/uniform 0 (* 0.25 (Math/sqrt (nc/dim %)))))
         rand-nonzero-vector
-        #(nn/dv (g/shuffle (into (repeat %1 1.0) (repeat (- %2 %1) 0))))
+        #(nn/fv (g/shuffle (into (repeat %1 1.0) (repeat (- %2 %1) 0))))
         sparsify-column
         #(nvm/mul! %1 (rand-nonzero-vector %2 (nc/dim %1)))
         sparsify-layer

@@ -111,7 +111,7 @@
 (s/fdef new-layers
   ;; Custom-made test of a valid neanderthal `rng`, since there is no
   ;; available `rng?` function in the neanderthal lib
-  :args (s/cat :rng (-> #(rnd/rand-uniform! % (nn/dv 1))
+  :args (s/cat :rng (-> #(rnd/rand-uniform! % (nn/fv 1))
                         (s/with-gen #(gen/return (rnd/rng-state nn/native-float))))
                
                :dimensions (s/every ::layer-dimension :min-count 2))
@@ -133,14 +133,14 @@
   (let [[input-dim first-dim & next-dims] dimensions
         new-unplugged-layer
         #(hash-map ::inputs nil
-                   ::weights (rnd/rand-uniform! rng (nn/dge %1 %2))
-                   ::patterns (rnd/rand-uniform! rng (nn/dge %1 %2))
-                   ::working-matrix (nn/dge %1 %2)
-                   ::outputs (nn/dv %2))
+                   ::weights (rnd/rand-uniform! rng (nn/fge %1 %2))
+                   ::patterns (rnd/rand-uniform! rng (nn/fge %1 %2))
+                   ::working-matrix (nn/fge %1 %2)
+                   ::outputs (nn/fv %2))
 
         first-layer
         (-> (new-unplugged-layer input-dim first-dim)
-            (assoc ::inputs (nn/dv input-dim)))
+            (assoc ::inputs (nn/fv input-dim)))
 
         append-layer
         (fn [layers new-dim]
