@@ -24,11 +24,11 @@
   "Compares 2 numbers with a given `precision`, returns true if the
   numbers' difference is lower or equal than the precision
 
-  Precision defaults to a millionth of the first number's value."
+  Precision defaults to a ten thousandth of the first number's value."
   ([a b precision]
    (<= (abs (- a b)) precision))
   ([a b]
-   (almost= a b (* (Math/abs a) 0.000001))))
+   (almost= a b (* (Math/abs a) 0.0001))))
 
 (defmacro timed
   "Returns a vector with 2 values:
