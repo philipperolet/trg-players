@@ -59,3 +59,28 @@
     (is (vect= (::sut/outputs layer1) (nn/fv [0.0 0.0])))
     (is (vect= (::sut/outputs layer2) (nn/fv [0.380952 0.0])))))
 
+(deftest operations-speed-test
+  ;; Basic speed test of activation.clj operations (not tuned to reach
+  ;; peak cpu perf)
+  (let [dim 1024
+        i (rnd/rand-uniform! (nn/fv dim))
+        w (rnd/rand-uniform! (nn/fge dim dim))
+        [p wm] (repeatedly 2 #(nn/fge dim dim))
+        wpdm-time
+        (u/timed
+         (->> #(#'sut/weighted-pattern-distance-matrix! i p w wm)
+              (repeatedly 1000)
+              vec))
+        norm-time
+        (u/timed (vec (repeatedly 1000 #(#'sut/weight-normalization! w wm))))
+        outputs (nn/fv dim)
+        unactivated-time
+        (u/timed (vec (repeatedly 1000 #(#'sut/unactivated-outputs! wm outputs))))
+        iomr-time
+        (u/timed (vec (repeatedly 1000 #(#'sut/iomr-activation! i))))]
+    (testing "Each matrix op on 1024*1024 matrices should take less than a ms"
+      (is (< (-> wpdm-time first (/ 1000)) 1))
+      (is (< (-> norm-time first (/ 1000)) 1)))
+    (testing "Vector ops should be less than 0.1ms"
+      (is (< (-> unactivated-time first (/ 1000)) 0.1))
+      (is (< (-> iomr-time first (/ 1000)) 0.1)))))
