@@ -46,7 +46,7 @@
         (ctr/run-timed-step world-state opts)
         (is (u/almost= (opts :game-step-duration)
                        (- (System/currentTimeMillis) start-time)
-                       3))
+                       4))
         
         (aip/request-movement player-state world-state)
         (ctr/run-timed-step world-state opts)
