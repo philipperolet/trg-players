@@ -1,6 +1,7 @@
 (ns mzero.utils.xp
   "Utilities for performing experiments."
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [mzero.utils.utils :as u]))
 
 (defn mean
   "Mean value of a sequence of numbers"
@@ -37,7 +38,9 @@ Sum %,4G
 ---
 ")
 
-(defn- display-stats [title measures]
+(defn display-stats
+  "Display usual stats given a set of `measures`"
+  [title measures]
   (printf display-string
           title (count measures)
           (mean measures) (confidence measures)
@@ -81,3 +84,18 @@ Sum %,4G
 
   ([measure-seqs data]
    (display-measures measure-seqs data "Measure")))
+
+(defn timing-measures
+  "Convenience function to get `nb-xps` measures of `xp-fn` with `args`
+  list. Measurements are computed via `measure-fn` applied on a
+  **timed** execution of xp-fn, a pair (timing, result)."
+  [xp-fn args nb-xps measure-fn]
+  (let [timed-fn
+         (fn [& args]
+           (u/timed (apply xp-fn args)))]
+    (first (measure timed-fn measure-fn (repeat nb-xps args) map))))
+
+(defn fn-name
+  [fn]
+  (if (var? fn) (:name (meta fn)) (:name (meta (var fn)))))
+
