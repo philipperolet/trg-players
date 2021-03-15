@@ -1,4 +1,6 @@
-(ns mzero.utils.utils)
+(ns mzero.utils.utils
+  (:require [clojure.tools.logging :as log]
+            [clojure.spec.alpha :as s]))
 
 (defn is_square
   "Return `true` iff n is a perfect square
@@ -65,6 +67,28 @@
   "Return a map with `f` applied to each of `m`'s keys"
   [f m]
   (reduce-kv (fn [acc k v] (assoc acc k (f v))) {} m))
+
+(defn fn-name
+  [fn-var]
+  {:pre [(var? fn-var)]}
+  (str (:name (meta fn-var))))
+
+(defn with-logs
+  "Return a function identical to `fn_`, that logs a message every time
+  it is called, whose first part is fn_'s name & call count and second
+  part is a custom message computed by `str-fn`"
+  ([fn-var str-fn]
+   {:pre [(var? fn-var)]}
+   (let [call-count (atom 0)]
+     (fn [& args]
+       (log/info (format "%s : call # %d %s"
+                         (fn-name fn-var)
+                         @call-count
+                         (apply str-fn args)))
+       (swap! call-count inc)
+       (apply fn-var args))))
+  ([fn_]
+   (with-logs fn_ (constantly ""))))
 
 (defn scaffold
   "Show all the interfaces implemented by given `iface`"

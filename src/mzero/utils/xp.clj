@@ -95,7 +95,3 @@ Sum %,4G
            (u/timed (apply xp-fn args)))]
     (first (measure timed-fn measure-fn (repeat nb-xps args) map))))
 
-(defn fn-name
-  [fn]
-  (if (var? fn) (:name (meta fn)) (:name (meta (var fn)))))
-
