@@ -6,7 +6,8 @@
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.random :as rnd]
             [mzero.utils.utils :as u]
-            [uncomplicate.neanderthal.core :as nc]))
+            [clojure.tools.logging :as log]
+            [clojure.data.generators :as g]))
 
 
 (deftest weighted-pdm-test
@@ -60,6 +61,7 @@
     (is (vect= (::sut/outputs layer2) (nn/fv [0.380952 0.0])))))
 
 (deftest operations-speed-test
+  :unstrumented
   ;; Basic speed test of activation.clj operations (not tuned to reach
   ;; peak cpu perf)
   (let [dim 1024
@@ -83,4 +85,17 @@
       (is (< (-> norm-time first (/ 1000)) 1)))
     (testing "Vector ops should be less than 0.1ms"
       (is (< (-> unactivated-time first (/ 1000)) 0.1))
-      (is (< (-> iomr-time first (/ 1000)) 0.1)))))
+      (is (< (-> iomr-time first (/ 1000)) 0.1)))
+    (testing "A complete pass on 4 layers should take about 10 ms (
+    sum of ops time * 4), so less than 20ms coz we're nice at this time"
+      (let [layers
+            (sut/new-layers (rnd/rng-state nn/native-float 42) (repeat 5 dim))
+            inputs
+            (binding [g/*rnd* (java.util.Random. 42)]
+              (vec (repeatedly dim #(g/float))))
+            forward-pass
+            (u/timed (vec (repeatedly 300 #(sut/forward-pass! layers inputs))))
+            single-pass-time
+            (/ (first forward-pass) 300)]
+        (log/info single-pass-time)
+        (is (< single-pass-time 20))))))

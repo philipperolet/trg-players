@@ -1,16 +1,26 @@
-# Todo - v0.2.4 - M0.0.1
+# Todo
+
+# Backlog  - v0.2.4 - M0.0.1
+- bug : randomness not properly seeded in m00-randomness test
+
+
+## Senses
+- feat: sens de motricité
+- feat: la durée de satiété k est paramétrée par la profondeur du réseau
+- feat: sens d'aléatoire
+
 ## Motoneurones
-- Dev initial : couche activée préexistante
+- function to add neural connections with their weights, all accross the layers
+- Réflexes : via *arc-réflexes*, court-circuiter une partie des couches pour arriver plus vite
+- Neurones de mouvements -> bouge de celui le plus élevé si > 0.2
+  - branchement réflexe de mouvement à proximité d'un fruit
+  - branchement réflexe d'inhibition motrice
+  - branchement réflexe de randomness
+  - add random float between 0.0 & 0.1 to every move via randomness sense
+- Neurone de renforcement supervisé -> activation progressive à partir de 0.2
+  - branchement réflexe de renforcement lorsqu'un fruit est mangé
 
-## Génération
-- *Shape Mech*
-  - min(10000 - activable neurons, max(100,0.1*|activables|)) new neurons
-  - chaque nouveau neurone : synapse avec ~ 2 à 3% des neurones précédents (sparsité)
-  - poids non-nuls initialisés à 1
-  - unités de patterns non-nulles initialisées à la valeur d'activation de leurs neurones
-
-## Renforcement / Dégradation
-- Annuler tous les poids < e.g. 0.2
+## Renforcement Non-supervisé
 - poids synaptiques non-nuls multipliés selon leur IOMR
   - poids non-activants divisés e.g (0.2)^1/N
 	- ainsi un poids utilisé 1 seule fois disparait au bout de N=1000 itérations (1s)
@@ -18,20 +28,52 @@
 	- selon leur force d'activation (1 + activation power/5), jusqu'à 1.2
 
 ## Renforcement supervisé
+- Calculer le bon truc
 - Poids activants descendants multipliés par (facteur non-supervisé * 3) ** (1-1/num couche) * force d'activation du poids
 
+## Plasticité
+### Dégradation
+- Fusionner les neurones proches
+  - calculer l'activation combinée
+	```sum_i(|p'_i - p_i|*w'_i*w_i) / sum_i(w'_i*w_i)```
+  - fusionner les neurones qui s'activent entre eux selon IOMR double
+	- moyenne géométrique sur weights et arithm. pondérée pour les pattern
 
-# Backlog
+- Annuler tous les poids < e.g. 0.1, et killer les neurones sans poids
 
+- La dégradation doit prendre en compte le nombre de neurones du pattern
+  - car un neurone avec qu'un seul input est bien plus facilement activé qu'un neurone avec 5. Facteur 2**nb neurs?
+
+### Génération
+- *Shape Mech*
+  - min(10000 - activable neurons, max(100,0.1*|activables|)) new neurons
+  - chaque nouveau neurone : synapse avec ~ 5% des neurones précédents (sparsité)
+  - poids non-nuls initialisés à 1
+  - unités de patterns non-nulles initialisées à la valeur d'activation de leurs neurones
 
 
 # Icebox
+## Vitesse
+- get 10x speed improvements (current = 2.5 GFlops)
+
+- Perf théorique de l'ordi : 4 coeurs, freq. 1.8 Ghz, supposément 32 float ops / cycle => 4 * 1.8 * 32 ~ 220 GFlops
+  - voir comment pousser un peu la perf, ton core i7 peut monter à 4.6Ghz
+  
+- parvenir à des couches de 10K neurones qui fonctionnent
+  - se rapprocher de la perf théorique de ~300GFlops
+  => déjà atteindre 40GFlops, soit 10GFlops/coeur, soit 10MFlop/ms/coeur
+  - çad avec 4 couches intermédiaires de 1000 neurones, on doit faire 1000 itérations en XX
+
+## Autre
+- feat : board seed specified as cli option
 - compare speed on aws machine vs on your machine
+- speed : use a C routine to make mul! fast (& other ops), via JNI?
 - feat : make it 30 times faster using GPU
 - option to store game & player data in a db for random player
   - do it via the seed it's better
 - * for exhaustive player
 - tools to inspect games
+- paranoia session : mettre tout sur un git perso dans un serveur ovh redondé
 
 ## Refactorings
 - get-test-world in all tests
@@ -50,6 +92,7 @@
 
 # Changelog
 ### v0.2.4
+- test: speed tests ensuring ~ 2.5 GFlops for common m00 params
 - feat: m00 player, using activation (with randomness for movements)
 - ref: utility function 'world' for tests
 - feat: activation 
