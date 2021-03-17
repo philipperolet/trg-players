@@ -27,15 +27,17 @@
     (if (<= (- sum-rest w) 0) item (recur (- sum-rest w) restc restw))))
 
 (s/fdef next-direction
-  :args (s/cat :motoneurons ::motoneurons)
+  :args (s/cat :rng (partial instance? java.util.Random)
+               :motoneurons ::motoneurons)
   :ret ::ge/direction)
 
 (defn next-direction
   "Next direction is chosen by considering each motoneuron value as a
   non-normalized probability, and picking randomly according to the
   distribution"
-  [motoneurons]
-  (random-nth-weighted ge/directions motoneurons))
+  [rng motoneurons]
+  (binding [g/*rnd* rng]
+    (random-nth-weighted ge/directions motoneurons)))
 
 
 

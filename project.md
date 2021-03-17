@@ -1,9 +1,6 @@
 # Todo
 
 # Backlog  - v0.2.4 - M0.0.1
-- bug : randomness not properly seeded in m00-randomness test
-
-
 ## Senses
 - feat: sens de motricité
 - feat: la durée de satiété k est paramétrée par la profondeur du réseau

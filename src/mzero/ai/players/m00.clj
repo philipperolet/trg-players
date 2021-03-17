@@ -50,7 +50,8 @@
                      (rnd/rng-state nn/native-float seed)
                      (rnd/rng-state nn/native-float))
           seeded-sparsify-weights
-          #(binding [g/*rnd* (:rng player)] (sparsify-weights %))
+          (fn [layers]
+            (binding [g/*rnd* (:rng player)] (sparsify-weights layers)))
           last-index
           (- (count all-layer-dims) 2)]
       (mzs/vision-depth-fits-game? vision-depth game-board)
@@ -75,7 +76,7 @@
           make-move
           #(->> (player-forward-pass %)
                 seq
-                mzm/next-direction
+                (mzm/next-direction (:rng player))
                 (assoc % :next-movement))]
       
       (-> player

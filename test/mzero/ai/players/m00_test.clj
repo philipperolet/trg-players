@@ -6,7 +6,8 @@
             [mzero.ai.player :as aip]
             [mzero.ai.world :as aiw :refer [world]]
             [mzero.ai.main :as aim]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.data.generators :as g]))
 
 (defn run-n-steps
   [player size world acc]
@@ -25,7 +26,7 @@
         m00-opts
         {:seed 40 :vision-depth 4 :layer-dims [18 30]}
         m00-player
-        (-> (aip/load-player "m00" m00-opts test-world))
+        (aip/load-player "m00" m00-opts test-world)
         dl-updates
         (u/timed (run-n-steps m00-player 1000 test-world []))]
     
@@ -33,7 +34,7 @@
     each dir. Note: this is not a real property fof m00. Here we
     purposely found a setup of layers, patterns & inputs exhibiting
     this property, for testing purposes."
-      (is (every? #(> % 200) (map (frequencies (dl-updates 1)) ge/directions))))))
+      (is (every? #(> % 200) (map (frequencies (second dl-updates)) ge/directions))))))
 
 (deftest ^:integration m00-run
   :unstrumented
@@ -58,15 +59,4 @@
       (is (> actual-gflops expected-gflops))
       (is (> iterations-per-sec 25)))))
 
-#_(deftest ^:integration m00-fast-enough
-  :unstrumented
-  (testing "Fast enough, more than 1K cycles/s on a size 50 board for 1 layer"
-    (let [player-options
-          {:seed 40 :vision-depth 4 :layer-dims [50 50]}
-          run-args
-          (aim/parse-run-args "-v WARNING -t dummy-luno -n 1000 -o'%s'"
-                              player-options)
-          runtime
-          (first (u/timed (aim/run run-args (world 50 41))))]
-      (is (< runtime 1000)))))
 
