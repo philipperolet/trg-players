@@ -10,12 +10,9 @@
              [core :as nc]
              [native :as nn]
              [random :as rnd]]
-            [mzero.game.events :as ge]
             [clojure.spec.alpha :as s]
             [uncomplicate.neanderthal.vect-math :as nvm]
-            [clojure.data.generators :as g]
-            [mzero.utils.utils :as u]
-            [mzero.utils.testing :as ut]))
+            [clojure.data.generators :as g]))
 
 (def dl-default-vision-depth 4)
 
@@ -26,7 +23,7 @@
   weights increases."
   [layers]
   (let [rand-nonzeros ; random number of non-zero weights for a column
-        #(max 2 (g/uniform 0 (* 0.25 (Math/sqrt (nc/dim %)))))
+        #(max 2 (g/uniform 0 (* 0.1 (nc/mrows %))))
         rand-nonzero-vector
         #(nn/fv (g/shuffle (into (repeat %1 1.0) (repeat (- %2 %1) 0))))
         sparsify-column
@@ -53,7 +50,9 @@
                      (rnd/rng-state nn/native-float seed)
                      (rnd/rng-state nn/native-float))
           seeded-sparsify-weights
-          #(binding [g/*rnd* (:rng player)] (sparsify-weights %))]
+          #(binding [g/*rnd* (:rng player)] (sparsify-weights %))
+          last-index
+          (- (count all-layer-dims) 2)]
       (mzs/vision-depth-fits-game? vision-depth game-board)
       (assert (s/valid? (s/every ::mza/layer-dimension) all-layer-dims))
       (assoc player
@@ -66,7 +65,7 @@
                          ;; direction is always picked)
                          seeded-sparsify-weights
                          (update-in [0 ::mza/patterns] #(nc/scal! 0 %))
-                         (update-in [2 ::mza/patterns] #(nc/scal! 0 %)))
+                         (update-in [last-index ::mza/patterns] #(nc/scal! 0 %)))
              :senses-data (mzs/initial-senses-data vision-depth))))
 
   (update-player [player world]
