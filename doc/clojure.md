@@ -66,7 +66,7 @@ Test things you're not sure of. Tests are a tool not an end.
 https://clojureverse.org/t/clojure-spec-instrumenting-functions/2619/13
 
 ## Generative vs case-based
-The one with the best effort/relevant-coverage ratio.
+The one with the best *effort/relevant-coverage* ratio.
 
 ## Testing only public vs also private
 Case for only public -> to avoid test suite become impl detail dependant : "only test the public interface". Test the private functions via the public interface.
