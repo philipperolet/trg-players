@@ -71,7 +71,9 @@
       (assoc player
              :rng rng
              :hidden-layer (create-hidden-layer input-size hl-size rng)
-             :senses-data (mzs/initial-senses-data vision-depth))))
+             ;; not using motoception-persistence so any valid value
+             ;; (such as 3) is fine
+             :senses-data (mzs/initial-senses-data vision-depth 3))))
   
   (update-player [player world]
     (let [input-vector #(dge 1 (count %) %)
@@ -83,5 +85,8 @@
                  (assoc player :next-movement)))]
       
       (-> player
-          (update :senses-data mzs/update-senses-data world)
+          (update :senses-data
+                  mzs/update-senses-data
+                  (world ::gs/game-state)
+                  (:next-movement player))
           update-movement-from-senses-vector))))

@@ -77,3 +77,7 @@ Case for also private -> it can get hard / less legible to test private function
 Mostly imagined for OO, since testing can be very complex in OO when not thought of a priori during design.
 For FP, and FCIS design, it's less necessary and more a burden
 
+# Formatting
+- No empty lines in function defs, even between arities -- except in let/cond constructs with long paired bindings
+- long function call : stacking args is ok but counts as 1/2 level of nesting
+- let counts as 1/2 level of nesting, threading too

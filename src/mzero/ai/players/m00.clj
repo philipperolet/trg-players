@@ -37,6 +37,24 @@
 
     (vec (map sparsify-layer layers))))
 
+(defn- create-thal-rng
+  "Neanderthal needs its own rng-state in addition to the player's
+  regular rng"
+  [player-opts]
+  (if-let [seed (:seed player-opts)]
+    (rnd/rng-state nn/native-float seed)
+    (rnd/rng-state nn/native-float)))
+
+(defn- initialize-layers
+  "Initialize weights and patterns so that movements vary (otherwise the
+  same direction is always picked)"
+  [rng thal-rng all-layer-dims]
+  (binding [g/*rnd* rng]
+    (-> (mza/new-layers thal-rng all-layer-dims)
+        sparsify-weights
+        (update-in [0 ::mza/patterns] #(nc/scal! 0 %))
+        (update-in [(- (count all-layer-dims) 2) ::mza/patterns] #(nc/scal! 0 %)))))
+
 (defrecord M00Player []
   aip/Player
   (init-player [player opts {{:keys [::gb/game-board]} ::gs/game-state}]
@@ -45,40 +63,28 @@
     number of outputs is the number of motoneurons")
     (let [vision-depth (:vision-depth opts dl-default-vision-depth)
           input-size (mzs/senses-vector-size vision-depth)
-          all-layer-dims (conj (into [input-size] (:layer-dims opts)) mzm/motoneuron-number)
-          thal-rng (if-let [seed (:seed opts)]
-                     (rnd/rng-state nn/native-float seed)
-                     (rnd/rng-state nn/native-float))
-          seeded-sparsify-weights
-          (fn [layers]
-            (binding [g/*rnd* (:rng player)] (sparsify-weights layers)))
-          last-index
-          (- (count all-layer-dims) 2)]
+          thal-rng (create-thal-rng opts)
+          all-layer-dims (conj (into [input-size] (:layer-dims opts)) mzm/motoneuron-number)]
       (mzs/vision-depth-fits-game? vision-depth game-board)
       (assert (s/valid? (s/every ::mza/layer-dimension) all-layer-dims))
       (assoc player
-             ;; neanderthal needs its own rng-state in addition to the
-             ;; player's regular rng
-             :thal-rng thal-rng 
-             :layers (-> (mza/new-layers thal-rng all-layer-dims)
-                         ;; initializing weights and patterns so that
-                         ;; movements vary (otherwise the same
-                         ;; direction is always picked)
-                         seeded-sparsify-weights
-                         (update-in [0 ::mza/patterns] #(nc/scal! 0 %))
-                         (update-in [last-index ::mza/patterns] #(nc/scal! 0 %)))
-             :senses-data (mzs/initial-senses-data vision-depth))))
+             :thal-rng thal-rng
+             :layers (initialize-layers (:rng player) thal-rng all-layer-dims)
+             :senses-data (mzs/initial-senses-data vision-depth
+                                                   (count all-layer-dims)))))
 
-  (update-player [player world]
+  (update-player [player {:as world, :keys [::gs/game-state]}]
     (let [player-forward-pass
-          #(mza/forward-pass! (-> % :layers)
-                              (-> % :senses-data ::mzs/senses))
+          #(mza/forward-pass! (-> % :layers) (-> % :senses-data ::mzs/senses))
+
+          update-senses-data
+          #(mzs/update-senses-data % game-state (:next-movement player))
+          
           make-move
           #(->> (player-forward-pass %)
                 seq
                 (mzm/next-direction (:rng player))
                 (assoc % :next-movement))]
-      
       (-> player
-          (update :senses-data mzs/update-senses-data world)
+          (update :senses-data update-senses-data)
           make-move))))

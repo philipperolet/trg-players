@@ -34,7 +34,7 @@
 (deftest dummy-luno-randomness
   (let [test-world (world 25 41)
         dummy-luno
-        (aip/load-player "dummy-luno" {:seed 40} test-world)
+        (aip/load-player "dummy-luno" {:seed 40 :vision-depth 4} test-world)
         dl-updates
         (u/timed (run-n-steps dummy-luno 1000 test-world []))]
     
@@ -52,5 +52,3 @@
           runtime
           (first (u/timed (aim/run run-args (world 50 41))))]
       (is (< runtime 1000)))))
-
-

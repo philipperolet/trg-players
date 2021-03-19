@@ -1,8 +1,9 @@
 # Todo
+- feat: sens de motricité
 
 # Backlog  - v0.2.4 - M0.0.1
 ## Senses
-- feat: sens de motricité
+
 - feat: la durée de satiété k est paramétrée par la profondeur du réseau
 - feat: sens d'aléatoire
 
