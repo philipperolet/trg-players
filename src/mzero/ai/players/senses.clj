@@ -1,6 +1,6 @@
 (ns mzero.ai.players.senses
   "Module to compute player senses given world data at a given time, as
-  a float-valued `::senses` vector containing valid neural values (see
+  a float-valued `::input-vector`containing valid neural values (see
   activation.clj).
 
   Computation of the senses requires the previous senses value,
@@ -173,18 +173,18 @@ values (v.s. keeping the activation value fixed during
 ;; Senses vector
 ;;;;;;;;;;;;;;;;
 
-(defn senses-vector-size
+(defn input-vector-size
   "Size of senses vector = number of visible cells + 1 (satiety) +
   1 (motoception)"
   [vision-depth]
   (int (+ 2 (Math/pow (visible-matrix-edge-size vision-depth) 2))))
 
 
-(defn- senses-vector-spec
+(defn- input-vector-spec
   "Return a spec of senses vector fitting vision-depth"
   [vision-depth]
-  (let [min-count (senses-vector-size (or vision-depth min-vision-depth))
-        max-count (senses-vector-size (or vision-depth max-vision-depth))
+  (let [min-count (input-vector-size (or vision-depth min-vision-depth))
+        max-count (input-vector-size (or vision-depth max-vision-depth))
         spec-def (s/every ::mza/neural-value
                           :kind vector?
                           :min-count min-count
@@ -204,41 +204,41 @@ values (v.s. keeping the activation value fixed during
                  (s/valid? ::motoception (motoception sv))))
         (s/with-gen generator-function))))
 
-(s/def ::senses (senses-vector-spec nil))
+(s/def ::input-vector (input-vector-spec nil))
 (s/def ::previous-score ::gs/score)
 
 (defn- senses-data-generator [vision-depth]
   (gen/hash-map ::previous-score (s/gen ::previous-score)
                 ::vision-depth (gen/return vision-depth)
                 ::motoception-persistence (s/gen ::motoception-persistence)
-                ::senses (s/gen (senses-vector-spec vision-depth))))
+                ::input-vector (s/gen (input-vector-spec vision-depth))))
 
 (s/def ::senses-data
-  (-> (s/keys :req [::senses ::previous-score
+  (-> (s/keys :req [::input-vector ::previous-score
                     ::vision-depth ::motoception-persistence])
-      (s/and (fn [{:keys [::vision-depth ::senses]}]
+      (s/and (fn [{:keys [::vision-depth ::input-vector]}]
                (comment "Senses vector size depends on vision depth")
-               (= (count senses) (senses-vector-size vision-depth))))
+               (= (count input-vector) (input-vector-size vision-depth))))
       (s/with-gen #(gen/bind (s/gen ::vision-depth) senses-data-generator))))
 
 (defn initial-senses-data
   [vision-depth motoception-persistence]
-  {::senses (vec (repeat (senses-vector-size vision-depth) 0.0))
+  {::input-vector (vec (repeat (input-vector-size vision-depth) 0.0))
    ::vision-depth vision-depth
    ::motoception-persistence motoception-persistence
    ::previous-score 0})
 
-(defn- update-senses-vector
-  [old-senses-vector senses-data game-state last-move satiety-persistence]
+(defn- update-input-vector
+  [old-input-vector senses-data game-state last-move satiety-persistence]
   (let [{:keys [::previous-score ::vision-depth ::motoception-persistence]} senses-data
         {:keys [::gb/game-board ::gs/player-position ::gs/score]} game-state
         visible-matrix (visible-matrix game-board player-position vision-depth)]
     
     (conj (visible-matrix-vector visible-matrix)
-          (new-motoception (motoception old-senses-vector)
+          (new-motoception (motoception old-input-vector)
                            motoception-persistence
                            last-move)
-          (new-satiety (satiety old-senses-vector) previous-score score satiety-persistence))))
+          (new-satiety (satiety old-input-vector) previous-score score satiety-persistence))))
 
 (s/fdef update-senses-data
   :args (-> (s/cat :senses-data ::senses-data
@@ -253,9 +253,9 @@ values (v.s. keeping the activation value fixed during
 (def default-satiety-persistence 40)
 
 (defn update-senses-data
-  "Compute a new senses-vector using its previous value and various game data,
+  "Compute a new input-vector using its previous value and various game data,
   updating score with the previous score"
   [senses-data game-state last-move]
   (-> senses-data
-      (update ::senses update-senses-vector senses-data game-state last-move default-satiety-persistence)
+      (update ::input-vector update-input-vector senses-data game-state last-move default-satiety-persistence)
       (assoc ::previous-score (game-state ::gs/score))))

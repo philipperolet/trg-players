@@ -62,7 +62,7 @@
   aip/Player
   (init-player [player opts {{:keys [::gb/game-board]} ::gs/game-state}]
     (let [vision-depth (:vision-depth opts dl-default-vision-depth)
-          input-size (mzs/senses-vector-size vision-depth)
+          input-size (mzs/input-vector-size vision-depth)
           hl-size (:hidden-layer-size opts dl-default-hidden-layer-size)
           rng (if-let [seed (:seed opts)]
                 (rnd/rng-state native-float seed)
@@ -77,9 +77,9 @@
   
   (update-player [player world]
     (let [input-vector #(dge 1 (count %) %)
-          update-movement-from-senses-vector
+          update-movement-from-input-vector
           (fn [player]
-            (->> (get-in player [:senses-data ::mzs/senses])
+            (->> (get-in player [:senses-data ::mzs/input-vector])
                  input-vector
                  (new-direction player)
                  (assoc player :next-movement)))]
@@ -89,4 +89,4 @@
                   mzs/update-senses-data
                   (world ::gs/game-state)
                   (:next-movement player))
-          update-movement-from-senses-vector))))
+          update-movement-from-input-vector))))

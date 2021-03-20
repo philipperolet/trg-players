@@ -58,7 +58,7 @@
         {:keys [world player]} (aim/run run-args (world 25 41))]
 
     (testing "There has just been a movement, motoception on"
-      (is (= (sut/motoception (-> player :senses-data ::sut/senses)) 1.0)))
+      (is (= (sut/motoception (-> player :senses-data ::sut/input-vector)) 1.0)))
 
     (testing "After 5 iterations without move requests, motoception is
     down. After 10, it is 0."
@@ -69,7 +69,7 @@
                   (assoc :next-movement nil))
               iter-5 (aim/run run-args world motopersistant-player)
               iter-10 (aim/run run-args (:world iter-5) (:player iter-5))
-              senses-of-iter #(-> % :player :senses-data ::sut/senses)]
+              senses-of-iter #(-> % :player :senses-data ::sut/input-vector)]
           (is (u/almost= 0.975 (sut/motoception (-> iter-5 senses-of-iter))))
           (is (= 0.0 (sut/motoception (-> iter-10 senses-of-iter)))))))))
 
@@ -89,10 +89,10 @@
         ;; |#  ##|
         ;; |# ###|
         (is (= (sut/update-senses-data senses-data game-state :left)
-               #::sut{:senses (vec (concat (repeat 14 0.0)
-                                           [0.5 1.0 0.0 0.0 1.0 1.0]
-                                           [1.0 0.0 1.0 1.0 1.0]
-                                           [1.0 0.28526252571673366]))
+               #::sut{:input-vector (vec (concat (repeat 14 0.0)
+                                                 [0.5 1.0 0.0 0.0 1.0 1.0]
+                                                 [1.0 0.0 1.0 1.0 1.0]
+                                                 [1.0 0.28526252571673366]))
                       :vision-depth 2
                       :previous-score 1
                       :motoception-persistence 3})))))

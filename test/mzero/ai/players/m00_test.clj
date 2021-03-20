@@ -41,10 +41,10 @@
   (testing "Speed should be above ~2.5 GFlops, equivalently 25 iters per sec"
     (let [test-world (world 30 42)
           expected-gflops 2 ;; more than 2 Gflops => average probably more than 2.5
-          expected-iters-sec 25
+          expected-iters-sec 20
           ;; layer constant ~= nb of ops for each matrix elt for a layer
           ;; layer nb is inc'd to take into account 
-          layer-nb 8 dim 1024 layer-constant 10 steps 500
+          layer-nb 8 dim 1024 layer-constant 10 steps 250
           forward-pass-ops (* dim dim (inc layer-nb) layer-constant steps)
           m00-opts
           {:seed 40 :vision-depth 4 :layer-dims (repeat layer-nb dim)}
@@ -57,7 +57,7 @@
           iterations-per-sec
           (/ steps time-ms 0.001)]
       #_(log/info actual-gflops " GFlops, " iterations-per-sec " iters/sec")
-      (is (> actual-gflops expected-gflops))
-      (is (> expected-iters-sec iterations-per-sec)))))
+      (is (< expected-gflops actual-gflops))
+      (is (< expected-iters-sec iterations-per-sec)))))
 
 
