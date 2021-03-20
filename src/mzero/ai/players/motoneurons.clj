@@ -11,7 +11,8 @@
   (:require [clojure.spec.alpha :as s]
             [mzero.game.events :as ge]
             [clojure.data.generators :as g]
-            [mzero.ai.players.activation :as mza]))
+            [mzero.ai.players.activation :as mza]
+            [clojure.spec.gen.alpha :as gen]))
 
 (def motoneuron-number 4)
 
@@ -27,7 +28,8 @@
     (if (<= (- sum-rest w) 0) item (recur (- sum-rest w) restc restw))))
 
 (s/fdef next-direction
-  :args (s/cat :rng (partial instance? java.util.Random)
+  :args (s/cat :rng (-> (partial instance? java.util.Random)
+                        (s/with-gen #(gen/return (java.util.Random.))))
                :motoneurons ::motoneurons)
   :ret ::ge/direction)
 
