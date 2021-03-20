@@ -71,7 +71,7 @@
       (assoc player
              :rng rng
              :hidden-layer (create-hidden-layer input-size hl-size rng)
-             ;; not using motoception-persistence so any valid value
+             ;; not using brain-tau so any valid value
              ;; (such as 3) is fine
              :senses-data (mzs/initial-senses-data vision-depth 3))))
   

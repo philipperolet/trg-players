@@ -38,6 +38,10 @@
             [mzero.ai.players.activation :as mza]
             [mzero.game.events :as ge]))
 
+(s/def ::brain-tau (s/int-in 1 200))
+
+(defn- default-persistence [brain-tau] (* 2 brain-tau))
+
 ;; Satiety
 ;;;;;;;;;;
 
@@ -55,14 +59,15 @@
   :args (-> (s/cat :old-satiety ::satiety
                    :previous-score ::gs/score
                    :score ::gs/score
-                   :satiety-persistence (s/int-in 1 100)))
+                   :brain-tau ::brain-tau))
   :ret ::satiety)
 
 (defn- new-satiety
   "Compute satiety from its former value `old-satiety` and whether the
   score increased at this step. see m0.0.1 notes for explanations."
-  [old-satiety previous-score score satiety-persistence]
+  [old-satiety previous-score score brain-tau]
   (let [fruit-increment 0.3
+        satiety-persistence (default-persistence brain-tau)
         decrease-factor (Math/pow (/ minimal-satiety fruit-increment) (/ satiety-persistence))
         fruit-eaten-increment (if (< previous-score score) fruit-increment 0.0)
         new-satiety (+ (* old-satiety decrease-factor) fruit-eaten-increment)]
@@ -73,11 +78,8 @@
 
 ;; Motoception
 ;;;;;;;;;;;;;;
-(def max-motoception-persitence 1000)
 (def min-motoception-activation 0.95)
 (def activation-value 1.0)
-
-(s/def ::motoception-persistence (s/int-in 1 max-motoception-persitence))
 
 (s/def ::motoception (-> ::mza/neural-value
                          (s/and #(or (= % 0.0) (>= % min-motoception-activation)))
@@ -88,7 +90,7 @@
 
 (s/fdef new-motoception
   :args (s/cat :old-motoception ::motoception
-               :motoception-persistence ::motoception-persistence
+               :brain-tau ::brain-tau
                :last-move (s/or :nil nil? :direction ::ge/direction))
   :ret ::motoception)
 
@@ -102,7 +104,7 @@ si pas de mouvement effectif)
 
 - Reste actif pendant *motoception-persistence* itérations si pas de
 nouveaux movements, désactivé ensuite. Similairement à la satiété,
-*motoception-persistence* dépend de *network-depth*
+  *motoception-persistence* dépend de `brain-tau`
 
 - Si mouvement à nouveau pendant la persistence, on repart pour le
   nombre total d'itérations (cas limite, devrait peu arriver)
@@ -110,16 +112,19 @@ nouveaux movements, désactivé ensuite. Similairement à la satiété,
 **Implémentation**
 
 To know if motoception should deactivate, i.e. if
-`motoception-persistence` iterations occured with no new move from
-player, without storing previous state, the motoception value is
-decreased from a small increment every time. An added benefit is the
-ability for the player to make use of the differences in activation
-values (v.s. keeping the activation value fixed during
-*motoception-persistence* iterations)."
-  [old-motoception motoception-persistence last-move]
-  (let [increment
+  *motoception-persistence* iterations, computed from `brain-tau`,
+  occured with no new move from player, without storing previous
+  state, the motoception value is decreased from a small increment
+  every time. An added benefit is the ability for the player to make
+  use of the differences in activation values (v.s. keeping the
+  activation value fixed during *motoception-persistence*
+  iterations)."
+  [old-motoception brain-tau last-move]
+  (let [motoception-persistence (default-persistence brain-tau)
+        increment
         (-> (- activation-value min-motoception-activation)
             (/ motoception-persistence))
+        
         new-motoception
         (- old-motoception increment)]
     (cond
@@ -210,35 +215,34 @@ values (v.s. keeping the activation value fixed during
 (defn- senses-data-generator [vision-depth]
   (gen/hash-map ::previous-score (s/gen ::previous-score)
                 ::vision-depth (gen/return vision-depth)
-                ::motoception-persistence (s/gen ::motoception-persistence)
+                ::brain-tau (s/gen ::brain-tau)
                 ::input-vector (s/gen (input-vector-spec vision-depth))))
 
 (s/def ::senses-data
-  (-> (s/keys :req [::input-vector ::previous-score
-                    ::vision-depth ::motoception-persistence])
+  (-> (s/keys :req [::input-vector ::previous-score ::vision-depth])
       (s/and (fn [{:keys [::vision-depth ::input-vector]}]
                (comment "Senses vector size depends on vision depth")
                (= (count input-vector) (input-vector-size vision-depth))))
       (s/with-gen #(gen/bind (s/gen ::vision-depth) senses-data-generator))))
 
 (defn initial-senses-data
-  [vision-depth motoception-persistence]
+  [vision-depth brain-tau]
   {::input-vector (vec (repeat (input-vector-size vision-depth) 0.0))
    ::vision-depth vision-depth
-   ::motoception-persistence motoception-persistence
+   ::brain-tau brain-tau
    ::previous-score 0})
 
 (defn- update-input-vector
-  [old-input-vector senses-data game-state last-move satiety-persistence]
-  (let [{:keys [::previous-score ::vision-depth ::motoception-persistence]} senses-data
+  [old-input-vector senses-data game-state last-move]
+  (let [{:keys [::previous-score ::vision-depth ::brain-tau]} senses-data
         {:keys [::gb/game-board ::gs/player-position ::gs/score]} game-state
         visible-matrix (visible-matrix game-board player-position vision-depth)]
     
     (conj (visible-matrix-vector visible-matrix)
           (new-motoception (motoception old-input-vector)
-                           motoception-persistence
+                           brain-tau
                            last-move)
-          (new-satiety (satiety old-input-vector) previous-score score satiety-persistence))))
+          (new-satiety (satiety old-input-vector) previous-score score brain-tau))))
 
 (s/fdef update-senses-data
   :args (-> (s/cat :senses-data ::senses-data
@@ -250,12 +254,10 @@ values (v.s. keeping the activation value fixed during
                      (vision-depth-fits-game? vision-depth game-board))))
   :ret ::senses-data)
 
-(def default-satiety-persistence 40)
-
 (defn update-senses-data
   "Compute a new input-vector using its previous value and various game data,
   updating score with the previous score"
   [senses-data game-state last-move]
   (-> senses-data
-      (update ::input-vector update-input-vector senses-data game-state last-move default-satiety-persistence)
+      (update ::input-vector update-input-vector senses-data game-state last-move)
       (assoc ::previous-score (game-state ::gs/score))))

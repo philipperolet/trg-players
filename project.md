@@ -1,13 +1,14 @@
 # Todo
-- feat: les durée de satiété et de motoception sont paramétrée par la profondeur du réseau
+- 
 
-- rename senses to input-vector via regexp
+- motoception/satiety persistence depend on brain-time-constant
 - senses comme spec'd vector décrit ci-dessous
 - player initialise ses sens
 - remove default satiety persistence
 - add doc below to senses, update it to fit
 - remove vision-depth variability (it's 4)
 
+- coder s/float-in
 
 
 Quel nouveau fonctionnement?
@@ -18,7 +19,8 @@ Quel nouveau fonctionnement?
 - senses:
   - input-vector : float-valued vector of senses which will be fed as input to the player's brain
   - params : paramètres initiaux nécéssaires pour calculer les sens
-	- vision-depth, network-time-constant
+	- vision-depth
+	- brain-tau, the brain time constant
   - data : la data requise pour calculer les sens, à partir de world & player
 	- last move, previous score, game board
 - each iteration, the player updates its data and its vector
@@ -111,6 +113,7 @@ Quel nouveau fonctionnement?
 
 # Changelog
 ### v0.2.4
+- feat: les durée de satiété et de motoception sont paramétrées par la profondeur du réseau
 - feat: sens de motricité
 - test: speed tests ensuring ~ 2.5 GFlops for common m00 params
 - feat: m00 player, using activation (with randomness for movements)

@@ -36,20 +36,20 @@
            (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
 
 (deftest new-satiety-test
-  (is (= (#'sut/new-satiety 0.0 7 8 40) 0.3))
-  (is (= (#'sut/new-satiety 0.0415 9 9 40) 0.0))
-  (is (= (#'sut/new-satiety 0.9 7 10 40) 1.0))
-  (is (u/almost= (#'sut/new-satiety 0.5 0 0 40) (* 0.5 0.950875))))
+  (is (= (#'sut/new-satiety 0.0 7 8 20) 0.3))
+  (is (= (#'sut/new-satiety 0.0415 9 9 20) 0.0))
+  (is (= (#'sut/new-satiety 0.9 7 10 20) 1.0))
+  (is (u/almost= (#'sut/new-satiety 0.5 0 0 20) (* 0.5 0.950875))))
 
 (deftest new-motoception-test
   (testing "Specs of motoception"
     (are [old mot-per req-mov res]
         (u/almost= (#'sut/new-motoception old mot-per req-mov) res)
-      0.0 10 nil 0.0
-      0.0 10 :left 1.0
-      0.99 10 :right 1.0
-      1.0 10 nil 0.995
-      0.995 20 nil 0.9925)))
+      0.0 5 nil 0.0
+      0.0 5 :left 1.0
+      0.99 5 :right 1.0
+      1.0 5 nil 0.995
+      0.995 10 nil 0.9925)))
 
 (deftest motoception-in-senses-test
   (let [player-options "{:seed 40 :vision-depth 2}"
@@ -65,7 +65,7 @@
       (with-redefs [dl/new-direction (constantly nil)]
         (let [motopersistant-player
               (-> player
-                  (assoc-in [:senses-data ::sut/motoception-persistence] 10)
+                  (assoc-in [:senses-data ::sut/brain-tau] 5)
                   (assoc :next-movement nil))
               iter-5 (aim/run run-args world motopersistant-player)
               iter-10 (aim/run run-args (:world iter-5) (:player iter-5))
@@ -92,7 +92,7 @@
                #::sut{:input-vector (vec (concat (repeat 14 0.0)
                                                  [0.5 1.0 0.0 0.0 1.0 1.0]
                                                  [1.0 0.0 1.0 1.0 1.0]
-                                                 [1.0 0.28526252571673366]))
+                                                 [1.0 0.21442613167152266]))
                       :vision-depth 2
                       :previous-score 1
-                      :motoception-persistence 3})))))
+                      :brain-tau 3})))))
