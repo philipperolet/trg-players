@@ -36,10 +36,10 @@
            (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
 
 (deftest new-satiety-test
-  (is (= (#'sut/new-satiety 0.0 7 8) 0.3))
-  (is (= (#'sut/new-satiety 0.0415 9 9) 0.0))
-  (is (= (#'sut/new-satiety 0.9 7 10) 1.0))
-  (is (= (#'sut/new-satiety 0.5 0 0) (* 0.5 0.95))))
+  (is (= (#'sut/new-satiety 0.0 7 8 40) 0.3))
+  (is (= (#'sut/new-satiety 0.0415 9 9 40) 0.0))
+  (is (= (#'sut/new-satiety 0.9 7 10 40) 1.0))
+  (is (u/almost= (#'sut/new-satiety 0.5 0 0 40) (* 0.5 0.950875))))
 
 (deftest new-motoception-test
   (testing "Specs of motoception"
@@ -92,7 +92,7 @@
                #::sut{:senses (vec (concat (repeat 14 0.0)
                                            [0.5 1.0 0.0 0.0 1.0 1.0]
                                            [1.0 0.0 1.0 1.0 1.0]
-                                           [1.0 0.285]))
+                                           [1.0 0.28526252571673366]))
                       :vision-depth 2
                       :previous-score 1
                       :motoception-persistence 3})))))

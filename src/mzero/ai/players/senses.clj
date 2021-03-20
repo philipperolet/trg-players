@@ -32,7 +32,6 @@
   not interact with the world in any other way."
   (:require [mzero.game.board :as gb]
             [clojure.spec.alpha :as s]
-            [mzero.ai.world :as aiw]
             [mzero.utils.modsubvec :refer [modsubvec]]
             [mzero.game.state :as gs]
             [clojure.spec.gen.alpha :as gen]
@@ -42,12 +41,12 @@
 ;; Satiety
 ;;;;;;;;;;
 
-(def minimal-satiety-value 0.04)
+(def minimal-satiety 0.04)
 
 (s/def ::satiety (-> ::mza/neural-value
-                     (s/and #(or (>= % minimal-satiety-value) (= % 0.0)))
+                     (s/and #(or (>= % minimal-satiety) (= % 0.0)))
                      (s/with-gen (fn [] (gen/fmap
-                                         #(if (< % minimal-satiety-value) 0.0 %)
+                                         #(if (< % minimal-satiety) 0.0 %)
                                          (s/gen ::mza/neural-value))))))
 
 (defn- satiety [senses] (last senses))
@@ -55,18 +54,20 @@
 (s/fdef new-satiety
   :args (-> (s/cat :old-satiety ::satiety
                    :previous-score ::gs/score
-                   :score ::gs/score))
+                   :score ::gs/score
+                   :satiety-persistence (s/int-in 1 100)))
   :ret ::satiety)
 
 (defn- new-satiety
   "Compute satiety from its former value `old-satiety` and whether the
   score increased at this step. see m0.0.1 notes for explanations."
-  [old-satiety previous-score score]
-  (let [fruit-eaten-increment (if (< previous-score score) 0.3 0.0)
-        decrease-factor 0.95
+  [old-satiety previous-score score satiety-persistence]
+  (let [fruit-increment 0.3
+        decrease-factor (Math/pow (/ minimal-satiety fruit-increment) (/ satiety-persistence))
+        fruit-eaten-increment (if (< previous-score score) fruit-increment 0.0)
         new-satiety (+ (* old-satiety decrease-factor) fruit-eaten-increment)]
     (cond
-      (< new-satiety minimal-satiety-value) 0.0
+      (< new-satiety minimal-satiety) 0.0
       (> new-satiety 1) 1.0
       :else new-satiety)))
 
@@ -228,7 +229,7 @@ values (v.s. keeping the activation value fixed during
    ::previous-score 0})
 
 (defn- update-senses-vector
-  [old-senses-vector senses-data game-state last-move]
+  [old-senses-vector senses-data game-state last-move satiety-persistence]
   (let [{:keys [::previous-score ::vision-depth ::motoception-persistence]} senses-data
         {:keys [::gb/game-board ::gs/player-position ::gs/score]} game-state
         visible-matrix (visible-matrix game-board player-position vision-depth)]
@@ -237,7 +238,7 @@ values (v.s. keeping the activation value fixed during
           (new-motoception (motoception old-senses-vector)
                            motoception-persistence
                            last-move)
-          (new-satiety (satiety old-senses-vector) previous-score score))))
+          (new-satiety (satiety old-senses-vector) previous-score score satiety-persistence))))
 
 (s/fdef update-senses-data
   :args (-> (s/cat :senses-data ::senses-data
@@ -249,10 +250,12 @@ values (v.s. keeping the activation value fixed during
                      (vision-depth-fits-game? vision-depth game-board))))
   :ret ::senses-data)
 
+(def default-satiety-persistence 40)
+
 (defn update-senses-data
   "Compute a new senses-vector using its previous value and various game data,
   updating score with the previous score"
   [senses-data game-state last-move]
   (-> senses-data
-      (update ::senses update-senses-vector senses-data game-state last-move)
+      (update ::senses update-senses-vector senses-data game-state last-move default-satiety-persistence)
       (assoc ::previous-score (game-state ::gs/score))))

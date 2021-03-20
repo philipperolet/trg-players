@@ -1,10 +1,31 @@
 # Todo
-- feat: sens de motricité
+- feat: les durée de satiété et de motoception sont paramétrée par la profondeur du réseau
+
+- rename senses to input-vector via regexp
+- senses comme spec'd vector décrit ci-dessous
+- player initialise ses sens
+- remove default satiety persistence
+- add doc below to senses, update it to fit
+- remove vision-depth variability (it's 4)
+
+
+
+Quel nouveau fonctionnement?
+- Les sens sont une partie du joueur. Ils font l'interface entre le cerveau du joueur et le reste du monde. C'est l'analogue des premières synapses qui sont connectées à d'autres mécanismes, e.g. les nerfs qui détectent le toucher.
+- lorsqu'on initialise le player, on initialise ses sens
+  - ça renvoie un senses vector qui donne la taille de l'input btw
+	- passer mzs/vision-depth-fits-game et input-size là dedans
+- senses:
+  - input-vector : float-valued vector of senses which will be fed as input to the player's brain
+  - params : paramètres initiaux nécéssaires pour calculer les sens
+	- vision-depth, network-time-constant
+  - data : la data requise pour calculer les sens, à partir de world & player
+	- last move, previous score, game board
+- each iteration, the player updates its data and its vector
 
 # Backlog  - v0.2.4 - M0.0.1
 ## Senses
 
-- feat: la durée de satiété k est paramétrée par la profondeur du réseau
 - feat: sens d'aléatoire
 
 ## Motoneurones
@@ -90,6 +111,7 @@
 
 # Changelog
 ### v0.2.4
+- feat: sens de motricité
 - test: speed tests ensuring ~ 2.5 GFlops for common m00 params
 - feat: m00 player, using activation (with randomness for movements)
 - ref: utility function 'world' for tests
