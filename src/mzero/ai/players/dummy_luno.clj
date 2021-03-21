@@ -60,33 +60,30 @@
 
 (defrecord DummyLunoPlayer [hidden-layer-size]
   aip/Player
-  (init-player [player opts {{:keys [::gb/game-board]} ::gs/game-state}]
+  (init-player [player opts {:keys [::gs/game-state]}]
     (let [vision-depth (:vision-depth opts dl-default-vision-depth)
           input-size (mzs/input-vector-size vision-depth)
           hl-size (:hidden-layer-size opts dl-default-hidden-layer-size)
           rng (if-let [seed (:seed opts)]
                 (rnd/rng-state native-float seed)
                 (rnd/rng-state native-float))]
-      (mzs/vision-depth-fits-game? vision-depth game-board)
+      (mzs/vision-depth-fits-game? vision-depth (::gb/game-board game-state))
       (assoc player
              :rng rng
              :hidden-layer (create-hidden-layer input-size hl-size rng)
              ;; not using brain-tau so any valid value
-             ;; (such as 3) is fine
-             :senses-data (mzs/initial-senses-data vision-depth 3))))
+             ;; (such as 5) is fine
+             :senses (mzs/initialize-senses vision-depth 5 game-state))))
   
   (update-player [player world]
     (let [input-vector #(dge 1 (count %) %)
           update-movement-from-input-vector
           (fn [player]
-            (->> (get-in player [:senses-data ::mzs/input-vector])
+            (->> (get-in player [:senses ::mzs/input-vector])
                  input-vector
                  (new-direction player)
                  (assoc player :next-movement)))]
       
       (-> player
-          (update :senses-data
-                  mzs/update-senses-data
-                  (world ::gs/game-state)
-                  (:next-movement player))
+          (update :senses mzs/update-senses world player)
           update-movement-from-input-vector))))

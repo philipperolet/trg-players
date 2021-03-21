@@ -1,15 +1,10 @@
 (ns mzero.ai.players.senses
-  "Module to compute player senses given world data at a given time, as
-  a float-valued `::input-vector`containing valid neural values (see
-  activation.clj).
+  "Module to compute player senses given world and player data at a
+  given time, as a float-valued `::input-vector`containing valid
+  neural values (see activation.clj).
 
-  Computation of the senses requires the previous senses value,
-  as well as a `vision-depth` and the previous `score`, both of which
-  are kept in `::senses-data`.
-
-  The module's main function is `udpate-senses-data`, performing the
-  senses computation. `initial-senses-data` is also part of the public
-  interface.
+  Senses are the part of the player interfacing between the player's
+  brain and the rest of the world.
 
   Player senses are:
   -  its `vision`, which is a subset of the board cells
@@ -19,17 +14,15 @@
   - its `motoception`, short for motricity perception, which activates
   when it moves and stays on for a while
 
-  A player's `vision-depth` is the distance up to which it can see a
-  cell content relatively to its current position.
+  Senses comprise:
+  - `::input-vector` fed to the player brain;
+  - inial `::params` necessary to compute them;
+  - `::data` on the player and the world, updated at each iteration along
+  with `::input-vector`.
 
-  E.g. a player with vision depth 2 in position [3 0] can see cells
-  [3 2], [1 0] or [1 2] but not [3 3] or [0 0].
+  The module provide functions `initialize-senses` and `udpate-senses`.
 
-  Therefore, the player can *see* a square matrix of visible cells of
-  edge length vision-depth*2 + 1.
-
-  The intention of the senses module is that a player using it should
-  not interact with the world in any other way."
+  See arch minor for more details."
   (:require [mzero.game.board :as gb]
             [clojure.spec.alpha :as s]
             [mzero.utils.modsubvec :refer [modsubvec]]
@@ -38,6 +31,7 @@
             [mzero.ai.players.activation :as mza]
             [mzero.game.events :as ge]))
 
+;; Brain time constant
 (s/def ::brain-tau (s/int-in 1 200))
 
 (defn- default-persistence [brain-tau] (* 2 brain-tau))
@@ -46,6 +40,8 @@
 ;;;;;;;;;;
 
 (def minimal-satiety 0.04)
+
+(s/def ::previous-score ::gs/score)
 
 (s/def ::satiety (-> ::mza/neural-value
                      (s/and #(or (>= % minimal-satiety) (= % 0.0)))
@@ -58,13 +54,13 @@
 (s/fdef new-satiety
   :args (-> (s/cat :old-satiety ::satiety
                    :previous-score ::gs/score
-                   :score ::gs/score
+                   :score ::previous-score
                    :brain-tau ::brain-tau))
   :ret ::satiety)
 
 (defn- new-satiety
   "Compute satiety from its former value `old-satiety` and whether the
-  score increased at this step. see m0.0.1 notes for explanations."
+  score increased at this step. see m0.0.1 arch minor for explanations."
   [old-satiety previous-score score brain-tau]
   (let [fruit-increment 0.3
         satiety-persistence (default-persistence brain-tau)
@@ -81,6 +77,9 @@
 (def min-motoception-activation 0.95)
 (def activation-value 1.0)
 
+(s/def ::last-move (s/or :nil nil?
+                        :direction ::ge/direction))
+
 (s/def ::motoception (-> ::mza/neural-value
                          (s/and #(or (= % 0.0) (>= % min-motoception-activation)))
                          (s/with-gen
@@ -91,27 +90,13 @@
 (s/fdef new-motoception
   :args (s/cat :old-motoception ::motoception
                :brain-tau ::brain-tau
-               :last-move (s/or :nil nil? :direction ::ge/direction))
+               :last-move ::last-move)
   :ret ::motoception)
 
 (defn- new-motoception
-  "Compute the motoception value.
+  "Compute the motoception value. See arch minor for details.
 
-- A chaque fois qu'il y a une volonté de mouvement, activé 
-  
-- donc si volonté de mouvement contre un mur, activé quand même (même
-si pas de mouvement effectif)
-
-- Reste actif pendant *motoception-persistence* itérations si pas de
-nouveaux movements, désactivé ensuite. Similairement à la satiété,
-  *motoception-persistence* dépend de `brain-tau`
-
-- Si mouvement à nouveau pendant la persistence, on repart pour le
-  nombre total d'itérations (cas limite, devrait peu arriver)
-
-**Implémentation**
-
-To know if motoception should deactivate, i.e. if
+  To know if motoception should deactivate, i.e. if
   *motoception-persistence* iterations, computed from `brain-tau`,
   occured with no new move from player, without storing previous
   state, the motoception value is decreased from a small increment
@@ -175,7 +160,7 @@ To know if motoception should deactivate, i.e. if
   (<= (visible-matrix-edge-size vision-depth) (count game-board)))
 
 
-;; Senses vector
+;; Input vector
 ;;;;;;;;;;;;;;;;
 
 (defn input-vector-size
@@ -210,54 +195,65 @@ To know if motoception should deactivate, i.e. if
         (s/with-gen generator-function))))
 
 (s/def ::input-vector (input-vector-spec nil))
-(s/def ::previous-score ::gs/score)
+(s/def ::params (s/keys :req [::vision-depth ::brain-tau]))
+(s/def ::data (s/keys :req [::previous-score ::gs/game-state ::last-move]))
 
-(defn- senses-data-generator [vision-depth]
-  (gen/hash-map ::previous-score (s/gen ::previous-score)
-                ::vision-depth (gen/return vision-depth)
-                ::brain-tau (s/gen ::brain-tau)
-                ::input-vector (s/gen (input-vector-spec vision-depth))))
+(defn- update-data
+  "Updates the senses data given player & world"
+  [{:as old-data, {:keys [::gs/score]} ::gs/game-state}
+   {:as world, :keys [::gs/game-state]}
+   {:as player, :keys [:next-movement]}]
+  {::gs/game-state game-state
+   ::last-move next-movement
+   ::previous-score score})
 
-(s/def ::senses-data
-  (-> (s/keys :req [::input-vector ::previous-score ::vision-depth])
-      (s/and (fn [{:keys [::vision-depth ::input-vector]}]
-               (comment "Senses vector size depends on vision depth")
-               (= (count input-vector) (input-vector-size vision-depth))))
-      (s/with-gen #(gen/bind (s/gen ::vision-depth) senses-data-generator))))
-
-(defn initial-senses-data
-  [vision-depth brain-tau]
-  {::input-vector (vec (repeat (input-vector-size vision-depth) 0.0))
-   ::vision-depth vision-depth
-   ::brain-tau brain-tau
-   ::previous-score 0})
+(s/fdef update-input-vector
+  :args (-> (s/cat :old-input-vector ::input-vector
+                   :params ::params
+                   :data ::data)
+            (s/and (fn [{{:keys [::vision-depth]} :params
+                         {{:keys [::gb/game-board]} ::gs/game-state} :data}]
+                     (vision-depth-fits-game? vision-depth game-board))))
+  :ret ::input-vector)
 
 (defn- update-input-vector
-  [old-input-vector senses-data game-state last-move]
-  (let [{:keys [::previous-score ::vision-depth ::brain-tau]} senses-data
-        {:keys [::gb/game-board ::gs/player-position ::gs/score]} game-state
-        visible-matrix (visible-matrix game-board player-position vision-depth)]
-    
+  [old-input-vector
+   {:as params, :keys [::vision-depth ::brain-tau]}
+   {:as data, :keys [::previous-score ::last-move]
+    {:keys [::gb/game-board ::gs/player-position ::gs/score]} ::gs/game-state}]
+  (let [visible-matrix (visible-matrix game-board player-position vision-depth)]
     (conj (visible-matrix-vector visible-matrix)
           (new-motoception (motoception old-input-vector)
                            brain-tau
                            last-move)
           (new-satiety (satiety old-input-vector) previous-score score brain-tau))))
 
-(s/fdef update-senses-data
-  :args (-> (s/cat :senses-data ::senses-data
-                   :game-state ::gs/game-state
-                   :last-move (s/or :nil nil?
-                                    :direction ::ge/direction))
-            (s/and (fn [{{:keys [::vision-depth]} :senses-data
-                         {:keys [::gb/game-board]} :game-state}]
-                     (vision-depth-fits-game? vision-depth game-board))))
-  :ret ::senses-data)
+(defn- senses-generator [vision-depth]
+  (gen/hash-map ::params (gen/hash-map ::vision-depth (gen/return vision-depth)
+                                      ::brain-tau (s/gen ::brain-tau))
+                ::data (s/gen ::data)
+                ::input-vector (s/gen (input-vector-spec vision-depth))))
 
-(defn update-senses-data
+(s/def ::senses
+  (-> (s/keys :req [::input-vector ::params ::data])
+      (s/and (fn [{:keys [::input-vector], {:keys [::vision-depth]} ::params}]
+               (comment "Senses vector size depends on vision depth")
+               (= (count input-vector) (input-vector-size vision-depth))))
+      (s/with-gen #(gen/bind (s/gen ::vision-depth) senses-generator))))
+
+(defn initialize-senses
+  [vision-depth brain-tau game-state]
+  {::input-vector (vec (repeat (input-vector-size vision-depth) 0.0))
+   ::params {::vision-depth vision-depth
+             ::brain-tau brain-tau}
+   ::data {::previous-score 0
+           ::gs/game-state game-state
+           ::last-move nil}})
+
+(defn update-senses
   "Compute a new input-vector using its previous value and various game data,
   updating score with the previous score"
-  [senses-data game-state last-move]
-  (-> senses-data
-      (update ::input-vector update-input-vector senses-data game-state last-move)
-      (assoc ::previous-score (game-state ::gs/score))))
+  [senses world player]
+  (-> senses
+      (update ::data update-data world player)
+      (#(update % ::input-vector update-input-vector (::params %) (::data %)))))

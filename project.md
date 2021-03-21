@@ -1,33 +1,24 @@
 # Todo
-- 
 
-- motoception/satiety persistence depend on brain-time-constant
-- senses comme spec'd vector décrit ci-dessous
 - player initialise ses sens
 - remove default satiety persistence
 - add doc below to senses, update it to fit
 - remove vision-depth variability (it's 4)
-
-- coder s/float-in
+- fix cljr rename symbol
 
 
 Quel nouveau fonctionnement?
-- Les sens sont une partie du joueur. Ils font l'interface entre le cerveau du joueur et le reste du monde. C'est l'analogue des premières synapses qui sont connectées à d'autres mécanismes, e.g. les nerfs qui détectent le toucher.
 - lorsqu'on initialise le player, on initialise ses sens
   - ça renvoie un senses vector qui donne la taille de l'input btw
 	- passer mzs/vision-depth-fits-game et input-size là dedans
-- senses:
-  - input-vector : float-valued vector of senses which will be fed as input to the player's brain
-  - params : paramètres initiaux nécéssaires pour calculer les sens
-	- vision-depth
-	- brain-tau, the brain time constant
-  - data : la data requise pour calculer les sens, à partir de world & player
-	- last move, previous score, game board
-- each iteration, the player updates its data and its vector
+
+
+
+
+
 
 # Backlog  - v0.2.4 - M0.0.1
 ## Senses
-
 - feat: sens d'aléatoire
 
 ## Motoneurones

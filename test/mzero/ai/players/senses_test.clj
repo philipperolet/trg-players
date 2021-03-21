@@ -58,7 +58,7 @@
         {:keys [world player]} (aim/run run-args (world 25 41))]
 
     (testing "There has just been a movement, motoception on"
-      (is (= (sut/motoception (-> player :senses-data ::sut/input-vector)) 1.0)))
+      (is (= (sut/motoception (-> player :senses ::sut/input-vector)) 1.0)))
 
     (testing "After 5 iterations without move requests, motoception is
     down. After 10, it is 0."
@@ -69,17 +69,17 @@
                   (assoc :next-movement nil))
               iter-5 (aim/run run-args world motopersistant-player)
               iter-10 (aim/run run-args (:world iter-5) (:player iter-5))
-              senses-of-iter #(-> % :player :senses-data ::sut/input-vector)]
+              senses-of-iter #(-> % :player :senses ::sut/input-vector)]
           (is (u/almost= 0.975 (sut/motoception (-> iter-5 senses-of-iter))))
           (is (= 0.0 (sut/motoception (-> iter-10 senses-of-iter)))))))))
 
-(deftest ^:integration update-senses-data-test
+(deftest ^:integration update-senses-test
   (let [player-options
         "{:seed 40 :vision-depth 2}"
         run-args
         (aim/parse-run-args "-v WARNING -t dummy-luno -n 20 -o'%s'"
                             player-options)
-        {{:keys [::gs/game-state]} :world {:keys [senses-data]} :player}
+        {:keys [world player]}
         (aim/run run-args (world 25 41))]
       (testing "Correct update of senses data in player"
         ;; new vision is as follows
@@ -88,11 +88,13 @@
         ;; |  @ o|
         ;; |#  ##|
         ;; |# ###|
-        (is (= (sut/update-senses-data senses-data game-state :left)
+        (is (= (sut/update-senses (:senses player) world player)
                #::sut{:input-vector (vec (concat (repeat 14 0.0)
                                                  [0.5 1.0 0.0 0.0 1.0 1.0]
                                                  [1.0 0.0 1.0 1.0 1.0]
-                                                 [1.0 0.21442613167152266]))
-                      :vision-depth 2
-                      :previous-score 1
-                      :brain-tau 3})))))
+                                                 [1.0 0.24525345171117205]))
+                      :params {::sut/vision-depth 2
+                               ::sut/brain-tau 5}
+                      :data {::sut/previous-score 1
+                             ::sut/last-move :right
+                             ::gs/game-state (::gs/game-state world)}})))))

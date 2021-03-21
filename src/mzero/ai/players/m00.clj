@@ -57,28 +57,32 @@
 
 (defrecord M00Player []
   aip/Player
-  (init-player [player opts {{:keys [::gb/game-board]} ::gs/game-state}]
+  (init-player
+    [player opts {:as world, :keys [::gs/game-state]}]
     (comment "`layer-dims` contains dimensions of hidden layers. The
     number of inputs is determined by the player's `vision-depth`. The
     number of outputs is the number of motoneurons")
     (let [vision-depth (:vision-depth opts dl-default-vision-depth)
           input-size (mzs/input-vector-size vision-depth)
           thal-rng (create-thal-rng opts)
-          all-layer-dims (conj (into [input-size] (:layer-dims opts)) mzm/motoneuron-number)]
-      (mzs/vision-depth-fits-game? vision-depth game-board)
+          
+          all-layer-dims
+          (conj (into [input-size] (:layer-dims opts)) mzm/motoneuron-number)]
+      (mzs/vision-depth-fits-game? vision-depth (::gb/game-board game-state))
       (assert (s/valid? (s/every ::mza/layer-dimension) all-layer-dims))
       (assoc player
              :thal-rng thal-rng
              :layers (initialize-layers (:rng player) thal-rng all-layer-dims)
-             :senses-data (mzs/initial-senses-data vision-depth
-                                                   (count all-layer-dims)))))
+             ::mzs/senses (mzs/initialize-senses vision-depth
+                                                 (count all-layer-dims) ;; brain-tau
+                                                 game-state))))
 
   (update-player [player {:as world, :keys [::gs/game-state]}]
     (let [player-forward-pass
-          #(mza/forward-pass! (-> % :layers) (-> % :senses-data ::mzs/input-vector))
+          #(mza/forward-pass! (-> % :layers) (-> % ::mzs/senses ::mzs/input-vector))
 
-          update-senses-data
-          #(mzs/update-senses-data % game-state (:next-movement player))
+          update-senses
+          #(mzs/update-senses % world player)
           
           make-move
           #(->> (player-forward-pass %)
@@ -86,5 +90,5 @@
                 (mzm/next-direction (:rng player))
                 (assoc % :next-movement))]
       (-> player
-          (update :senses-data update-senses-data)
+          (update ::mzs/senses update-senses)
           make-move))))
