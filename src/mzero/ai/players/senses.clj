@@ -20,7 +20,7 @@
   - `::data` on the player and the world, updated at each iteration along
   with `::input-vector`.
 
-  The module provide functions `initialize-senses` and `udpate-senses`.
+  The module provide functions `initialize-senses!` and `udpate-senses`.
 
   See arch minor for more details."
   (:require [mzero.game.board :as gb]
@@ -29,7 +29,8 @@
             [mzero.game.state :as gs]
             [clojure.spec.gen.alpha :as gen]
             [mzero.ai.players.activation :as mza]
-            [mzero.game.events :as ge]))
+            [mzero.game.events :as ge]
+            [mzero.utils.utils :as u]))
 
 ;; Brain time constant
 (s/def ::brain-tau (s/int-in 1 200))
@@ -123,23 +124,17 @@
 ;; Vision
 ;;;;;;;;;
 
-(def min-vision-depth 1)
-(def max-vision-depth (dec (int (/ gb/max-board-size 2))))
-
-(s/def ::vision-depth (s/int-in 1 max-vision-depth))
-
-(defn visible-matrix-edge-size
+(def vision-depth 4)
+(def visible-matrix-edge-size
   "Edge size of the matrix of visible cells"
-  [vision-depth]
   (inc (* vision-depth 2)))
 
 (defn- visible-matrix  
-  [game-board player-position vision-depth]
-  (let [size (visible-matrix-edge-size vision-depth)
-        offset-row (- (first player-position) vision-depth)
+  [game-board player-position]
+  (let [offset-row (- (first player-position) vision-depth)
         offset-col (- (second player-position) vision-depth)]
-    (->> (modsubvec game-board offset-row size)
-         (map #(modsubvec % offset-col size))
+    (->> (modsubvec game-board offset-row visible-matrix-edge-size)
+         (map #(modsubvec % offset-col visible-matrix-edge-size))
          vec)))
 
 (defn- visible-matrix-vector
@@ -156,46 +151,32 @@
 
 (defn vision-depth-fits-game?
   "`true` iff the vision matrix edge is smaller than the game board edge"
-  [vision-depth game-board]
-  (<= (visible-matrix-edge-size vision-depth) (count game-board)))
+  [game-board]
+  (<= visible-matrix-edge-size (count game-board)))
 
 
 ;; Input vector
 ;;;;;;;;;;;;;;;;
 
-(defn input-vector-size
+(def input-vector-size
   "Size of senses vector = number of visible cells + 1 (satiety) +
   1 (motoception)"
-  [vision-depth]
-  (int (+ 2 (Math/pow (visible-matrix-edge-size vision-depth) 2))))
+  (int (+ 2 (Math/pow visible-matrix-edge-size 2))))
 
-
-(defn- input-vector-spec
-  "Return a spec of senses vector fitting vision-depth"
-  [vision-depth]
-  (let [min-count (input-vector-size (or vision-depth min-vision-depth))
-        max-count (input-vector-size (or vision-depth max-vision-depth))
-        spec-def (s/every ::mza/neural-value
-                          :kind vector?
-                          :min-count min-count
-                          :max-count max-count)
-        generator-function
-        (fn []
-          (gen/fmap #(assoc %
-                            (- min-count 2) (gen/generate (s/gen ::motoception))
-                            (dec min-count) (gen/generate (s/gen ::satiety)))
-                    (s/gen spec-def)))]
-    (-> spec-def
-        (s/and (fn [sv]
+(s/def ::input-vector
+  (-> (s/every ::mza/neural-value :kind vector? :count input-vector-size)
+      (u/with-mapped-gen
+        #(assoc %
+                (- input-vector-size 2) (gen/generate (s/gen ::motoception))
+                (dec input-vector-size) (gen/generate (s/gen ::satiety))))
+      (s/and (fn [sv]
                  (comment "Vector must have a valid satiety")
                  (s/valid? ::satiety (satiety sv)))
                (fn [sv]
                  (comment "Vector must have a valid motoception")
-                 (s/valid? ::motoception (motoception sv))))
-        (s/with-gen generator-function))))
+                 (s/valid? ::motoception (motoception sv))))))
 
-(s/def ::input-vector (input-vector-spec nil))
-(s/def ::params (s/keys :req [::vision-depth ::brain-tau]))
+(s/def ::params (s/keys :req [::brain-tau]))
 (s/def ::data (s/keys :req [::previous-score ::gs/game-state ::last-move]))
 
 (defn- update-data
@@ -211,49 +192,34 @@
   :args (-> (s/cat :old-input-vector ::input-vector
                    :params ::params
                    :data ::data)
-            (s/and (fn [{{:keys [::vision-depth]} :params
-                         {{:keys [::gb/game-board]} ::gs/game-state} :data}]
-                     (vision-depth-fits-game? vision-depth game-board))))
+            (s/and (fn [{ {{:keys [::gb/game-board]} ::gs/game-state} :data}]
+                     (vision-depth-fits-game? game-board))))
   :ret ::input-vector)
 
 (defn- update-input-vector
   [old-input-vector
-   {:as params, :keys [::vision-depth ::brain-tau]}
+   {:as params, :keys [::brain-tau]}
    {:as data, :keys [::previous-score ::last-move]
     {:keys [::gb/game-board ::gs/player-position ::gs/score]} ::gs/game-state}]
-  (let [visible-matrix (visible-matrix game-board player-position vision-depth)]
+  (let [visible-matrix (visible-matrix game-board player-position)]
     (conj (visible-matrix-vector visible-matrix)
-          (new-motoception (motoception old-input-vector)
-                           brain-tau
-                           last-move)
+          (new-motoception (motoception old-input-vector) brain-tau last-move)
           (new-satiety (satiety old-input-vector) previous-score score brain-tau))))
 
-(defn- senses-generator [vision-depth]
-  (gen/hash-map ::params (gen/hash-map ::vision-depth (gen/return vision-depth)
-                                      ::brain-tau (s/gen ::brain-tau))
-                ::data (s/gen ::data)
-                ::input-vector (s/gen (input-vector-spec vision-depth))))
-
-(s/def ::senses
-  (-> (s/keys :req [::input-vector ::params ::data])
-      (s/and (fn [{:keys [::input-vector], {:keys [::vision-depth]} ::params}]
-               (comment "Senses vector size depends on vision depth")
-               (= (count input-vector) (input-vector-size vision-depth))))
-      (s/with-gen #(gen/bind (s/gen ::vision-depth) senses-generator))))
+(s/def ::senses (s/keys :req [::input-vector ::params ::data]))
 
 (defn- initialize-senses
-  [vision-depth brain-tau game-state]
-  {::input-vector (vec (repeat (input-vector-size vision-depth) 0.0))
-   ::params {::vision-depth vision-depth
-             ::brain-tau brain-tau}
+  [brain-tau game-state]
+  {::input-vector (vec (repeat input-vector-size 0.0))
+   ::params {::brain-tau brain-tau}
    ::data {::previous-score 0
            ::gs/game-state game-state
            ::last-move nil}})
 
 (defn initialize-senses!
-  [vision-depth brain-tau game-state]
-  (if (vision-depth-fits-game? vision-depth (::gb/game-board game-state))
-    (initialize-senses vision-depth brain-tau game-state)
+  [brain-tau game-state]
+  (if (vision-depth-fits-game? (::gb/game-board game-state))
+    (initialize-senses brain-tau game-state)
     (throw (java.lang.RuntimeException. "Vision depth incompatible w. game board"))))
 
 (defn update-senses

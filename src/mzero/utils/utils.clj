@@ -1,6 +1,7 @@
 (ns mzero.utils.utils
   (:require [clojure.tools.logging :as log]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]))
 
 (defn is_square
   "Return `true` iff n is a perfect square
@@ -89,6 +90,12 @@
        (apply fn-var args))))
   ([fn_]
    (with-logs fn_ (constantly ""))))
+
+(defn with-mapped-gen
+  "Like with-gen, but takes a fn to be fed to fmap, and applies it to a
+  regular generator for the provided spec"
+  [spec fn]
+  (s/with-gen spec #(gen/fmap fn (s/gen spec))))
 
 (defn scaffold
   "Show all the interfaces implemented by given `iface`"

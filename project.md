@@ -1,21 +1,6 @@
 # Todo
 
-- player initialise ses sens
-- remove default satiety persistence
-- add doc below to senses, update it to fit
-- remove vision-depth variability (it's 4)
 - fix cljr rename symbol
-
-
-Quel nouveau fonctionnement?
-- lorsqu'on initialise le player, on initialise ses sens
-  - ça renvoie un senses vector qui donne la taille de l'input btw
-	- passer mzs/vision-depth-fits-game et input-size là dedans
-
-
-
-
-
 
 # Backlog  - v0.2.4 - M0.0.1
 ## Senses
@@ -104,6 +89,7 @@ Quel nouveau fonctionnement?
 
 # Changelog
 ### v0.2.4
+- ref: vision-depth is a senses parameter rather than a player opt
 - feat: les durée de satiété et de motoception sont paramétrées par la profondeur du réseau
 - feat: sens de motricité
 - test: speed tests ensuring ~ 2.5 GFlops for common m00 params

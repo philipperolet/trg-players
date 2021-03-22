@@ -19,21 +19,25 @@
             {:clojure.spec.test.check/opts {:num-tests 100}})
 
 (deftest visible-matrix-test
-  (let [{:keys [::gb/game-board ::gs/player-position]} gst/test-state-2]
-    (is (= (#'sut/visible-matrix game-board player-position 1)
-         [[:empty :wall :empty]
-          [:fruit :empty :empty]
-          [:empty :wall :empty]]))
-    (is (= (#'sut/visible-matrix game-board [0 4] 1)
-           [[:empty :empty :empty]
-            [:empty :empty :empty]
-            [:empty :empty :empty]]))))
+  (with-redefs [sut/vision-depth 1
+                sut/visible-matrix-edge-size 3]
+    (let [{:keys [::gb/game-board ::gs/player-position]} gst/test-state-2]
+      (is (= (#'sut/visible-matrix game-board player-position)
+             [[:empty :wall :empty]
+              [:fruit :empty :empty]
+              [:empty :wall :empty]]))
+      (is (= (#'sut/visible-matrix game-board [0 4])
+             [[:empty :empty :empty]
+              [:empty :empty :empty]
+              [:empty :empty :empty]])))))
 
 (deftest visible-matrix-vector-test
-  (let [{:keys [::gb/game-board ::gs/player-position]}
-        (first (gg/generate-game-states 1 25 41))]
-    (is (= (#'sut/visible-matrix-vector (#'sut/visible-matrix game-board player-position 2))
-           (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1])))))
+  (with-redefs [sut/vision-depth 2
+                sut/visible-matrix-edge-size 5]
+    (let [{:keys [::gb/game-board ::gs/player-position]}
+          (first (gg/generate-game-states 1 25 41))]
+      (is (= (#'sut/visible-matrix-vector (#'sut/visible-matrix game-board player-position))
+             (map float [0 0.5 0 0 0 0 0 0.5 0 0 0.5 0 0 0 0 0 1 1 1 1 1 1 1 1 1]))))))
 
 (deftest new-satiety-test
   (is (= (#'sut/new-satiety 0.0 7 8 20) 0.3))
@@ -52,7 +56,7 @@
       0.995 10 nil 0.9925)))
 
 (deftest motoception-in-senses-test
-  (let [player-options "{:seed 40 :vision-depth 2}"
+  (let [player-options "{:seed 40}"
         run-args
         (aim/parse-run-args "-v WARNING -t dummy-luno -n 5 -o'%s'" player-options)
         {:keys [world player]} (aim/run run-args (world 25 41))]
@@ -74,13 +78,16 @@
           (is (= 0.0 (sut/motoception (-> iter-10 senses-of-iter)))))))))
 
 (deftest ^:integration update-senses-test
-  (let [player-options
-        "{:seed 40 :vision-depth 2}"
-        run-args
-        (aim/parse-run-args "-v WARNING -t dummy-luno -n 20 -o'%s'"
-                            player-options)
-        {:keys [world player]}
-        (aim/run run-args (world 25 41))]
+  (with-redefs [sut/vision-depth 2
+                sut/visible-matrix-edge-size 5
+                sut/input-vector-size 27]
+    (let [player-options
+          "{:seed 40}"
+          run-args
+          (aim/parse-run-args "-v WARNING -t dummy-luno -n 20 -o'%s'"
+                              player-options)
+          {:keys [world player]}
+          (aim/run run-args (world 25 41))]
       (testing "Correct update of senses data in player"
         ;; new vision is as follows
         ;; |     |
@@ -93,8 +100,7 @@
                                                  [0.5 1.0 0.0 0.0 1.0 1.0]
                                                  [1.0 0.0 1.0 1.0 1.0]
                                                  [1.0 0.24525345171117205]))
-                      :params {::sut/vision-depth 2
-                               ::sut/brain-tau 5}
+                      :params {::sut/brain-tau 5}
                       :data {::sut/previous-score 1
                              ::sut/last-move :right
-                             ::gs/game-state (::gs/game-state world)}})))))
+                             ::gs/game-state (::gs/game-state world)}}))))))

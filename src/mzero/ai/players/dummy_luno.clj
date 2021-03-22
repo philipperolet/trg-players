@@ -55,25 +55,21 @@
   (let [output-vector (rnd/rand-uniform! rng (dge (ncols hidden-layer) 1))]
     (direction-from-real (forward-pass input-vector hidden-layer output-vector))))
 
-(def dl-default-vision-depth 4)
 (def dl-default-hidden-layer-size 6)
 
 (defrecord DummyLunoPlayer [hidden-layer-size]
   aip/Player
   (init-player [player opts {:keys [::gs/game-state]}]
-    (let [vision-depth (:vision-depth opts dl-default-vision-depth)
-          input-size (mzs/input-vector-size vision-depth)
+    (let [brain-tau 5 ;; brain-tau not relevant for dummy-luno, any value is fine
+          senses (mzs/initialize-senses! brain-tau game-state) 
           hl-size (:hidden-layer-size opts dl-default-hidden-layer-size)
           rng (if-let [seed (:seed opts)]
                 (rnd/rng-state native-float seed)
                 (rnd/rng-state native-float))]
-      (mzs/vision-depth-fits-game? vision-depth (::gb/game-board game-state))
       (assoc player
              :rng rng
-             :hidden-layer (create-hidden-layer input-size hl-size rng)
-             ;; not using brain-tau so any valid value
-             ;; (such as 5) is fine
-             :senses (mzs/initialize-senses! vision-depth 5 game-state))))
+             :hidden-layer (create-hidden-layer mzs/input-vector-size hl-size rng)
+             :senses senses)))
   
   (update-player [player world]
     (let [input-vector #(dge 1 (count %) %)

@@ -14,8 +14,6 @@
             [uncomplicate.neanderthal.vect-math :as nvm]
             [clojure.data.generators :as g]))
 
-(def dl-default-vision-depth 4)
-
 (defn- sparsify-weights
   "Nullify most of the weights so that patterns have a chance to match.
 
@@ -59,12 +57,8 @@
   aip/Player
   (init-player
     [player opts {:as world, :keys [::gs/game-state]}]
-    (comment "`layer-dims` contains dimensions of hidden layers. The
-    number of inputs is determined by the player's `vision-depth`. The
-    number of outputs is the number of motoneurons")
-    (let [vision-depth (:vision-depth opts dl-default-vision-depth)
-          brain-tau (+ 2 (count (:layer-dims opts)))
-          senses (mzs/initialize-senses! vision-depth brain-tau game-state)
+    (let [brain-tau (+ 2 (count (:layer-dims opts)))
+          senses (mzs/initialize-senses! brain-tau game-state)
           input-size (count (::mzs/input-vector senses))
           thal-rng (create-thal-rng opts)
           all-layer-dims

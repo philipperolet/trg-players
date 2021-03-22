@@ -23,8 +23,7 @@
 
 (deftest m00-randomness
   (let [test-world (world 25 43)
-        m00-opts
-        {:seed 40 :vision-depth 4 :layer-dims [18 30]}
+        m00-opts {:seed 40 :layer-dims [18 30]}
         m00-player
         (aip/load-player "m00" m00-opts test-world)
         dl-updates
@@ -46,8 +45,7 @@
           ;; layer nb is inc'd to take into account 
           layer-nb 8 dim 1024 layer-constant 10 steps 250
           forward-pass-ops (* dim dim (inc layer-nb) layer-constant steps)
-          m00-opts
-          {:seed 40 :vision-depth 4 :layer-dims (repeat layer-nb dim)}
+          m00-opts {:seed 40 :layer-dims (repeat layer-nb dim)}
           game-opts
           (aim/parse-run-args "-v WARNING -n %d -t m00 -o'%s'" steps m00-opts)
           time-ms
