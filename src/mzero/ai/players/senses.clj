@@ -241,7 +241,7 @@
                (= (count input-vector) (input-vector-size vision-depth))))
       (s/with-gen #(gen/bind (s/gen ::vision-depth) senses-generator))))
 
-(defn initialize-senses
+(defn- initialize-senses
   [vision-depth brain-tau game-state]
   {::input-vector (vec (repeat (input-vector-size vision-depth) 0.0))
    ::params {::vision-depth vision-depth
@@ -249,6 +249,12 @@
    ::data {::previous-score 0
            ::gs/game-state game-state
            ::last-move nil}})
+
+(defn initialize-senses!
+  [vision-depth brain-tau game-state]
+  (if (vision-depth-fits-game? vision-depth (::gb/game-board game-state))
+    (initialize-senses vision-depth brain-tau game-state)
+    (throw (java.lang.RuntimeException. "Vision depth incompatible w. game board"))))
 
 (defn update-senses
   "Compute a new input-vector using its previous value and various game data,

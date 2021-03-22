@@ -73,7 +73,7 @@
              :hidden-layer (create-hidden-layer input-size hl-size rng)
              ;; not using brain-tau so any valid value
              ;; (such as 5) is fine
-             :senses (mzs/initialize-senses vision-depth 5 game-state))))
+             :senses (mzs/initialize-senses! vision-depth 5 game-state))))
   
   (update-player [player world]
     (let [input-vector #(dge 1 (count %) %)

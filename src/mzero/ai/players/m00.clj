@@ -63,19 +63,17 @@
     number of inputs is determined by the player's `vision-depth`. The
     number of outputs is the number of motoneurons")
     (let [vision-depth (:vision-depth opts dl-default-vision-depth)
-          input-size (mzs/input-vector-size vision-depth)
+          brain-tau (+ 2 (count (:layer-dims opts)))
+          senses (mzs/initialize-senses! vision-depth brain-tau game-state)
+          input-size (count (::mzs/input-vector senses))
           thal-rng (create-thal-rng opts)
-          
           all-layer-dims
           (conj (into [input-size] (:layer-dims opts)) mzm/motoneuron-number)]
-      (mzs/vision-depth-fits-game? vision-depth (::gb/game-board game-state))
       (assert (s/valid? (s/every ::mza/layer-dimension) all-layer-dims))
       (assoc player
              :thal-rng thal-rng
              :layers (initialize-layers (:rng player) thal-rng all-layer-dims)
-             ::mzs/senses (mzs/initialize-senses vision-depth
-                                                 (count all-layer-dims) ;; brain-tau
-                                                 game-state))))
+             ::mzs/senses senses)))
 
   (update-player [player {:as world, :keys [::gs/game-state]}]
     (let [player-forward-pass
