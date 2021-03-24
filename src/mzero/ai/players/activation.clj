@@ -121,6 +121,20 @@
         (every? (fn [[dim {:keys [::inputs]}]] (= (nc/dim inputs) dim))
                 (map vector dimensions layers))))
 
+(defn- new-unplugged-layer
+  [m n init-fn]
+  (hash-map ::inputs nil
+            ::weights (init-fn (nn/fge m n))
+            ::patterns (init-fn (nn/fge m n))
+            ::working-matrix (nn/fge m n)
+            ::outputs (nn/fv n)))
+
+(defn- append-layer
+  [layers new-dim init-fn]
+  (-> (new-unplugged-layer (nc/dim (::outputs (last layers))) new-dim init-fn)
+      (assoc ::inputs (::outputs (last layers)))
+      (#(conj layers %))))
+
 (defn new-layers
   "Initialize a network with connected layers.
   
@@ -131,24 +145,12 @@
   [rng dimensions]
   {:pre [(>= (count dimensions) 2)]}
   (let [[input-dim first-dim & next-dims] dimensions
-        new-unplugged-layer
-        #(hash-map ::inputs nil
-                   ::weights (rnd/rand-uniform! rng (nn/fge %1 %2))
-                   ::patterns (rnd/rand-uniform! rng (nn/fge %1 %2))
-                   ::working-matrix (nn/fge %1 %2)
-                   ::outputs (nn/fv %2))
-
         first-layer
-        (-> (new-unplugged-layer input-dim first-dim)
+        (-> (new-unplugged-layer input-dim first-dim #(rnd/rand-uniform! rng %))
             (assoc ::inputs (nn/fv input-dim)))
-
-        append-layer
-        (fn [layers new-dim]
-          (-> (new-unplugged-layer (nc/dim (::outputs (last layers))) new-dim)
-              (assoc ::inputs (::outputs (last layers)))
-              (#(conj layers %))))]
-    
-    (reduce append-layer [first-layer] next-dims)))
+        append-random-init-layer
+        #(append-layer %1 %2 (partial rnd/rand-uniform! rng))]
+    (reduce append-random-init-layer [first-layer] next-dims)))
 
 (s/fdef forward-pass!
   :args (-> (s/cat :layers ::layers

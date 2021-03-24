@@ -1,11 +1,7 @@
 # Todo
-
-- fix cljr rename symbol
+- Motoneurones : arc-réflexe de déplacement
 
 # Backlog  - v0.2.4 - M0.0.1
-## Senses
-- feat: sens d'aléatoire
-
 ## Motoneurones
 - function to add neural connections with their weights, all accross the layers
 - Réflexes : via *arc-réflexes*, court-circuiter une partie des couches pour arriver plus vite
@@ -16,6 +12,9 @@
   - add random float between 0.0 & 0.1 to every move via randomness sense
 - Neurone de renforcement supervisé -> activation progressive à partir de 0.2
   - branchement réflexe de renforcement lorsqu'un fruit est mangé
+
+## Senses
+- feat: sens d'aléatoire
 
 ## Renforcement Non-supervisé
 - poids synaptiques non-nuls multipliés selon leur IOMR

@@ -40,7 +40,3 @@
   [rng motoneurons]
   (binding [g/*rnd* rng]
     (random-nth-weighted ge/directions motoneurons)))
-
-
-
-
