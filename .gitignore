@@ -4,6 +4,7 @@ pom.xml
 /classes/
 /out/
 /target/
+/.local/
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
@@ -21,4 +22,3 @@ pom.xml
 /flycheck_.dir-locals.elc
 /.idea/
 mzero.iml
-/doc/arch*.md
