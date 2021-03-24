@@ -1,5 +1,6 @@
 (ns mzero.ai.players.activation-test
   (:require [mzero.ai.players.activation :as sut]
+            [mzero.ai.players.network :as mzn]
             [clojure.test :refer [is testing]]
             [mzero.utils.testing :refer [deftest check-spec]]
             [mzero.ai.players.common :refer [vect= matrix=]]
@@ -37,28 +38,26 @@
   (is (vect= (#'sut/iomr-activation! (nn/fv 0.0 1.0 0.5 0.2 0.01))
              (nn/fv 1.0 0.0 0.0 0.2 0.96))))
 
-(check-spec `sut/new-layers)
-
 (deftest forward-pass-test
   (let [layer1
-        {::sut/inputs (nn/fv 3)
-         ::sut/patterns (nn/fge 3 2 [[0.5 0.3 0.9] [1 1 1]])
-         ::sut/weights (nn/fge 3 2 [[0.3 0.8 1.0] [0.5 0.2 0.9]])
-         ::sut/working-matrix (nn/fge 3 2)
-         ::sut/outputs (nn/fv 2)}
+        {::mzn/inputs (nn/fv 3)
+         ::mzn/patterns (nn/fge 3 2 [[0.5 0.3 0.9] [1 1 1]])
+         ::mzn/weights (nn/fge 3 2 [[0.3 0.8 1.0] [0.5 0.2 0.9]])
+         ::mzn/working-matrix (nn/fge 3 2)
+         ::mzn/outputs (nn/fv 2)}
         layer2
-        {::sut/inputs (::sut/outputs layer1)
-         ::sut/patterns (nn/fge 2 2 [[0.5 0] [0 1]])
-         ::sut/weights (nn/fge 2 2 [[0.7 0.7] [0.7 0.7]])
-         ::sut/working-matrix (nn/fge 2 2)
-         ::sut/outputs (nn/fv 2)}
+        {::mzn/inputs (::mzn/outputs layer1)
+         ::mzn/patterns (nn/fge 2 2 [[0.5 0] [0 1]])
+         ::mzn/weights (nn/fge 2 2 [[0.7 0.7] [0.7 0.7]])
+         ::mzn/working-matrix (nn/fge 2 2)
+         ::mzn/outputs (nn/fv 2)}
         layers [layer1 layer2]]
     (sut/forward-pass! layers '(0.5 0.3 1.0))
-    (is (vect= (::sut/outputs layer1) (nn/fv [0.809524 0.0])))
-    (is (vect= (::sut/outputs layer2) (nn/fv [0.0 0.0])))
+    (is (vect= (::mzn/outputs layer1) (nn/fv [0.809524 0.0])))
+    (is (vect= (::mzn/outputs layer2) (nn/fv [0.0 0.0])))
     (sut/forward-pass! layers '(0.3 0.8 0.5))
-    (is (vect= (::sut/outputs layer1) (nn/fv [0.0 0.0])))
-    (is (vect= (::sut/outputs layer2) (nn/fv [0.380952 0.0])))))
+    (is (vect= (::mzn/outputs layer1) (nn/fv [0.0 0.0])))
+    (is (vect= (::mzn/outputs layer2) (nn/fv [0.380952 0.0])))))
 
 (deftest operations-speed-test
   :unstrumented
@@ -82,14 +81,16 @@
         (u/timed (vec (repeatedly 1000 #(#'sut/iomr-activation! i))))]
     (testing "Each matrix op on 1024*1024 matrices should take less than a ms (33% added to avoid brittle tests)"
       (is (< (-> wpdm-time first (/ 1000)) 1.33))
+      (println "---\n"(first wpdm-time))
       (is (< (-> norm-time first (/ 1000)) 1.33)))
     (testing "Vector ops should be less than 0.1ms"
       (is (< (-> unactivated-time first (/ 1000)) 0.133))
+      (println (first unactivated-time))
       (is (< (-> iomr-time first (/ 1000)) 0.133)))
     (testing "A complete pass on 4 layers should take about 10 ms (
     sum of ops time * 4), so less than 20ms coz we're nice at this time"
       (let [layers
-            (sut/new-layers (rnd/rng-state nn/native-float 42) (repeat 5 dim))
+            (mzn/new-layers (rnd/rng-state nn/native-float 42) (repeat 5 dim))
             inputs
             (binding [g/*rnd* (java.util.Random. 42)]
               (vec (repeatedly dim #(g/float))))

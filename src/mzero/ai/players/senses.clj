@@ -28,7 +28,7 @@
             [mzero.utils.modsubvec :refer [modsubvec]]
             [mzero.game.state :as gs]
             [clojure.spec.gen.alpha :as gen]
-            [mzero.ai.players.activation :as mza]
+            [mzero.ai.players.network :as mzn]
             [mzero.game.events :as ge]
             [mzero.utils.utils :as u]))
 
@@ -44,11 +44,11 @@
 
 (s/def ::previous-score ::gs/score)
 
-(s/def ::satiety (-> ::mza/neural-value
+(s/def ::satiety (-> ::mzn/neural-value
                      (s/and #(or (>= % minimal-satiety) (= % 0.0)))
                      (s/with-gen (fn [] (gen/fmap
                                          #(if (< % minimal-satiety) 0.0 %)
-                                         (s/gen ::mza/neural-value))))))
+                                         (s/gen ::mzn/neural-value))))))
 
 (defn- satiety [senses] (last senses))
 
@@ -81,7 +81,7 @@
 (s/def ::last-move (s/or :nil nil?
                         :direction ::ge/direction))
 
-(s/def ::motoception (-> ::mza/neural-value
+(s/def ::motoception (-> ::mzn/neural-value
                          (s/and #(or (= % 0.0) (>= % min-motoception-activation)))
                          (s/with-gen
                            #(gen/one-of
@@ -164,7 +164,7 @@
   (int (+ 2 (Math/pow visible-matrix-edge-size 2))))
 
 (s/def ::input-vector
-  (-> (s/every ::mza/neural-value :kind vector? :count input-vector-size)
+  (-> (s/every ::mzn/neural-value :kind vector? :count input-vector-size)
       (u/with-mapped-gen
         #(assoc %
                 (- input-vector-size 2) (gen/generate (s/gen ::motoception))

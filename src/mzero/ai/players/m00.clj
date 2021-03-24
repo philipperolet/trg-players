@@ -3,9 +3,9 @@
   (:require [mzero.ai.player :as aip]
             [mzero.ai.players.senses :as mzs]
             [mzero.ai.players.activation :as mza]
+            [mzero.ai.players.network :as mzn]
             [mzero.ai.players.motoneurons :as mzm]
             [mzero.game.state :as gs]
-            [mzero.game.board :as gb]
             [uncomplicate.neanderthal
              [core :as nc]
              [native :as nn]
@@ -27,7 +27,7 @@
         sparsify-column
         #(nvm/mul! %1 (rand-nonzero-vector %2 (nc/dim %1)))
         sparsify-layer
-        (fn [{:as layer, :keys [::mza/weights]}]
+        (fn [{:as layer, :keys [::mzn/weights]}]
           (doall (map sparsify-column
                       (nc/cols weights)
                       (repeatedly (nc/ncols weights) #(rand-nonzeros weights))))
@@ -35,7 +35,7 @@
 
     (vec (map sparsify-layer layers))))
 
-(defn- create-thal-rng
+(defn- create-ndt-rng
   "Neanderthal needs its own rng-state in addition to the player's
   regular rng"
   [player-opts]
@@ -44,43 +44,43 @@
     (rnd/rng-state nn/native-float)))
 
 (defn- initialize-layers
-  "Initialize weights and patterns so that movements vary (otherwise the
-  same direction is always picked)"
-  [rng thal-rng all-layer-dims]
+  "Initialize layers, with inner layers' weights and patterns
+  sparsified, so that neurons are similar to what they might be when
+  generation starts, and randomized so that movements vary (otherwise
+  the same direction is always picked)"
+  [rng ndt-rng layer-dims input-dim]
   (binding [g/*rnd* rng]
-    (-> (mza/new-layers thal-rng all-layer-dims)
+    (-> (mzn/new-layers ndt-rng (cons input-dim layer-dims))
         sparsify-weights
-        (update-in [0 ::mza/patterns] #(nc/scal! 0 %))
-        (update-in [(- (count all-layer-dims) 2) ::mza/patterns] #(nc/scal! 0 %)))))
+        ;; custom init of first layer to zero patterns
+        (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
+        (mzm/plug-motoneurons ndt-rng))))
 
 (defrecord M00Player []
   aip/Player
   (init-player
     [player opts {:as world, :keys [::gs/game-state]}]
+    {:pre [(s/valid? (s/every ::mzn/layer-dimension) (:layer-dims opts))]}
     (let [brain-tau (+ 2 (count (:layer-dims opts)))
           senses (mzs/initialize-senses! brain-tau game-state)
-          input-size (count (::mzs/input-vector senses))
-          thal-rng (create-thal-rng opts)
-          all-layer-dims
-          (conj (into [input-size] (:layer-dims opts)) mzm/motoneuron-number)]
-      (assert (s/valid? (s/every ::mza/layer-dimension) all-layer-dims))
+          input-dim (count (::mzs/input-vector senses))
+          ndt-rng (create-ndt-rng opts)
+          initial-layers
+          (initialize-layers (:rng player) ndt-rng (:layer-dims opts) input-dim)]
       (assoc player
-             :thal-rng thal-rng
-             :layers (initialize-layers (:rng player) thal-rng all-layer-dims)
+             :layers initial-layers
              ::mzs/senses senses)))
 
   (update-player [player {:as world, :keys [::gs/game-state]}]
     (let [player-forward-pass
-          #(mza/forward-pass! (-> % :layers) (-> % ::mzs/senses ::mzs/input-vector))
+          #(mza/forward-pass! (-> % :layers)
+                              (-> % ::mzs/senses ::mzs/input-vector))
 
-          update-senses
-          #(mzs/update-senses % world player)
-          
           make-move
           #(->> (player-forward-pass %)
                 seq
                 (mzm/next-direction (:rng player))
                 (assoc % :next-movement))]
       (-> player
-          (update ::mzs/senses update-senses)
+          (update ::mzs/senses #(mzs/update-senses % world player))
           make-move))))

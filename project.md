@@ -1,4 +1,8 @@
 # Todo
+- suppression de la normalisation des poids
+  - et accélération du calcul?
+- initialisation des poids normalisée (incl. négativité des poids)
+- s'assurer que les poids négatifs ne cassent pas l'activation
 - Motoneurones : arc-réflexe de déplacement
 
 # Backlog  - v0.2.4 - M0.0.1
