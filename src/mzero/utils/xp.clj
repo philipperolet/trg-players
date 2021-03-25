@@ -85,7 +85,7 @@ Sum %,4G
   ([measure-seqs data]
    (display-measures measure-seqs data "Measure")))
 
-(defn timing-measures
+(defn timed-measures
   "Convenience function to get `nb-xps` measures of `xp-fn` with `args`
   list. Measurements are computed via `measure-fn` applied on a
   **timed** execution of xp-fn, a pair (timing, result)."
@@ -93,5 +93,5 @@ Sum %,4G
   (let [timed-fn
          (fn [& args]
            (u/timed (apply xp-fn args)))]
-    (first (measure timed-fn measure-fn (repeat nb-xps args) map))))
+    (measure timed-fn measure-fn (repeat nb-xps args) map)))
 
