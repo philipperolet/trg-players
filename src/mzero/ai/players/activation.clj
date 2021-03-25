@@ -14,20 +14,19 @@
             [mzero.ai.players.network :as mzn]))
 
 
-(defn- weighted-pattern-distance-matrix!
+(defn- pattern-distance-matrix!
   "Compute the layers' *weighted pattern distance matrix*, in
   `working-matrix`, from the input vector with each neuron represented
-  by a col of matrices `weights` and `patterns`."
-  ([inputs patterns weights working-matrix]
+  by a col of matrix `patterns` (and weights, not used here)."
+  ([inputs patterns working-matrix]
    (let [substract-inputs-to-cols!
-         #(nc/rk! -1 inputs (ones (nc/ncols weights)) %)]
+         #(nc/rk! -1 inputs (ones (nc/ncols patterns)) %)]
      (-> (nc/copy! patterns working-matrix)
          substract-inputs-to-cols!
-         nvm/abs!
-         (nvm/mul! weights))))
+         nvm/abs!)))
   ([{:as layer,
-     :keys [::mzn/inputs ::mzn/patterns ::mzn/weights ::mzn/working-matrix]}]
-   (weighted-pattern-distance-matrix! inputs patterns weights working-matrix)
+     :keys [::mzn/inputs ::mzn/patterns ::mzn/working-matrix]}]
+   (pattern-distance-matrix! inputs patterns working-matrix)
    layer))
 
 (defn- weight-normalization!
@@ -44,12 +43,14 @@
 
 (defn- unactivated-outputs!
   "Compute outputs from `working-matrix` before activating them with IOMR,
-  by summing every column of `working-matrix`. `outputs` is changed."
-  ([working-matrix outputs]
-   (->> (nc/scal! 0 outputs)
-        (nc/mv! (nc/trans working-matrix) (ones (nc/mrows working-matrix)))))
-  ([{:as layer, :keys [::mzn/working-matrix ::mzn/outputs]}]
-   (unactivated-outputs! working-matrix outputs)
+  by doing a `weights`ed sum of every column of
+  `working-matrix`. `outputs` is changed."
+  ([working-matrix weights outputs]
+   (-> (nvm/mul! working-matrix weights)
+       nc/trans
+       (nc/mv! (ones (nc/mrows working-matrix)) (nc/scal! 0 outputs))))
+  ([{:as layer, :keys [::mzn/working-matrix ::mzn/weights ::mzn/outputs]}]
+   (unactivated-outputs! working-matrix weights outputs)
    layer))
 
 (defn- iomr-activation!
@@ -87,7 +88,6 @@
   read."
   [layers inputs]
   (nc/transfer! inputs (-> layers first ::mzn/inputs))
-  (doall (pmap (comp weight-normalization! weighted-pattern-distance-matrix!)
-               layers))
+  (doall (pmap pattern-distance-matrix! layers))
   (last (pmap (comp iomr-activation! ::mzn/outputs unactivated-outputs!)
               layers)))
