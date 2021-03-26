@@ -35,9 +35,7 @@
      {:fn-var #'nc/rk! :args [-1.0 i (ones (nc/ncols w)) wm] :cmpl (* dim dim)}
      {:fn-var #'sut/pattern-distance-matrix! :cmpl (* dim dim 4)
       :args [i p w wm]}
-     {:fn-var #'sut/weight-normalization! :args [w wm] :cmpl (* dim dim 2)}
-     {:fn-var #'sut/unactivated-outputs! :args [wm outputs] :cmpl (* dim dim 2)}
-     {:fn-var #'sut/iomr-activation! :args [i] :cmpl (* dim 5)}]))
+     {:fn-var #'sut/unactivated-outputs! :args [wm outputs] :cmpl (* dim dim 2)}]))
 
 (defn- op-for-dim
   [dim op-to-time]
@@ -48,14 +46,20 @@
         ops-list
         ;; cmpl = complexity = nb of floating-point operations per high-level op
         [{:fn-var #'nvm/relu! :cmpl (* dim dim) :args [w]}
-         {:fn-var #'nvm/mul! :cmpl (* dim dim) :args [w w2 wm]}
+         {:fn-var #'nvm/mul! :cmpl (* dim dim) :args [w w2]}
          {:fn-var #'nc/sum :cmpl (* dim dim) :args [w]}
          {:fn-var #'nc/mm :cmpl (* 2 dim dim dim) :args [w w2]}
          {:fn-var #'nvm/abs! :cmpl (* dim dim) :args [w]}
          {:fn-var #'nvm/sqr! :cmpl (* dim dim) :args [w]}
          {:fn-var #'nvm/floor! :cmpl (* dim dim) :args [w]}
          {:fn-var #'nc/rk! :args [-1.0 (ones (nc/mrows wm)) (ones (nc/ncols w)) w] :cmpl (* dim dim)}
-         {:fn-var #'nvm/fmax! :cmpl (* dim dim) :args [w2 w]}]]
+         {:fn-var #'nvm/fmax! :cmpl (* dim dim) :args [w2 w]}
+         {:fn-var #'nvm/fmax! :cmpl (* dim dim) :args []}
+         {:fn-var #'nc/scal! :cmpl (* dim dim) :args [1.001 w]}
+         {:fn-var #'nn/fge :cmpl (* dim dim) :args [dim dim]}
+         {:fn-var #'sut/unactivated-outputs! :cmpl (* dim dim)
+          :args [w w2 (nn/fv dim)]}
+         {:fn-var #'nc/mm! :cmpl (* dim dim) :args [w (nn/fgd dim (repeat dim 1.001))]}]]
     (first (filter #(= (:fn-var %) op-to-time) ops-list))))
 
 (defn- time-to-gflops

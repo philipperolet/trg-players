@@ -5,14 +5,10 @@
   matrices/vectors in place."
   (:require [uncomplicate.neanderthal
              [core :as nc]
-             [native :as nn]
-             [vect-math :as nvm]
-             [random :as rnd]]
+             [vect-math :as nvm]]
             [clojure.spec.alpha :as s]
-            [mzero.ai.players.common :refer [ones]]
-
+            [mzero.ai.players.common :refer [ones ro-zeros-matr]]
             [mzero.ai.players.network :as mzn]))
-
 
 (defn- pattern-distance-matrix!
   "Compute the layers' *weighted pattern distance matrix*, in
@@ -29,42 +25,53 @@
    (pattern-distance-matrix! inputs patterns working-matrix)
    layer))
 
-(defn- weight-normalization!
-  "Divide each element of `working-matrix` by sum of weights of the
-  element's column. `working-matrix` is changed"
-  ([weights working-matrix]
-   (let [normalize!
-         (fn [weight-col wm-col] (nc/scal! (/ (nc/sum weight-col)) wm-col))]
-     (doall (map normalize! (nc/cols weights) (nc/cols working-matrix)))
-     working-matrix))
-  ([{:as layer, :keys [::mzn/weights ::mzn/working-matrix]}]
-   (weight-normalization! weights working-matrix)
-   layer))
+(def s "Activation threshold" 0.2)
+(def decrease-factor (- (/ (- 1.0 s) s)))
+
+(defmulti proximity-matrix!
+  "Computes the proximity matrix in-place given a pattern distance
+  matrix `working-matrix`"
+  #(if (::mzn/working-matrix %) :layer :working-matrix))
+
+(defmethod proximity-matrix! :working-matrix
+  [working-matrix]
+  (let [m (nc/mrows working-matrix) n (nc/ncols working-matrix)]
+    (->> working-matrix
+         (nc/scal! decrease-factor)
+         (nc/rk! (ones m) (ones n))
+         (#(nvm/fmax! % (ro-zeros-matr m n))))))
+
+(defmethod proximity-matrix! :layer [l] (proximity-matrix! (::mzn/working-matrix l)))
 
 (defn- unactivated-outputs!
-  "Compute outputs from `working-matrix` before activating them with IOMR,
+  "Compute outputs from `working-matrix` before activating them with OMR,
   by doing a `weights`ed sum of every column of
   `working-matrix`. `outputs` is changed."
   ([working-matrix weights outputs]
-   (-> (nvm/mul! working-matrix weights)
+   (-> (map nc/dot (nc/cols weights) (nc/cols working-matrix))
+       (nc/transfer! outputs))
+   #_(-> (nvm/mul! working-matrix weights)
        nc/trans
        (nc/mv! (ones (nc/mrows working-matrix)) (nc/scal! 0 outputs))))
   ([{:as layer, :keys [::mzn/working-matrix ::mzn/weights ::mzn/outputs]}]
    (unactivated-outputs! working-matrix weights outputs)
    layer))
 
-(defn- iomr-activation!
-  "Computes inversed-offsetted max-relu activation function, see
+(defn- omr!
+  "Computes offsetted max-relu activation function, see
   arch-major/minor"
   [outputs]
-  (let [s 0.2 ;; seuil d'activation
-        decrease-factor (- (/ (- 1.0 s) s))
-        f-values ;; see f in arch-minor
-        (nc/axpby! (ones (nc/dim outputs)) decrease-factor outputs)
-        threshold-factor ;; 0 if < s, 1 if >= s, s/1000 ensures the >= is respected
-        #(nvm/relu! (nvm/ceil! (nc/axpy (- (/ s 1000) s) (ones (nc/dim %)) %)))]
-    
-    (nvm/mul! f-values (threshold-factor f-values))))
+  (let [dim (nc/dim outputs)
+        nullify-if-lower-than-s
+        #(nvm/mul! % (nvm/ceil! (nc/axpy (- (* 0.999 s)) (ones dim) %)))]    
+    (-> outputs
+        (nvm/fmin! (ones dim))
+        ;; get distance to 1
+        (#(nc/axpby! (ones dim) -1.0 %))
+        ;; compute proximity to 1 using proximity-matrix!
+        nc/view-ge proximity-matrix! nc/view-vctr
+        ;; only keep values above or equal to s
+        nullify-if-lower-than-s)))
 
 (s/fdef forward-pass!
   :args (-> (s/cat :layers ::mzn/layers
@@ -88,6 +95,6 @@
   read."
   [layers inputs]
   (nc/transfer! inputs (-> layers first ::mzn/inputs))
-  (doall (pmap pattern-distance-matrix! layers))
-  (last (pmap (comp iomr-activation! ::mzn/outputs unactivated-outputs!)
+  (doall (pmap (comp proximity-matrix! pattern-distance-matrix!) layers))
+  (last (pmap (comp omr! ::mzn/outputs unactivated-outputs!)
               layers)))
