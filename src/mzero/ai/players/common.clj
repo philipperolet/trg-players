@@ -16,6 +16,10 @@
   {:pre [(<= size max-ones-size)]}
   (nc/subvector ones-vector 0 size))
 
+(def ro-zeros-matr
+  "Get read-only zeros matrix in constant time (after a first initialization)"
+  (memoize nn/fge))
+
 (defn vect=
   [v1 v2]
   (every? true? (map u/almost= v1 v2)))
