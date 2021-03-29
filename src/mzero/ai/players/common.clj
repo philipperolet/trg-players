@@ -5,20 +5,29 @@
             [mzero.utils.utils :as u]
             [clojure.spec.alpha :as s]))
 
-(def max-ones-size 10000)
-(def ones-vector (nn/fv (repeat max-ones-size 1.0)))
+(def max-dimension (* 8 1024))
+(def ones-vector (nn/fv (repeat max-dimension 1.0)))
+(def zeros-vector (nn/fv max-dimension))
+(def zeros-matrix (nn/fge max-dimension max-dimension))
+
+(defn valid-dimension? [d] (<= 1 d max-dimension))
 
 (defn ones
   "Return a vector of `size` ones (double).
   A subvector of `ones-vector` is used, for performance.
   It should not be altered (use copy if needed)"
   [size]
-  {:pre [(<= size max-ones-size)]}
   (nc/subvector ones-vector 0 size))
 
-(def ro-zeros-matr
-  "Get read-only zeros matrix in constant time (after a first initialization)"
-  (memoize nn/fge))
+(defn zeros
+  "Similar to `ones`"
+  [size]
+  (nc/subvector zeros-vector 0 size))
+
+(defn ro-zeros-matr
+  "Similar to `ones` and `zeros`, with 2 dims"
+  [m n]
+  (nc/submatrix zeros-matrix m n))
 
 (defn vect=
   [v1 v2]

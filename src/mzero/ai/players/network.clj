@@ -2,7 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [uncomplicate.neanderthal.random :as rnd]
             [clojure.spec.gen.alpha :as gen]
-            [mzero.ai.players.common :refer [values-in? per-element-spec]]
+            [mzero.ai.players.common :refer [values-in? per-element-spec valid-dimension?]]
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.core :as nc]))
 
@@ -10,20 +10,27 @@
 
 (s/def ::weights
   (-> nc/matrix?
-      (s/and #(values-in? % 0.0 Float/MAX_VALUE)
+      (s/and (per-element-spec float?)
+             #(valid-dimension? (nc/mrows %))
+             #(valid-dimension? (nc/ncols %))
              (fn [m]
                (comment "At least a non-0 val per neuron (column)")
                (every? #(pos? (nc/asum %)) (nc/cols m))))))
 
 (s/def ::patterns
   (-> nc/matrix?
-      (s/and (per-element-spec ::neural-value))))
+      (s/and (per-element-spec ::neural-value)
+             #(valid-dimension? (nc/mrows %))
+             #(valid-dimension? (nc/ncols %)))))
 
 (s/def ::working-matrix (-> nc/matrix?
-                            (s/and #(values-in? % 0.0 Float/MAX_VALUE))))
+                            (s/and #(values-in? % 0.0 Float/MAX_VALUE)
+                                   #(valid-dimension? (nc/ncols %))
+                                   #(valid-dimension? (nc/mrows %)))))
 
 (s/def ::neural-vector (-> nc/vctr?
-                           (s/and (per-element-spec ::neural-value))))
+                           (s/and (per-element-spec ::neural-value)
+                                  #(valid-dimension? (nc/dim %)))))
 
 (s/def ::inputs ::neural-vector)
 (s/def ::outputs ::neural-vector)
@@ -87,7 +94,7 @@
   number of units in the layers; elt 0 is the input dimension, elt 1
   the number of units in the first layer, etc."
   [rng dimensions]
-  {:pre [(>= (count dimensions) 2)]}
+  {:pre [(>= (count dimensions) 2) (every? valid-dimension? dimensions)]}
   (let [[input-dim first-dim & next-dims] dimensions
         first-layer
         (-> (new-unplugged-layer input-dim first-dim #(rnd/rand-uniform! rng %))
