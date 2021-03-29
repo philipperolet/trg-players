@@ -1,14 +1,17 @@
 (ns mzero.utils.utils
   (:require [clojure.tools.logging :as log]
             [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]))
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.data.generators :as g]))
 
-(defn is_square
-  "Return `true` iff n is a perfect square
-
-  WARNING: may fail for large numbers due to rounding errors"
-  [n]
-  (= (Math/pow (Math/round (Math/sqrt n)) 2) (float n)))
+(defn weighted-rand-nth
+  "Pick an element of `coll` randomly according to the
+  distribution represented by positive `weights`"
+  [coll weights]
+  (loop [sum-rest (* (g/double) (apply + weights))
+         [item & restc] coll
+         [w & restw] weights]
+    (if (<= (- sum-rest w) 0) item (recur (- sum-rest w) restc restw))))
 
 (defn reduce-until
   "Like clojure.core/reduce, but stops reduction when `pred` is

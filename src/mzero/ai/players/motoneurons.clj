@@ -14,7 +14,8 @@
             [mzero.ai.players.network :as mzn]
             [clojure.spec.gen.alpha :as gen]
             [uncomplicate.neanderthal.core :as nc]
-            [uncomplicate.neanderthal.random :as rnd]))
+            [uncomplicate.neanderthal.random :as rnd]
+            [mzero.utils.utils :as u]))
 
 (def motoneuron-number 4)
 
@@ -30,15 +31,6 @@
       (mzn/append-layer motoneuron-number (partial rnd/rand-uniform! ndt-rng))
       (update-in [(count layers) ::mzn/patterns] #(nc/scal! 0 %))))
 
-(defn- random-nth-weighted
-  "Pick an element of `coll` randomly according to the
-  distribution represented by `weights`"
-  [coll weights]
-  (loop [sum-rest (* (g/double) (apply + weights))
-         [item & restc] coll
-         [w & restw] weights]
-    (if (<= (- sum-rest w) 0) item (recur (- sum-rest w) restc restw))))
-
 (s/fdef next-direction
   :args (s/cat :rng (-> (partial instance? java.util.Random)
                         (s/with-gen #(gen/return (java.util.Random.))))
@@ -51,4 +43,4 @@
   distribution"
   [rng motoneurons]
   (binding [g/*rnd* rng]
-    (random-nth-weighted ge/directions motoneurons)))
+    (u/weighted-rand-nth ge/directions motoneurons)))

@@ -1,6 +1,22 @@
 (ns mzero.utils.utils-test
   (:require [mzero.utils.utils :as u]
-            [clojure.test :refer [are deftest is]]))
+            [clojure.test :refer [are deftest is]]
+            [clojure.data.generators :as g]))
+
+(deftest weighted-rand-nth-test
+  (binding [g/*rnd* (java.util.Random. 30)]
+    (let [test-coll [:a :b :c :d]
+          random-10000-freqs
+          (->> #(u/weighted-rand-nth test-coll [0.4 0.1 0.1 0.2])
+               (repeatedly 10000)
+               vec
+               frequencies)
+          perfect-average
+          {:a 5000 :b 1250 :c 1250 :d 2500}]
+
+      (is (->> test-coll
+               (map #(u/almost= (% random-10000-freqs) (% perfect-average) 60))
+               (every? true?))))))
 
 (deftest almost=-test
   (is (u/almost= 10 12 2))
