@@ -49,10 +49,7 @@
   `working-matrix`. `outputs` is changed."
   ([working-matrix weights outputs]
    (-> (map nc/dot (nc/cols weights) (nc/cols working-matrix))
-       (nc/transfer! outputs))
-   #_(-> (nvm/mul! working-matrix weights)
-       nc/trans
-       (nc/mv! (ones (nc/mrows working-matrix)) (nc/scal! 0 outputs))))
+       (nc/transfer! outputs)))
   ([{:as layer, :keys [::mzn/working-matrix ::mzn/weights ::mzn/outputs]}]
    (unactivated-outputs! working-matrix weights outputs)
    layer))

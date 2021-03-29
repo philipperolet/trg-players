@@ -96,10 +96,8 @@
         (u/timed (vec (repeatedly 1000 #(#'sut/omr! i))))]
     (testing "Each matrix op on 1024*1024 matrices should take clearly less than a ms"
       (is (< (-> wpdm-time first (/ 1000)) 1))
-      (println "---\n"(first wpdm-time))
       (is (< (-> prox-time first (/ 1000)) 1))
       (is (< (-> unactivated-time first (/ 1000)) 1)))
-    (println (first unactivated-time))
     (testing "Vector ops should be less than 0.1ms"
       (is (< (-> omr-time first (/ 1000)) 0.133)))
     (testing "A complete pass on 4 layers should take about 10 ms (
@@ -113,5 +111,4 @@
             (u/timed (vec (repeatedly 300 #(sut/forward-pass! layers inputs))))
             single-pass-time
             (/ (first forward-pass) 300)]
-        (log/info single-pass-time)
         (is (< single-pass-time 20))))))
