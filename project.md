@@ -1,7 +1,5 @@
 # Todo
-  - et accélération du calcul?
 - initialisation des poids normalisée (incl. négativité des poids)
-  - s'assurer que les poids négatifs ne cassent pas l'activation
 - Motoneurones : arc-réflexe de déplacement
 
 # Backlog  - v0.2.4 - M0.0.1
@@ -15,6 +13,7 @@ Cf arch-minor:
 
 # Icebox
 ## Vitesse
+- speed tests on mul -> to be redone later (possibly good surprises: 0.1ms for 1Mops => ~ 10GF ok)
 - get 10x speed improvements (current = 2.5 GFlops)
 
 - Perf théorique de l'ordi : 4 coeurs, freq. 1.8 Ghz, supposément 32 float ops / cycle => 4 * 1.8 * 32 ~ 220 GFlops

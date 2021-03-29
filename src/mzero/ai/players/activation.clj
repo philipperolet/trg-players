@@ -7,7 +7,7 @@
              [core :as nc]
              [vect-math :as nvm]]
             [clojure.spec.alpha :as s]
-            [mzero.ai.players.common :refer [ones ro-zeros-matr]]
+            [mzero.ai.players.common :refer [ones zeros-matr zeros]]
             [mzero.ai.players.network :as mzn]))
 
 (defn- pattern-distance-matrix!
@@ -39,7 +39,7 @@
     (->> working-matrix
          (nc/scal! decrease-factor)
          (nc/rk! (ones m) (ones n))
-         (#(nvm/fmax! % (ro-zeros-matr m n))))))
+         (#(nvm/fmax! % (zeros-matr m n))))))
 
 (defmethod proximity-matrix! :layer [l] (proximity-matrix! (::mzn/working-matrix l)))
 
@@ -63,10 +63,7 @@
         #(nvm/mul! % (nvm/ceil! (nc/axpy (- (* 0.999 s)) (ones dim) %)))]    
     (-> outputs
         (nvm/fmin! (ones dim))
-        ;; get distance to 1
-        (#(nc/axpby! (ones dim) -1.0 %))
-        ;; compute proximity to 1 using proximity-matrix!
-        nc/view-ge proximity-matrix! nc/view-vctr
+        (nvm/fmax! (zeros dim))
         ;; only keep values above or equal to s
         nullify-if-lower-than-s)))
 

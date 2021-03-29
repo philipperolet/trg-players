@@ -2,14 +2,12 @@
   (:require [mzero.ai.players.activation :as sut]
             [mzero.ai.players.network :as mzn]
             [clojure.test :refer [is testing]]
-            [mzero.utils.testing :refer [deftest check-spec]]
+            [mzero.utils.testing :refer [deftest]]
             [mzero.ai.players.common :refer [vect= matrix=]]
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.random :as rnd]
             [mzero.utils.utils :as u]
-            [clojure.tools.logging :as log]
-            [clojure.data.generators :as g]
-            [uncomplicate.neanderthal.core :as nc]))
+            [clojure.data.generators :as g]))
 
 
 (deftest pdm-test
@@ -29,16 +27,18 @@
 (deftest unactivated-outputs-test
   (let [working-matrix (nn/fge [[1 1 0.6] [0 0 1]])
         weights (nn/fge 3 2 [[0.3 0.8 1.0] [0.5 0.2 0.9]])
+        weights2 (nn/fge 3 2 [[0.4 -1.0 0.5] [-1.0 -0.5 -0.5]])
         outputs (nn/fv 2)]
     (#'sut/unactivated-outputs! working-matrix weights outputs)
-    (is (vect= outputs
-               (nn/fv 1.7 0.9)))))
+    (is (vect= outputs (nn/fv 1.7 0.9)))
+    (#'sut/unactivated-outputs! working-matrix weights2 outputs)
+    (is (vect= outputs (nn/fv -0.3 -0.5)))))
 
 (deftest omr-test
-  (let [test-vec (nn/fv 0.0 1.0 3.5 0.2 0.01 0.9 0.8 0.79 0.95)]
+  (let [test-vec (nn/fv 0.0 1.0 3.5 0.2 0.19 0.01 0.9 0.8 0.79 -0.5 -9.0)]
     (#'sut/omr! test-vec)
     (is (vect= test-vec
-               (nn/fv 0.0 1.0 1.0 0.0 0.0 0.6 0.2 0.0 0.8)))))
+               (nn/fv 0.0 1.0 1.0 0.2 0.0 0.0 0.9 0.8 0.79 0.0 0.0)))))
 
 (deftest forward-pass-test
   (let [layer1
@@ -46,33 +46,47 @@
          ::mzn/patterns (nn/fge 3 2 [[0.5 0.3 0.9] [1 1 1]])
          ;; [[0 0 .1] [.5 .7 0]] then [[0.2 0.5 0.5] [0.7 0.2 0.5]]
          ;; [[1 1 0.6] [0 0 1.0]] then [[0.2 0 0] [0 0.2 0]]
-         ::mzn/weights (nn/fge 3 2 [[0.3 0.8 1.0] [0.5 0.2 0.9]])
-         ;; [[0.3 0.8 0.6] [0 0 0.9]] then [[0.06 0 0] [0.0 0.04 0.0]]
+         ::mzn/weights (nn/fge 3 2 [[-0.3 0.8 1.0] [0.5 2.0 0.9]])
+         ;; [[0.3 0.8 0.6] [0 0 0.9]] then [[-0.06 0 0] [0.0 0.4 0.0]]
          ::mzn/working-matrix (nn/fge 3 2)
-         ;; unactivated output [1.7 0.9] then [0 0]
-         ::mzn/outputs (nn/fv 2)} ;; omr [1.0 0.6] then [0 0]
+         ;; unactivated output [1.1 0.9] then [0 0.4]
+         ::mzn/outputs (nn/fv 2)} ;; omr [1.0 0.9] then [0 0.4]
         layer2
         {::mzn/inputs (::mzn/outputs layer1)
          ::mzn/patterns (nn/fge 2 2 [[0.5 0] [0 1]]) 
-         ;; [[0.5 0.6] [1.0 0.4]] then [[0.5 0] [0 1]]
-         ;; [[0 0] [0 0.0]] then [[0 1] [1 0]]
+         ;; [[0.5 0.9] [1.0 0.1]] then [[0.5 0.4] [0 0.6]]
+         ;; [[0 0] [0 0.6]] then [[0 0] [1 0]]
          ::mzn/weights (nn/fge 2 2 [[0.7 0.7] [2.0 0.1]])
-         ;; [[0 0] [0 0.0]] then [[0.0 0.7] [2.0 0]]
+         ;; [[0 0] [0 0.06]] then [[0.0 0.0] [2.0 0]]
          ::mzn/working-matrix (nn/fge 2 2)
-         ;; [0.0 0.0] then [0.7 2.0]
+         ;; [0.0 0.06] then [0.0 2.0]
          ::mzn/outputs (nn/fv 2)} ;; iomr [0.0 0.0] then [0 1.0]
-        layers [layer1 layer2]]
+        layer3
+        {::mzn/inputs (::mzn/outputs layer2)
+         ::mzn/patterns (nn/fge 2 2 [[0.1 0.1] [0.1 0.9]]) 
+         ;; [[0.1 0.1] [0.1 0.9]] then [[0.1 0.9] [0.9 0.1]]
+         ;; [[0.6 0.6] [0.6 0.0]] then [[0.6 0.0] [0 0.6]]
+         ::mzn/weights (nn/fge 2 2 [[1.0 -0.7] [1.0 -1.0]])
+         ;; [[0.6 -0.42] [0.6 0.0]] then [[0.6 0.0] [0.0 -0.6]]
+         ::mzn/working-matrix (nn/fge 2 2)
+         ;; [0.18 0.6] then [0.6 0.0]
+         ::mzn/outputs (nn/fv 2)} ;; iomr [0.0 0.6] then [0.6 0.0]
+        layers [layer1 layer2 layer3]]
     (sut/forward-pass! layers '(0.5 0.3 1.0))
-    (is (vect= (::mzn/outputs layer1) (nn/fv [1.0 0.6])))
+    (is (vect= (::mzn/outputs layer1) (nn/fv [1.0 0.9])))
     ;; simultaneous propagation : layer2 has the output of t-1, layer1 of t
     ;; so this is not [0.72 0.0] now but the result of a [0 0] input to layer 2
-    (is (vect= (::mzn/outputs layer2) (nn/fv [0.0 1.0])))
+    (is (vect= (::mzn/outputs layer2) (nn/fv [0.7 1.0])))
     (sut/forward-pass! layers '(0.3 0.8 0.5))
-    (is (vect= (::mzn/outputs layer1) (nn/fv [0.0 0.0])))
+    (is (vect= (::mzn/outputs layer1) (nn/fv [0.0 0.4])))
     (is (vect= (::mzn/outputs layer2) (nn/fv [0.0 0.0]))) ;; but now it is
     (sut/forward-pass! layers '(0.323 0.18 0.55))
     ;; and now it should yield the 2nd result
-    (is (vect= (::mzn/outputs layer2) (nn/fv [0.0 1.0])))))
+    (is (vect= (::mzn/outputs layer2) (nn/fv [0.0 1.0])))
+    (is (vect= (::mzn/outputs layer3) (nn/fv [0.0 0.6])))
+    (sut/forward-pass! layers '(0.323 0.18 0.55))
+    (is (vect= (::mzn/outputs layer3) (nn/fv [0.6 0.0])))))
+
 
 (deftest operations-speed-test
   :unstrumented

@@ -24,7 +24,7 @@
   [size]
   (nc/subvector zeros-vector 0 size))
 
-(defn ro-zeros-matr
+(defn zeros-matr
   "Similar to `ones` and `zeros`, with 2 dims"
   [m n]
   (nc/submatrix zeros-matrix m n))
