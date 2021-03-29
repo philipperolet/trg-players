@@ -17,16 +17,16 @@
 
 (defn- get-test-vectors
   [dim]
-  {:w (rnd/rand-uniform! (nn/fge dim dim))
+  {:i (rnd/rand-uniform! (nn/fv dim))
+   :w (rnd/rand-uniform! (nn/fge dim dim))
    :w2 (rnd/rand-uniform! (nn/fge dim dim))
    :p (nn/fge dim dim)
    :wm (nn/fge dim dim)})
 
 (defn- operations-to-time
   [dim]
-  (let [i (rnd/rand-uniform! (nn/fv dim))
-        outputs (nn/fv dim)
-        {:keys [w wm w2 p]} (get-test-vectors dim)]
+  (let [outputs (nn/fv dim)
+        {:keys [i w wm w2 p]} (get-test-vectors dim)]
     ;; cmpl = complexity = nb of floating-point operations per high-level op
     [{:fn-var #'nc/mm! :cmpl (* 2 (Math/pow dim 3)) :args [1.0 w w2 0.0 wm]}
      {:fn-var #'nc/copy! :args [w wm] :cmpl (* dim dim)}
@@ -39,9 +39,8 @@
 
 (defn- op-for-dim
   [dim op-to-time]
-  (let [i (rnd/rand-uniform! (nn/fv dim))
-        outputs (nn/fv dim)
-        {:keys [w wm w2 p]} (get-test-vectors dim)
+  (let [outputs (nn/fv dim)
+        {:keys [i w wm w2 p]} (get-test-vectors dim)
 
         ops-list
         ;; cmpl = complexity = nb of floating-point operations per high-level op
@@ -96,4 +95,23 @@
     (doall (map display-gflops-per-op (operations-to-time default-dim)))))
 
 
+(defn- msqi-pdm!
+  "Clone of patter-dist-matr to experiment on timings"
+  ([i p wm w]
+   (let [substract-inputs-to-cols!
+         #(nc/rk! -1 i (ones (nc/ncols p)) %)]
+     (-> (nc/copy! p wm)
+         #_substract-inputs-to-cols!
+         #_nvm/abs!
+         (nvm/mul! w)))))
 
+(defn msqi
+  "Mul! Speed Quirk investigation - why is mul faster in pdm than naturally?"
+  []
+  (let [{:keys [i w wm p w2]} (get-test-vectors 1024)]
+    (time (some? (doall
+                  (repeatedly 1000 #(msqi-pdm! i w2 wm w))))))
+  (let [{:keys [i w wm p w2]} (get-test-vectors 1024)]
+    (time (some? (doall (repeatedly 1000 #(nvm/mul! w w2))))))
+  (let [{:keys [i w wm p w2]} (get-test-vectors 1024)]
+    (time (some? (doall (repeatedly 1000 #(nvm/mul! w w2 wm)))))))
