@@ -11,7 +11,8 @@
             [uncomplicate.neanderthal.random :as rnd]
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.vect-math :as nvm]
-            [uncomplicate.neanderthal.core :as nc]))
+            [uncomplicate.neanderthal.core :as nc]
+            [clojure.tools.logging :as log]))
 
 (deftest sparsify-test
   (let [rng (rnd/rng-state nn/native-float 43)
@@ -45,13 +46,13 @@
         m00-player
         (aip/load-player "m00" m00-opts test-world)
         dl-updates
-        (u/timed (run-n-steps m00-player 1000 test-world []))]
+        (u/timed (run-n-steps m00-player 500 test-world []))]
     
-    (testing "Chosen direction approximately random, more than say 150
+    (testing "Chosen direction approximately random, more than say 110
     each dir. Note: this is not a real property fof m00. Here we
     purposely found a setup of layers, patterns & inputs exhibiting
     this property, for testing purposes."
-      (is (every? #(> % 150) (map (frequencies (second dl-updates)) ge/directions))))))
+      (is (every? #(> % 110) (map (frequencies (second dl-updates)) ge/directions))))))
 
 (deftest ^:integration m00-run
   :unstrumented
