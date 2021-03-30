@@ -35,7 +35,15 @@
 
       (is (->> test-coll
                (map #(u/almost= (% random-10000-freqs) (% perfect-average) 60))
-               (every? true?))))))
+               (every? true?))))
+    (let [test-coll [:a :b :c :d :e :f]
+          random-1k
+          (->> #(u/weighted-rand-nth test-coll [0 0.5 0.5 0 0.5 0])
+               (repeatedly 1000)
+               vec
+               frequencies)]
+      (is (every? nil? (map random-1k [:a :d :f])))
+      (is (every? #(> % 300) (map random-1k [:b :c :e]))))))
 
 (deftest almost=-test
   (is (u/almost= 10 12 2))
