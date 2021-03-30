@@ -31,29 +31,28 @@
    (int (inc (* (Math/sqrt dim) (scale-float flt 0.3 1.0)))))
   ([dim] (nonzero-weights-nb dim (g/float))))
 
+(defn- rand-nonzero-vector
+  [dim]
+  (let [normalized-randsign-weight ;; weight with normalized val, and random sign
+        #(* (u/weighted-rand-nth [1 -1] [(- 1 nwr) nwr]) (/ %))
+        nzw (nonzero-weights-nb dim)]
+    (-> (into (repeatedly nzw #(normalized-randsign-weight nzw))
+              (repeat (- dim nzw) 0))
+        g/shuffle
+        nn/fv)))
+
 (defn- sparsify-weights
   "Nullify most of the weights so that patterns have a chance to match.
 
   A pattern's proba to match gets smaller as the number of non-nil
   weights increases."
   [layers]
-  (let [rand-weight ;; weight with normalized value and random sign
-        #(* (u/weighted-rand-nth [1 -1] [(- 1 nwr) nwr]) (/ %))
-        rand-nonzero-vector
-        (fn [nb-non-zeros size]
-          (-> (into (repeatedly nb-non-zeros #(rand-weight nb-non-zeros))
-                    (repeat (- size nb-non-zeros) 0))
-              g/shuffle
-              nn/fv))
-        sparsify-column
-        #(nvm/mul! %1 (rand-nonzero-vector %2 (nc/dim %1)))
+  (let [sparsify-column
+        (fn [col] (nvm/mul! col (rand-nonzero-vector (nc/dim col))))
         sparsify-layer
         (fn [{:as layer, :keys [::mzn/weights]}]
-          (doall (map sparsify-column
-                      (nc/cols weights)
-                      (repeatedly (nc/ncols weights) #(nonzero-weights-nb (nc/mrows weights)))))
+          (doall (map sparsify-column (nc/cols weights)))
           layer)]
-
     (vec (map sparsify-layer layers))))
 
 (defn- create-ndt-rng
