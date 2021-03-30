@@ -1,5 +1,6 @@
 (ns mzero.ai.players.m00-test
-  (:require [clojure.test :refer [is testing]]
+  (:require [clojure.tools.logging :as log]
+            [clojure.test :refer [is testing]]
             [mzero.utils.testing :refer [deftest]]
             [mzero.utils.utils :as u]
             [mzero.game.events :as ge]
@@ -12,20 +13,22 @@
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.vect-math :as nvm]
             [uncomplicate.neanderthal.core :as nc]
-            [clojure.tools.logging :as log]))
+            [clojure.data.generators :as g]))
 
+(def seed 44)
 (deftest sparsify-test
-  (let [rng (rnd/rng-state nn/native-float 43)
-        input-dim 100 nb-cols 1000
-        w (rnd/rand-uniform! rng (nn/fge input-dim nb-cols))
-        _ (#'sut/sparsify-weights [{::mzn/weights w}])
-        nb-nonzero-weights (nc/sum (nvm/ceil (nvm/abs w)))
-        nb-neg-weights (- (nc/sum (nvm/floor w)))
-        neg-ratio (/ nb-neg-weights nb-nonzero-weights)
-        total-ratio (/ nb-nonzero-weights (nc/dim w))
-        expected-total-ratio (/ (sut/nonzero-weights-nb input-dim 0.5) input-dim)]
-    (is (u/almost= neg-ratio sut/nwr (* 0.05 neg-ratio)))
-    (is (u/almost= total-ratio expected-total-ratio (* 0.05 total-ratio)))))
+  (binding [g/*rnd* (java.util.Random. seed)]
+    (let [rng (rnd/rng-state nn/native-float seed)
+          input-dim 100 nb-cols 1000
+          w (rnd/rand-uniform! rng (nn/fge input-dim nb-cols))
+          _ (#'sut/sparsify-weights [{::mzn/weights w}])
+          nb-nonzero-weights (nc/sum (nvm/ceil (nvm/abs w)))
+          nb-neg-weights (- (nc/sum (nvm/floor w)))
+          neg-ratio (/ nb-neg-weights nb-nonzero-weights)
+          total-ratio (/ nb-nonzero-weights (nc/dim w))
+          expected-total-ratio (/ (sut/nonzero-weights-nb input-dim 0.5) input-dim)]
+      (is (u/almost= neg-ratio sut/nwr (* 0.05 neg-ratio)))
+      (is (u/almost= total-ratio expected-total-ratio (* 0.05 total-ratio))))))
 
 (defn run-n-steps
   [player size world acc]
@@ -41,8 +44,8 @@
 
 
 (deftest m00-randomness
-  (let [test-world (world 25 43)
-        m00-opts {:seed 40 :layer-dims [18 30]}
+  (let [test-world (world 25 seed)
+        m00-opts {:seed seed :layer-dims [18 30]}
         m00-player
         (aip/load-player "m00" m00-opts test-world)
         dl-updates
@@ -57,14 +60,14 @@
 (deftest ^:integration m00-run
   :unstrumented
   (testing "Speed should be above ~2.5 GFlops, equivalently 25 iters per sec"
-    (let [test-world (world 30 42)
+    (let [test-world (world 30 seed)
           expected-gflops 2 ;; more than 2 Gflops => average probably more than 2.5
           expected-iters-sec 20
           ;; layer constant ~= nb of ops for each matrix elt for a layer
           ;; layer nb is inc'd to take into account 
           layer-nb 8 dim 1024 layer-constant 10 steps 250
           forward-pass-ops (* dim dim (inc layer-nb) layer-constant steps)
-          m00-opts {:seed 40 :layer-dims (repeat layer-nb dim)}
+          m00-opts {:seed seed :layer-dims (repeat layer-nb dim)}
           game-opts
           (aim/parse-run-args "-v WARNING -n %d -t m00 -o'%s'" steps m00-opts)
           time-ms
@@ -73,7 +76,7 @@
           (/ forward-pass-ops time-ms 1000000)
           iterations-per-sec
           (/ steps time-ms 0.001)]
-      #_(log/info actual-gflops " GFlops, " iterations-per-sec " iters/sec")
+      (log/info actual-gflops " GFlops, " iterations-per-sec " iters/sec")
       (is (< expected-gflops actual-gflops))
       (is (< expected-iters-sec iterations-per-sec)))))
 
