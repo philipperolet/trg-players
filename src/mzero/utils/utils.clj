@@ -2,7 +2,20 @@
   (:require [clojure.tools.logging :as log]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
-            [clojure.data.generators :as g]))
+            [clojure.data.generators :as g]
+            [clojure.tools.logging.impl :as li]))
+
+(defmacro with-loglevel
+  "Set the logging `level` during the execution of `body`,
+  tailored to use of java.util.logging impl"
+  [level & body]
+  `(let [logger# (li/get-logger log/*logger-factory* "")
+         old-level# (.getLevel logger#)]
+     (.setLevel logger# ~level)
+     (try
+       ~@body
+       (finally
+         (.setLevel logger# old-level#)))))
 
 (defn weighted-rand-nth
   "Pick an element of `coll` randomly according to the

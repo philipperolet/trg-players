@@ -1,7 +1,26 @@
 (ns mzero.utils.utils-test
   (:require [mzero.utils.utils :as u]
             [clojure.test :refer [are deftest is]]
-            [clojure.data.generators :as g]))
+            [clojure.data.generators :as g]
+            [clojure.tools.logging :as log]
+            [clojure.tools.logging.impl :as li]))
+
+
+(deftest ^:integration with-loglevel
+  (.setLevel (li/get-logger log/*logger-factory* "") java.util.logging.Level/INFO)
+  (u/with-loglevel java.util.logging.Level/WARNING
+    (+ 3 3)
+    (- 2 2)
+    (log/info "ERROR: Should NOT show")
+    (log/warn "Should show 1/3"))
+  (log/info "Should 2/3")
+  (try 
+    (u/with-loglevel java.util.logging.Level/WARNING
+      (+ 3 3)
+      (log/info "ERROR: Should NOT show")
+      (throw (java.lang.Exception. "ow")))
+    (catch java.lang.Exception _
+      (log/info "Should show 3/3"))))
 
 (deftest weighted-rand-nth-test
   (binding [g/*rnd* (java.util.Random. 30)]

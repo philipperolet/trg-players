@@ -10,11 +10,11 @@
             [mzero.ai.player :as aip]
             [mzero.ai.world :as aiw]
             [mzero.game.generation :as gg]
+            [mzero.utils.utils :refer [with-loglevel]]
             [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [clojure.tools.cli :as ctc]
-            [clojure.tools.logging :as log]
-            [clojure.tools.logging.impl :as li]))
+            [clojure.tools.logging :as log]))
 
 (defn- parse-game-runner [runner-name]
   (if (= runner-name "ClockedThreadsRunner")
@@ -148,17 +148,14 @@
   "Run a game given initial `world` & `player` states and game `opts`."
   ([opts world player]
    (let [world-state (atom world) player-state (atom player)]
-     ;; setup logging
-     (.setLevel (li/get-logger log/*logger-factory* "") (opts :logging-level))
-     (log/info "Running game with the following options:\n" opts)
-
-     ;; runs the game
-     (log/info "Starting world state:\n" (aiw/data->string @world-state))
-     (if (-> opts :interactive)
-       (run-game-interactively world-state player-state opts)
-       (gr/run-game ((opts :game-runner) world-state player-state opts)))
-     (log/info "Ending world state:\n" (aiw/data->string  @world-state))
-     {:world @world-state :player @player-state}))
+     (with-loglevel (opts :logging-level)
+       (log/info "Running game with the following options:\n" opts)
+       (log/info "Starting world state:\n" (aiw/data->string @world-state))
+       (if (-> opts :interactive)
+         (run-game-interactively world-state player-state opts)
+         (gr/run-game ((opts :game-runner) world-state player-state opts)))
+       (log/info "Ending world state:\n" (aiw/data->string  @world-state))
+       {:world @world-state :player @player-state})))
   
   ([opts world]
    (run opts world
