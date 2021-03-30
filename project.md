@@ -51,20 +51,14 @@ Cf arch-minor:
 
 
 # Changelog
-### v0.2.4
-- ref: vision-depth is a senses parameter rather than a player opt
-- feat: les durée de satiété et de motoception sont paramétrées par la profondeur du réseau
-- feat: sens de motricité
-- test: speed tests ensuring ~ 2.5 GFlops for common m00 params
-- feat: m00 player, using activation (with randomness for movements)
-- ref: utility function 'world' for tests
-- feat: activation 
-- feat : senses (vision + satiety)
-- feat : use Neanderthal lib for Luno (> 1000 times faster)
-- feat: dummy-luno player impl
-- ref: replace calls to init-player by calls to load-player
-- ref: all players can use :seed options (done via load-player)
-- feat: added hidden layer of N units
+### v0.2.4 |  m0.0.1-halfway
+- **Motoneurons** alpha version (not yet as in arch docs)
+- **Activation** as in arch docs
+- **Senses** as in arch docs
+- **m00** player impl using all those
+
+- Use of neanderthal lib for fast computation, various speed tests
+- Dummy Luno player impl., for basic testing purposes
 
 ### v0.2.3
 - feat: add game level to run options
