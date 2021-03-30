@@ -1,6 +1,6 @@
 # Todo
-- initialisation des poids normalisée (incl. négativité des poids)
 - Motoneurones : arc-réflexe de déplacement
+
 
 # Backlog  - v0.2.4 - M0.0.1
 

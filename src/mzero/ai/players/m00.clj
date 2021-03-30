@@ -12,7 +12,24 @@
              [random :as rnd]]
             [clojure.spec.alpha :as s]
             [uncomplicate.neanderthal.vect-math :as nvm]
-            [clojure.data.generators :as g]))
+            [clojure.data.generators :as g]
+            [mzero.utils.utils :as u]))
+
+(s/fdef scale-float
+  :args (s/cat :flt (-> (s/double-in 0 1)
+                      (s/and float?))
+               :low float?
+               :hi float?))
+
+(defn- scale-float [flt low hi] (+ low (* flt (- hi low))))
+
+(def nwr "Negative weights ratio" 0.1)
+(defn nonzero-weights-nb
+  "Number of nonzero weights for a column of size `dim` given a range
+  `flt` between 0 and 1"
+  ([dim flt]
+   (int (inc (* (Math/sqrt dim) (scale-float flt 0.3 1.0)))))
+  ([dim] (nonzero-weights-nb dim (g/float))))
 
 (defn- sparsify-weights
   "Nullify most of the weights so that patterns have a chance to match.
@@ -20,17 +37,21 @@
   A pattern's proba to match gets smaller as the number of non-nil
   weights increases."
   [layers]
-  (let [rand-nonzeros ; random number of non-zero weights for a column
-        #(max 2 (g/uniform 0 (* 0.1 (nc/mrows %))))
+  (let [rand-weight ;; weight with normalized value and random sign
+        #(* (u/weighted-rand-nth [1 -1] [(- 1 nwr) nwr]) (/ %))
         rand-nonzero-vector
-        #(nn/fv (g/shuffle (into (repeat %1 1.0) (repeat (- %2 %1) 0))))
+        (fn [nb-non-zeros size]
+          (-> (into (repeatedly nb-non-zeros #(rand-weight nb-non-zeros))
+                    (repeat (- size nb-non-zeros) 0))
+              g/shuffle
+              nn/fv))
         sparsify-column
         #(nvm/mul! %1 (rand-nonzero-vector %2 (nc/dim %1)))
         sparsify-layer
         (fn [{:as layer, :keys [::mzn/weights]}]
           (doall (map sparsify-column
                       (nc/cols weights)
-                      (repeatedly (nc/ncols weights) #(rand-nonzeros weights))))
+                      (repeatedly (nc/ncols weights) #(nonzero-weights-nb (nc/mrows weights)))))
           layer)]
 
     (vec (map sparsify-layer layers))))

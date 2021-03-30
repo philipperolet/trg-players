@@ -6,8 +6,25 @@
             [mzero.ai.player :as aip]
             [mzero.ai.world :as aiw :refer [world]]
             [mzero.ai.main :as aim]
-            [clojure.tools.logging :as log]
-            [clojure.data.generators :as g]))
+            [mzero.ai.players.m00 :as sut]
+            [mzero.ai.players.network :as mzn]
+            [uncomplicate.neanderthal.random :as rnd]
+            [uncomplicate.neanderthal.native :as nn]
+            [uncomplicate.neanderthal.vect-math :as nvm]
+            [uncomplicate.neanderthal.core :as nc]))
+
+(deftest sparsify-test
+  (let [rng (rnd/rng-state nn/native-float 43)
+        input-dim 100 nb-cols 1000
+        w (rnd/rand-uniform! rng (nn/fge input-dim nb-cols))
+        _ (#'sut/sparsify-weights [{::mzn/weights w}])
+        nb-nonzero-weights (nc/sum (nvm/ceil (nvm/abs w)))
+        nb-neg-weights (- (nc/sum (nvm/floor w)))
+        neg-ratio (/ nb-neg-weights nb-nonzero-weights)
+        total-ratio (/ nb-nonzero-weights (nc/dim w))
+        expected-total-ratio (/ (sut/nonzero-weights-nb input-dim 0.5) input-dim)]
+    (is (u/almost= neg-ratio sut/nwr (* 0.05 neg-ratio)))
+    (is (u/almost= total-ratio expected-total-ratio (* 0.05 total-ratio)))))
 
 (defn run-n-steps
   [player size world acc]
@@ -20,6 +37,7 @@
       
       (recur player (dec size) next-world (conj acc next-movement)))
     acc))
+
 
 (deftest m00-randomness
   (let [test-world (world 25 43)
