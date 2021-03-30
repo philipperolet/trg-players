@@ -38,9 +38,8 @@
   :ret ::ge/direction)
 
 (defn next-direction
-  "Next direction is chosen by considering each motoneuron value as a
-  non-normalized probability, and picking randomly according to the
-  distribution"
+  "Next direction is chosen by picking randomly among neurons whose
+  value is one."
   [rng motoneurons]
   (binding [g/*rnd* rng]
-    (u/weighted-rand-nth ge/directions motoneurons)))
+    (u/weighted-rand-nth ge/directions (map #(Math/floor %) motoneurons))))
