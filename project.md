@@ -1,5 +1,6 @@
 # Todo
 - Motoneurones : arc-réflexe de déplacement
+- bug : weights init are too small compared to expectation
 
 
 # Backlog  - v0.2.4 - M0.0.1

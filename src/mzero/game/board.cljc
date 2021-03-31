@@ -74,6 +74,8 @@
   [size]
   (vec (repeat size (vec (repeat size :empty)))))
 
+(defn empty-board? [board] (every? #{:empty} (flatten board)))
+
 (defn board-stats
   [board]
   (let [walls (count-cells board :wall) total-cells (* (count board) (count board))]

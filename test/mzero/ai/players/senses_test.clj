@@ -104,3 +104,14 @@
                       :data {::sut/previous-score 1
                              ::sut/last-move :right
                              ::gs/game-state (::gs/game-state world)}}))))))
+
+(deftest vision-cell-index
+  (is (= (sut/vision-cell-index [0 0])
+         (+ (* sut/visible-matrix-edge-size sut/vision-depth) sut/vision-depth)))
+  (is (= (sut/vision-cell-index [(- sut/vision-depth) (- sut/vision-depth)]) 0))
+  (is (= (sut/vision-cell-index [1 0])
+         (+ (* (inc sut/vision-depth) sut/visible-matrix-edge-size) sut/vision-depth)))
+  (is (= (sut/vision-cell-index [0 1])
+         (+ (* sut/vision-depth sut/visible-matrix-edge-size) (inc sut/vision-depth))))
+  (is (= (sut/vision-cell-index [sut/vision-depth sut/vision-depth])
+         (dec (* sut/visible-matrix-edge-size sut/visible-matrix-edge-size)))))

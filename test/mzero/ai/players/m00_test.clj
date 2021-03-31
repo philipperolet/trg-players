@@ -45,17 +45,17 @@
 
 (deftest m00-randomness
   (let [test-world (world 25 seed)
-        m00-opts {:seed seed :layer-dims [18 30]}
+        m00-opts {:seed seed :layer-dims [18 85]}
         m00-player
         (aip/load-player "m00" m00-opts test-world)
         dl-updates
-        (u/timed (run-n-steps m00-player 500 test-world []))]
+        (u/timed (run-n-steps m00-player 100 test-world []))]
     
-    (testing "Chosen direction approximately random, more than say 110
+    (testing "Chosen direction approximately random, more than say 25
     each dir. Note: this is not a real property fof m00. Here we
     purposely found a setup of layers, patterns & inputs exhibiting
     this property, for testing purposes."
-      (is (every? #(> % 110) (map (frequencies (second dl-updates)) ge/directions))))))
+      (is (every? #(> % 20) (map (frequencies (second dl-updates)) ge/directions))))))
 
 (deftest ^:integration m00-run
   :unstrumented

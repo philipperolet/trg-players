@@ -137,6 +137,7 @@
          (map #(modsubvec % offset-col visible-matrix-edge-size))
          vec)))
 
+(def board-cell-to-float-map  {:wall 1.0 :empty 0.0 :fruit 0.5 :cheese 0.2})
 (defn- visible-matrix-vector
   "Turn the board subset visible by the player from keyword
   matrix to a real-valued vector.
@@ -146,14 +147,19 @@
   [visible-keyword-matrix]
   (->> visible-keyword-matrix
        (reduce into [])
-       (map {:wall 1.0 :empty 0.0 :fruit 0.5 :cheese 0.2})
+       (map board-cell-to-float-map)
        vec))
+
+(defn vision-cell-index
+  "Return the index of a vision cell at position `[row col]` relative to the
+  player in `::input-vector`"
+  [[row col]]
+  (+ (* (+ row vision-depth) visible-matrix-edge-size) (+ col vision-depth)))
 
 (defn vision-depth-fits-game?
   "`true` iff the vision matrix edge is smaller than the game board edge"
   [game-board]
   (<= visible-matrix-edge-size (count game-board)))
-
 
 ;; Input vector
 ;;;;;;;;;;;;;;;;

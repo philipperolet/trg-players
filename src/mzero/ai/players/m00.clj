@@ -69,12 +69,15 @@
   generation starts, and randomized so that movements vary (otherwise
   the same direction is always picked)"
   [rng ndt-rng layer-dims input-dim]
+  (assert (< input-dim (last layer-dims))
+          "Arcreflexes need layer before motoneuron to be bigger than inputs")
   (binding [g/*rnd* rng]
     (-> (mzn/new-layers ndt-rng (cons input-dim layer-dims))
-        sparsify-weights
         ;; custom init of first layer to zero patterns
         (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
-        (mzm/plug-motoneurons ndt-rng))))
+        (mzm/plug-motoneurons ndt-rng)
+        sparsify-weights
+        mzm/setup-fruit-eating-arcreflexes!)))
 
 (defrecord M00Player []
   aip/Player
@@ -101,6 +104,9 @@
                 seq
                 (mzm/next-direction (:rng player))
                 (assoc % :next-movement))]
-      (-> player
-          (update ::mzs/senses #(mzs/update-senses % world player))
-          make-move))))
+      
+      (as-> player p
+        (update p ::mzs/senses mzs/update-senses world p)
+        (update p :layers mzm/arcreflexes-pass!
+                (-> p ::mzs/senses ::mzs/input-vector))
+        (make-move p)))))

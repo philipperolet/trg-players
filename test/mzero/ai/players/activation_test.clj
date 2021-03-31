@@ -9,7 +9,6 @@
             [mzero.utils.utils :as u]
             [clojure.data.generators :as g]))
 
-
 (deftest pdm-test
   (let [inputs (nn/fv 0.5 0.3 1.0)
         patterns (nn/fge 3 2 [[0.5 0.3 0.9] [1 1 1]])
