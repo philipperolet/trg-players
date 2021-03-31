@@ -85,4 +85,12 @@
       (is (every? identity (map #(not= %1 %2) boards (rest boards))))
       (is (every? identity (map #(not= %1 %2) seeded-boards (rest seeded-boards)))))))
 
-
+(deftest sow-path
+  (let [board1
+        (gg/sow-path (gb/empty-board 20) :wall [0 0] [:right :right :right])
+        board2
+        (gg/sow-path (gb/empty-board 20) :cheese [3 1] [:down :left :up :up :up])]
+    (is (= :empty (get-in board1 [0 0])))
+    (is (every? #{:wall} (subvec (board1 0) 1 3)))
+    (is (= :empty (get-in board2 [3 1])))
+    (is (every? #{:cheese} (map #(get-in board2 %) [[4 1] [4 0] [3 0] [2 0] [1 0]])))))

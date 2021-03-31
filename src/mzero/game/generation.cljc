@@ -146,6 +146,17 @@
       (add-n-elements-random board element nb-elts-to-sow)
       board)))
 
+
+(defn sow-path
+  "Sows `element` on `board` along `path`, starting at `position`,
+  excluding position"
+  [board element position path]
+  (let [sow-one-elt
+        (fn [[brd pos] direction]
+          (let [new-pos (ge/move-position pos direction (count board))]
+            (vector (assoc-in brd new-pos element) new-pos)))]
+    (first (reduce sow-one-elt [board position] path))))
+
 ;;; Nice board
 ;;;;;;
 
