@@ -70,14 +70,15 @@
 ;;; Game initialization
 ;;;;;;
 
-(defn get-initial-world-state
+(defn new-world
   ([game-state initial-timestamp]
    {::gs/game-state (assoc game-state ::gs/status :active)
     ::game-step 0
     ::requested-movements {}
     ::step-timestamp initial-timestamp})
-  ([game-state] (get-initial-world-state game-state (System/currentTimeMillis))))
+  ([game-state] (new-world game-state (System/currentTimeMillis))))
 
+(def ^:deprecated get-initial-world-state new-world)
 ;;; Game execution
 ;;;;;;
 
