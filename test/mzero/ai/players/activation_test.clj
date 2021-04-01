@@ -7,7 +7,8 @@
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.random :as rnd]
             [mzero.utils.utils :as u]
-            [clojure.data.generators :as g]))
+            [clojure.data.generators :as g]
+            [uncomplicate.neanderthal.core :as nc]))
 
 (deftest pdm-test
   (let [inputs (nn/fv 0.5 0.3 1.0)
@@ -116,7 +117,9 @@
     (testing "A complete pass on 4 layers should take about 10 ms (
     sum of ops time * 4), so less than 20ms coz we're nice at this time"
       (let [layers
-            (mzn/new-layers (rnd/rng-state nn/native-float 42) (repeat 5 dim))
+            (mzn/new-layers (repeat 5 dim)
+                            nn/fge
+                            #(rnd/rand-uniform! (rnd/rng-state nn/native-float 42) (nn/fge %1 %2)))
             inputs
             (binding [g/*rnd* (java.util.Random. 42)]
               (vec (repeatedly dim #(g/float))))

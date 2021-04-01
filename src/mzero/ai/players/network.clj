@@ -2,35 +2,39 @@
   (:require [clojure.spec.alpha :as s]
             [uncomplicate.neanderthal.random :as rnd]
             [clojure.spec.gen.alpha :as gen]
-            [mzero.ai.players.common :refer [values-in? per-element-spec valid-dimension?]]
+            [mzero.ai.players.common :as mzc]
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.core :as nc]))
 
+(def max-test-dimension 100)
+
+(s/def ::dimension (-> (s/int-in 1 mzc/max-dimension)
+                       (s/with-gen #(s/gen (s/int-in 1 max-test-dimension)))))
 (s/def ::neural-value (s/double-in :min 0.0 :max 1.0 :infinity? false :NaN? false))
 
 (s/def ::weights
   (-> nc/matrix?
-      (s/and (per-element-spec float?)
-             #(valid-dimension? (nc/mrows %))
-             #(valid-dimension? (nc/ncols %))
+      (s/and (mzc/per-element-spec float?)
+             #(s/valid? ::dimension (nc/mrows %))
+             #(s/valid? ::dimension (nc/ncols %))
              (fn [m]
                (comment "At least a non-0 val per neuron (column)")
                (every? #(pos? (nc/asum %)) (nc/cols m))))))
 
 (s/def ::patterns
   (-> nc/matrix?
-      (s/and (per-element-spec ::neural-value)
-             #(valid-dimension? (nc/mrows %))
-             #(valid-dimension? (nc/ncols %)))))
+      (s/and (mzc/per-element-spec ::neural-value)
+             #(s/valid? ::dimension (nc/mrows %))
+             #(s/valid? ::dimension (nc/ncols %)))))
 
 (s/def ::working-matrix (-> nc/matrix?
-                            (s/and #(values-in? % 0.0 Float/MAX_VALUE)
-                                   #(valid-dimension? (nc/ncols %))
-                                   #(valid-dimension? (nc/mrows %)))))
+                            (s/and #(mzc/values-in? % 0.0 Float/MAX_VALUE)
+                                   #(s/valid? ::dimension (nc/ncols %))
+                                   #(s/valid? ::dimension (nc/mrows %)))))
 
 (s/def ::neural-vector (-> nc/vctr?
-                           (s/and (per-element-spec ::neural-value)
-                                  #(valid-dimension? (nc/dim %)))))
+                           (s/and (mzc/per-element-spec ::neural-value)
+                                  #(s/valid? ::dimension (nc/dim %)))))
 
 (s/def ::inputs ::neural-vector)
 (s/def ::outputs ::neural-vector)
@@ -53,33 +57,32 @@
          (reduce #(if (identical? (-> %1 ::outputs) (-> %2 ::inputs)) %2 false)
                  layers)))))
 
-(def max-layer-size 10000)
-(def max-test-layer-size 10)
-
-(s/def ::layer-dimension (-> (s/int-in 1 max-layer-size)
-                             (s/with-gen #(s/gen (s/int-in 1 max-test-layer-size)))))
-
 (defn- new-unplugged-layer
-  [m n init-fn]
+  [m n patterns-fn weights-fn]
   (hash-map ::inputs nil
-            ::weights (init-fn (nn/fge m n))
-            ::patterns (init-fn (nn/fge m n))
+            ::weights (patterns-fn m n)
+            ::patterns (weights-fn m n)
             ::working-matrix (nn/fge m n)
             ::outputs (nn/fv n)))
 
 (defn append-layer
-  [layers new-dim init-fn]
-  (-> (new-unplugged-layer (nc/dim (::outputs (last layers))) new-dim init-fn)
+  [layers new-dim patterns-fn weights-fn]
+  (-> (new-unplugged-layer (nc/dim (::outputs (last layers))) new-dim
+                           patterns-fn weights-fn)
       (assoc ::inputs (::outputs (last layers)))
       (#(conj layers %))))
 
+(def matrix-generating-fn-spec
+  (-> (s/fspec :args (s/cat :m ::dimension :n ::dimension)
+               :ret nc/matrix?
+               :fn (fn [{{:keys [m n]} :args, :keys [ret]}]
+                     (and (= m (nc/mrows ret)) (= n (nc/ncols ret)))))
+      (s/with-gen (fn [] (gen/return #(rnd/rand-uniform! (nn/fge %1 %2)))))))
+
 (s/fdef new-layers
-  ;; Custom-made test of a valid neanderthal `rng`, since there is no
-  ;; available `rng?` function in the neanderthal lib
-  :args (s/cat :rng (-> #(rnd/rand-uniform! % (nn/fv 1))
-                        (s/with-gen #(gen/return (rnd/rng-state nn/native-float))))
-               
-               :dimensions (s/every ::layer-dimension :min-count 2))
+  :args (s/cat :dimensions (s/every ::dimension :min-count 2)
+               :patterns-fn matrix-generating-fn-spec
+               :weights-fn matrix-generating-fn-spec)
   :ret ::layers
   :fn (fn [{{:keys [dimensions]} :args, layers :ret}]
         (comment "Generated network dimensions fit supplied arguments")
@@ -89,16 +92,16 @@
 (defn new-layers
   "Initialize a network with connected layers.
   
-  `rng` is the random number generator to initialize weights and
-  patterns (uniformly in-between 0 & 1).  `dimensions` is the list of
-  number of units in the layers; elt 0 is the input dimension, elt 1
-  the number of units in the first layer, etc."
-  [rng dimensions]
-  {:pre [(>= (count dimensions) 2) (every? valid-dimension? dimensions)]}
+  `dimensions` is the list of number of units in the layers; elt 0 is
+  the input dimension, elt 1 the number of units in the first layer,
+  etc.  `patterns-fn` and `weights-fn` create new matrices of size
+  `m`*`n` (their 2 args) "
+  [dimensions patterns-fn weights-fn]
+  {:pre [(>= (count dimensions) 2) (every? #(s/valid? ::dimension %) dimensions)]}
   (let [[input-dim first-dim & next-dims] dimensions
         first-layer
-        (-> (new-unplugged-layer input-dim first-dim #(rnd/rand-uniform! rng %))
+        (-> (new-unplugged-layer input-dim first-dim patterns-fn weights-fn)
             (assoc ::inputs (nn/fv input-dim)))
         append-random-init-layer
-        #(append-layer %1 %2 (partial rnd/rand-uniform! rng))]
+        #(append-layer %1 %2 patterns-fn weights-fn)]
     (reduce append-random-init-layer [first-layer] next-dims)))

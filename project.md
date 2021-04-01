@@ -1,7 +1,6 @@
 # Todo
-- Motoneurones : arc-réflexe de déplacement
 - bug : weights init are too small compared to expectation
-
+  - check valid fns in unplugged layer
 
 # Backlog  - v0.2.4 - M0.0.1
 
@@ -11,7 +10,7 @@ Cf arch-minor:
 - then renf
 - then plast
 
-
+- croissance de taille d'axone / de dendrites, ça peut atteindre une taille max, il faut le prévoir (genre je grossis pas exponentiellement jusqu'à exploser)
 # Icebox
 ## Vitesse
 - speed tests on mul -> to be redone later (possibly good surprises: 0.1ms for 1Mops => ~ 10GF ok)

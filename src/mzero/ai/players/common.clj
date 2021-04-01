@@ -10,8 +10,6 @@
 (def zeros-vector (nn/fv max-dimension))
 (def zeros-matrix (nn/fge max-dimension max-dimension))
 
-(defn valid-dimension? [d] (<= 1 d max-dimension))
-
 (defn ones
   "Return a vector of `size` ones (double).
   A subvector of `ones-vector` is used, for performance.
