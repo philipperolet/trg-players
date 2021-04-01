@@ -8,26 +8,22 @@
             [mzero.ai.world :as aiw :refer [world]]
             [mzero.ai.main :as aim]
             [mzero.ai.players.m00 :as sut]
-            [mzero.ai.players.network :as mzn]
-            [uncomplicate.neanderthal.random :as rnd]
-            [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.vect-math :as nvm]
             [uncomplicate.neanderthal.core :as nc]
             [clojure.data.generators :as g]))
 
 (def seed 44)
 (deftest sparsify-test
-  (binding [g/*rnd* (java.util.Random. seed)]
-    (let [rng (rnd/rng-state nn/native-float seed)
-          input-dim 100 nb-cols 1000
-          w (rnd/rand-uniform! rng (nn/fge input-dim nb-cols))
-          _ (#'sut/sparsify-weights [{::mzn/weights w}])
+  (binding [g/*rnd* (java.util.Random.)]
+    (let [input-dim 1024 nb-cols 1000
+          w (#'sut/sparse-weights! input-dim nb-cols)
           nb-nonzero-weights (nc/sum (nvm/ceil (nvm/abs w)))
           nb-neg-weights (- (nc/sum (nvm/floor w)))
           neg-ratio (/ nb-neg-weights nb-nonzero-weights)
           total-ratio (/ nb-nonzero-weights (nc/dim w))
           expected-total-ratio (/ (sut/nonzero-weights-nb input-dim 0.5) input-dim)]
-      (is (u/almost= neg-ratio sut/nwr (* 0.05 neg-ratio)))
+      (is (u/almost= neg-ratio sut/neg-weight-ratio (* 0.05 neg-ratio)))
+      (is (every? #(u/almost= 1.0 (nc/sum %)) (nc/cols w)))
       (is (u/almost= total-ratio expected-total-ratio (* 0.05 total-ratio))))))
 
 (defn run-n-steps

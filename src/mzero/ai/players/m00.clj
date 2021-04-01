@@ -23,7 +23,8 @@
 
 (defn- scale-float [flt low hi] (+ low (* flt (- hi low))))
 
-(def nwr "Negative weights ratio" 0.1)
+(def neg-weight-ratio "Negative weights ratio" 0.1)
+
 (defn nonzero-weights-nb
   "Number of nonzero weights for a column of size `dim` given a range
   `flt` between 0 and 1"
@@ -33,27 +34,29 @@
 
 (defn- rand-nonzero-vector
   [dim]
-  (let [normalized-randsign-weight ;; weight with normalized val, and random sign
-        #(* (u/weighted-rand-nth [1 -1] [(- 1 nwr) nwr]) (/ %))
-        nzw (nonzero-weights-nb dim)]
-    (-> (into (repeatedly nzw #(normalized-randsign-weight nzw))
-              (repeat (- dim nzw) 0))
-        g/shuffle
-        nn/fv)))
+  (let [nzw (nonzero-weights-nb dim)
+        
+        neg-weights-nb ;; on average, nwr ratio of negative weights 
+        (int (Math/round (* nzw (scale-float (g/float) 0.0 (* 2 neg-weight-ratio)))))
 
-(defn- sparsify-weights
-  "Nullify most of the weights so that patterns have a chance to match.
+        ones-vector
+        (into (repeat neg-weights-nb -1) (repeat (- nzw neg-weights-nb) 1))
+        
+        normalization-factor (apply + ones-vector)]
+    (->> ones-vector
+         (into (repeat (- dim nzw) 0))
+         (map #(/ % normalization-factor))
+         g/shuffle)))
 
-  A pattern's proba to match gets smaller as the number of non-nil
-  weights increases."
-  [layers]
-  (let [sparsify-column
-        (fn [col] (nvm/mul! col (rand-nonzero-vector (nc/dim col))))
-        sparsify-layer
-        (fn [{:as layer, :keys [::mzn/weights]}]
-          (doall (map sparsify-column (nc/cols weights)))
-          layer)]
-    (vec (map sparsify-layer layers))))
+(defn- sparse-weights!
+  "Create a sparse matrix of size `m`*`n`, aimed to be used as weights.
+
+  Every neuron (= column) has about sqrt(#rows)/2 non-zero weights,
+  with a random ratio of negative weights averaging to
+  `neg-weight-ratio`, all initialized to the same value (in ]0,1])
+  such that they sum to one."
+  [m n]
+  (nn/fge m n (repeatedly n #(rand-nonzero-vector m))))
 
 (defn- create-ndt-rng
   "Neanderthal needs its own rng-state in addition to the player's
@@ -64,35 +67,33 @@
     (rnd/rng-state nn/native-float)))
 
 (defn- initialize-layers
-  "Initialize layers, with inner layers' weights and patterns
-  sparsified, so that neurons are similar to what they might be when
-  generation starts, and randomized so that movements vary (otherwise
-  the same direction is always picked)"
-  [rng ndt-rng layer-dims input-dim]
+  "Initialize layers, with inner layers' weights sparsified, so that
+  neurons are similar to what they might be when generation starts,
+  and patterns randomized so that movements vary (otherwise the same
+  direction is always picked)"
+  [layer-dims input-dim patterns-fn weights-fn]
   (assert (< input-dim (last layer-dims))
           "Arcreflexes need layer before motoneuron to be bigger than inputs")
-  (binding [g/*rnd* rng]
-    (-> (mzn/new-layers ndt-rng (cons input-dim layer-dims))
-        ;; custom init of first layer to zero patterns
-        (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
-        (mzm/plug-motoneurons ndt-rng)
-        sparsify-weights
-        mzm/setup-fruit-eating-arcreflexes!)))
+  (-> (mzn/new-layers (cons input-dim layer-dims) patterns-fn weights-fn)
+      ;; custom init of first layer to zero patterns
+      (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
+      (mzm/plug-motoneurons weights-fn)
+      mzm/setup-fruit-eating-arcreflexes!))
 
 (defrecord M00Player []
   aip/Player
   (init-player
-    [player opts {:as world, :keys [::gs/game-state]}]
-    {:pre [(s/valid? (s/every ::mzn/layer-dimension) (:layer-dims opts))]}
-    (let [brain-tau (+ 2 (count (:layer-dims opts)))
+    [player {:as opts, :keys [layer-dims]} {:as world, :keys [::gs/game-state]}]
+    {:pre [(s/valid? (s/every ::mzn/dimension) layer-dims)]}
+    (let [brain-tau (+ 2 (count layer-dims))
           senses (mzs/initialize-senses! brain-tau game-state)
           input-dim (count (::mzs/input-vector senses))
           ndt-rng (create-ndt-rng opts)
+          random-init #(rnd/rand-uniform! ndt-rng (nn/fge %1 %2))
           initial-layers
-          (initialize-layers (:rng player) ndt-rng (:layer-dims opts) input-dim)]
-      (assoc player
-             :layers initial-layers
-             ::mzs/senses senses)))
+          (binding [g/*rnd* (:rng player)]
+            (initialize-layers layer-dims input-dim random-init sparse-weights!))]
+      (assoc player :layers initial-layers ::mzs/senses senses)))
 
   (update-player [player {:as world, :keys [::gs/game-state]}]
     (let [player-forward-pass

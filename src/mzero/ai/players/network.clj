@@ -60,8 +60,8 @@
 (defn- new-unplugged-layer
   [m n patterns-fn weights-fn]
   (hash-map ::inputs nil
-            ::weights (patterns-fn m n)
-            ::patterns (weights-fn m n)
+            ::weights (weights-fn m n)
+            ::patterns (patterns-fn m n)
             ::working-matrix (nn/fge m n)
             ::outputs (nn/fv n)))
 

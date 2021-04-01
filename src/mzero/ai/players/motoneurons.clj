@@ -17,7 +17,8 @@
             [uncomplicate.neanderthal.random :as rnd]
             [uncomplicate.neanderthal.real :as nr]
             [mzero.utils.utils :as u]
-            [mzero.ai.players.senses :as mzs]))
+            [mzero.ai.players.senses :as mzs]
+            [uncomplicate.neanderthal.native :as nn]))
 
 (def motoneuron-number 4)
 
@@ -77,12 +78,13 @@
 (defn plug-motoneurons
   "Plug motoneurons to the network describe by `layers`.
   Add and setup new layers to `layers` so that motoneurons are properly
-  connected.
+  connected. Initial patterns are all 0.
   Motoneurons have a specific layer setup, see arch docs for details."
-  [layers ndt-rng]
-  (-> layers
-      (mzn/append-layer motoneuron-number (partial rnd/rand-uniform! ndt-rng))
-      (update-in [(count layers) ::mzn/patterns] #(nc/scal! 0 %))))
+  [layers weights-fn]
+  (mzn/append-layer layers
+                    motoneuron-number
+                    nn/fge
+                    weights-fn))
 
 (s/fdef next-direction
   :args (s/cat :rng (-> (partial instance? java.util.Random)
