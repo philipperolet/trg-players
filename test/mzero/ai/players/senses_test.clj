@@ -9,7 +9,8 @@
             [mzero.game.generation :as gg]
             [mzero.game.board :as gb]
             [mzero.ai.main :as aim]
-            [mzero.utils.utils :as u]))
+            [mzero.utils.utils :as u]
+            [mzero.ai.players.senses :as mzs]))
 
 (check-spec `sut/update-senses-data
             {:clojure.spec.test.check/opts {:num-tests 50}})
@@ -47,13 +48,13 @@
 
 (deftest new-motoception-test
   (testing "Specs of motoception"
-    (are [old mot-per req-mov res]
-        (u/almost= (#'sut/new-motoception old mot-per req-mov) res)
+    (are [old brain-tau req-mov res]
+        (u/almost= (#'sut/new-motoception old brain-tau req-mov) res)
       0.0 5 nil 0.0
       0.0 5 :left 1.0
       0.99 5 :right 1.0
-      1.0 5 nil 0.995
-      0.995 10 nil 0.9925)))
+      1.0 10 nil 0.995
+      0.995 20 nil 0.9925)))
 
 (deftest motoception-in-senses-test
   (let [player-options "{:seed 40}"
@@ -67,11 +68,11 @@
     (testing "After 5 iterations without move requests, motoception is
     down. After 10, it is 0."
       (with-redefs [dl/new-direction (constantly nil)]
-        (let [motopersistant-player
+        (let [motopersistent-player
               (-> player
-                  (assoc-in [:senses-data ::sut/brain-tau] 5)
+                  (assoc-in [:senses ::sut/params ::sut/brain-tau] 10)
                   (assoc :next-movement nil))
-              iter-5 (aim/run run-args world motopersistant-player)
+              iter-5 (aim/run run-args world motopersistent-player)
               iter-10 (aim/run run-args (:world iter-5) (:player iter-5))
               senses-of-iter #(-> % :player :senses ::sut/input-vector)]
           (is (u/almost= 0.975 (sut/motoception (-> iter-5 senses-of-iter))))
@@ -80,7 +81,9 @@
 (deftest ^:integration update-senses-test
   (with-redefs [sut/vision-depth 2
                 sut/visible-matrix-edge-size 5
-                sut/input-vector-size 27]
+                sut/input-vector-size 27
+                sut/motoception-index 25
+                sut/satiety-index 26]
     (let [player-options
           "{:seed 40}"
           run-args

@@ -10,7 +10,8 @@
             [mzero.ai.world :as aiw]
             [uncomplicate.neanderthal.native :as nn]
             [mzero.ai.players.network :as mzn]
-            [uncomplicate.neanderthal.core :as nc]))
+            [uncomplicate.neanderthal.core :as nc]
+            [mzero.ai.players.senses :as mzs]))
 
 (check-spec `sut/next-direction)
 (def seed 30)
@@ -41,11 +42,11 @@
     (is (every? #(= (nc/entry w-col %) -500.0) [31 39 49]))
     (is (= (nc/entry w-col 41) 1000.0))))
 
-(deftest next-fruit-arcreflex-test
+(deftest arcreflexes-test
   :unstrumented
-  (testing "Should eat all the fruits without going anywhere else on
-  the board, since there is always a fruit next to the player until
-  the board is empty.")
+  (testing "next-fruit arcreflex: should eat all the fruits without
+  going anywhere else on the board, since there is always a fruit next
+  to the player until the board is empty.")
   (let [test-board
         (-> (gb/empty-board 20) ;; path below sows fruits up to [0 3]
             (gg/sow-path :fruit [0 0] [:down :down :right :right :right :up :up]))
@@ -64,7 +65,14 @@
              (remove stays-in-path)
              first)]
     (is (= [0 3] (-> game-run :world ::gs/game-state ::gs/player-position)))
-    (is (gb/empty-board? (-> game-run :world ::gs/game-state ::gb/game-board)))))
+    (is (gb/empty-board? (-> game-run :world ::gs/game-state ::gb/game-board)))
+    (testing "motoinhibition arcreflex: it should take at least 7 *
+    motoception-persistence steps to eat all fruits, since motoception
+    blocks movements for a while"
+      (let [brain-tau
+            (-> game-run :player ::mzs/senses ::mzs/params ::mzs/brain-tau)]
+        (is (> (-> game-run :world ::aiw/game-step)
+               (* 7 (mzs/motoception-persistence brain-tau))))))))
 
 ;; Will become a randomness-reflex test
 #_(deftest m00-randomness

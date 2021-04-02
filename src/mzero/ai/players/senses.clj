@@ -37,90 +37,6 @@
 
 (defn- default-persistence [brain-tau] (* 2 brain-tau))
 
-;; Satiety
-;;;;;;;;;;
-
-(def minimal-satiety 0.04)
-
-(s/def ::previous-score ::gs/score)
-
-(s/def ::satiety (-> ::mzn/neural-value
-                     (s/and #(or (>= % minimal-satiety) (= % 0.0)))
-                     (s/with-gen (fn [] (gen/fmap
-                                         #(if (< % minimal-satiety) 0.0 %)
-                                         (s/gen ::mzn/neural-value))))))
-
-(defn- satiety [senses] (last senses))
-
-(s/fdef new-satiety
-  :args (-> (s/cat :old-satiety ::satiety
-                   :previous-score ::gs/score
-                   :score ::previous-score
-                   :brain-tau ::brain-tau))
-  :ret ::satiety)
-
-(defn- new-satiety
-  "Compute satiety from its former value `old-satiety` and whether the
-  score increased at this step. see m0.0.1 arch minor for explanations."
-  [old-satiety previous-score score brain-tau]
-  (let [fruit-increment 0.3
-        satiety-persistence (default-persistence brain-tau)
-        decrease-factor (Math/pow (/ minimal-satiety fruit-increment) (/ satiety-persistence))
-        fruit-eaten-increment (if (< previous-score score) fruit-increment 0.0)
-        new-satiety (+ (* old-satiety decrease-factor) fruit-eaten-increment)]
-    (cond
-      (< new-satiety minimal-satiety) 0.0
-      (> new-satiety 1) 1.0
-      :else new-satiety)))
-
-;; Motoception
-;;;;;;;;;;;;;;
-(def min-motoception-activation 0.95)
-(def activation-value 1.0)
-
-(s/def ::last-move (s/or :nil nil?
-                        :direction ::ge/direction))
-
-(s/def ::motoception (-> ::mzn/neural-value
-                         (s/and #(or (= % 0.0) (>= % min-motoception-activation)))
-                         (s/with-gen
-                           #(gen/one-of
-                             [(s/gen (s/double-in min-motoception-activation activation-value))
-                              (gen/return 0.0)]))))
-
-(s/fdef new-motoception
-  :args (s/cat :old-motoception ::motoception
-               :brain-tau ::brain-tau
-               :last-move ::last-move)
-  :ret ::motoception)
-
-(defn- new-motoception
-  "Compute the motoception value. See arch minor for details.
-
-  To know if motoception should deactivate, i.e. if
-  *motoception-persistence* iterations, computed from `brain-tau`,
-  occured with no new move from player, without storing previous
-  state, the motoception value is decreased from a small increment
-  every time. An added benefit is the ability for the player to make
-  use of the differences in activation values (v.s. keeping the
-  activation value fixed during *motoception-persistence*
-  iterations)."
-  [old-motoception brain-tau last-move]
-  (let [motoception-persistence (inc brain-tau)
-        increment
-        (-> (- activation-value min-motoception-activation)
-            (/ motoception-persistence))
-        
-        new-motoception
-        (- old-motoception increment)]
-    (cond
-      (some? last-move) activation-value
-      (> new-motoception min-motoception-activation) new-motoception
-      :else 0.0)))
-
-(defn motoception [senses]
-  (nth senses (- (count senses) 2)))
-
 ;; Vision
 ;;;;;;;;;
 
@@ -156,10 +72,97 @@
   [[row col]]
   (+ (* (+ row vision-depth) visible-matrix-edge-size) (+ col vision-depth)))
 
+(def last-vision-cell-index (vision-cell-index [vision-depth vision-depth]))
 (defn vision-depth-fits-game?
   "`true` iff the vision matrix edge is smaller than the game board edge"
   [game-board]
   (<= visible-matrix-edge-size (count game-board)))
+
+;; Motoception
+;;;;;;;;;;;;;;
+(def min-motoception-activation 0.95)
+(def motoception-activation-value 1.0)
+
+(s/def ::last-move (s/or :nil nil?
+                        :direction ::ge/direction))
+
+(s/def ::motoception (-> ::mzn/neural-value
+                         (s/and #(or (= % 0.0) (>= % min-motoception-activation)))
+                         (s/with-gen
+                           #(gen/one-of
+                             [(s/gen (s/double-in min-motoception-activation motoception-activation-value))
+                              (gen/return 0.0)]))))
+
+(s/fdef new-motoception
+  :args (s/cat :old-motoception ::motoception
+               :brain-tau ::brain-tau
+               :last-move ::last-move)
+  :ret ::motoception)
+
+(defn motoception-persistence [brain-tau] brain-tau)
+
+(defn- new-motoception
+  "Compute the motoception value. See arch minor for details.
+
+  To know if motoception should deactivate, i.e. if
+  *motoception-persistence* iterations, computed from `brain-tau`,
+  occured with no new move from player, without storing previous
+  state, the motoception value is decreased from a small increment
+  every time. An added benefit is the ability for the player to make
+  use of the differences in activation values (v.s. keeping the
+  activation value fixed during *motoception-persistence*
+  iterations)."
+  [old-motoception brain-tau last-move]
+  (let [increment
+        (-> (- motoception-activation-value min-motoception-activation)
+            (/ (motoception-persistence brain-tau)))
+        
+        new-motoception
+        (- old-motoception increment)]
+    (cond
+      (some? last-move) motoception-activation-value
+      (> new-motoception min-motoception-activation) new-motoception
+      :else 0.0)))
+
+(def motoception-index (inc last-vision-cell-index))
+(defn motoception [input-vector] (nth input-vector motoception-index))
+
+;; Satiety
+;;;;;;;;;;
+
+(def minimal-satiety 0.04)
+(def satiety-index (inc motoception-index))
+(s/def ::previous-score ::gs/score)
+
+(s/def ::satiety (-> ::mzn/neural-value
+                     (s/and #(or (>= % minimal-satiety) (= % 0.0)))
+                     (s/with-gen (fn [] (gen/fmap
+                                         #(if (< % minimal-satiety) 0.0 %)
+                                         (s/gen ::mzn/neural-value))))))
+
+(defn- satiety [input-vector] (nth input-vector satiety-index))
+
+(s/fdef new-satiety
+  :args (-> (s/cat :old-satiety ::satiety
+                   :previous-score ::gs/score
+                   :score ::previous-score
+                   :brain-tau ::brain-tau))
+  :ret ::satiety)
+
+(defn- new-satiety
+  "Compute satiety from its former value `old-satiety` and whether the
+  score increased at this step. see m0.0.1 arch minor for explanations."
+  [old-satiety previous-score score brain-tau]
+  (let [fruit-increment 0.3
+        satiety-persistence (default-persistence brain-tau)
+        decrease-factor (Math/pow (/ minimal-satiety fruit-increment) (/ satiety-persistence))
+        fruit-eaten-increment (if (< previous-score score) fruit-increment 0.0)
+        new-satiety (+ (* old-satiety decrease-factor) fruit-eaten-increment)]
+    (cond
+      (< new-satiety minimal-satiety) 0.0
+      (> new-satiety 1) 1.0
+      :else new-satiety)))
+
 
 ;; Input vector
 ;;;;;;;;;;;;;;;;

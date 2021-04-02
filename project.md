@@ -1,8 +1,8 @@
 # Todo
-- arc-réflexe d'inhibition motrice
+- visu de ton arcreflexed avec petite modif pour montrer quand il réfléchit
+- réflexe de mouvement aléatoire
+- renfo non-supervisé initial
 
-- refact
-  - :unstrumented in meta rather than body for utils.testing.deftest
 # Backlog  - v0.2.4 - M0.0.1
 
 Cf arch-minor:
@@ -39,6 +39,7 @@ Cf arch-minor:
 ## Refactorings
 - get-test-world in all tests
 - use fixtures for test instr/uninstr
+- :unstrumented in meta rather than body for utils.testing.deftest
 
 ## Colder
 - Add player using reinforcement learning - basic 

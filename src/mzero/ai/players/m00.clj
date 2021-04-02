@@ -77,14 +77,14 @@
       ;; custom init of first layer to zero patterns
       (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
       (mzm/plug-motoneurons weights-fn)
-      mzm/setup-fruit-eating-arcreflexes!))
+      mzm/setup-arcreflexes!))
 
 (defrecord M00Player []
   aip/Player
   (init-player
     [player {:as opts, :keys [layer-dims]} {:as world, :keys [::gs/game-state]}]
     {:pre [(s/valid? (s/every ::mzn/dimension) layer-dims)]}
-    (let [brain-tau (+ 2 (count layer-dims))
+    (let [brain-tau (inc (count layer-dims))
           senses (mzs/initialize-senses! brain-tau game-state)
           input-dim (count (::mzs/input-vector senses))
           ndt-rng (create-ndt-rng opts)

@@ -60,20 +60,42 @@
      patterns
      ge/directions)))
 
+(defn- set-motoinhibition-ar-patterns!
+  [patterns direction]
+  (nr/entry! patterns
+             mzs/motoception-index (col-index direction)
+             mzs/motoception-activation-value))
+
+(defn- set-motoinhibition-ar-weights!
+  [weights direction]
+  (let [motoinhibition-ar-weight -2000.0]
+    (nr/entry! weights
+               mzs/motoception-index (col-index direction)
+               motoinhibition-ar-weight)))
+
 (defn- setup-fruit-arcreflex-in-direction!
   [layer direction]
   (-> layer
       (update ::mzn/patterns set-fruit-ar-patterns! direction)
       (update ::mzn/weights set-fruit-ar-weights! direction)))
 
-(defn setup-fruit-eating-arcreflexes!
+(defn- setup-motoinhibition-arcreflex-in-direction!
+  [layer direction]
+  (-> layer
+      (update ::mzn/patterns set-motoinhibition-ar-patterns! direction)
+      (update ::mzn/weights set-motoinhibition-ar-weights! direction)))
+
+(defn setup-arcreflexes!
   "Player will move to a fruit next to it: fruit pattern with strong
   weights are put on visual cells for each motoneuron, stimulating
   when the motoneuron would move to a fruit if activated, inhibiting
   if another motoneuron would do so."
   [layers]
-  (update layers (dec (count layers)) ;; update last layer
-          #(reduce setup-fruit-arcreflex-in-direction! % ge/directions)))
+  (-> layers
+      (update (dec (count layers)) ;; update last layer
+              #(reduce setup-fruit-arcreflex-in-direction! % ge/directions))
+      (update (dec (count layers))
+              #(reduce setup-motoinhibition-arcreflex-in-direction! % ge/directions))))
 
 (defn plug-motoneurons
   "Plug motoneurons to the network describe by `layers`.
