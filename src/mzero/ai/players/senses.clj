@@ -106,7 +106,7 @@
   activation value fixed during *motoception-persistence*
   iterations)."
   [old-motoception brain-tau last-move]
-  (let [motoception-persistence (default-persistence brain-tau)
+  (let [motoception-persistence (inc brain-tau)
         increment
         (-> (- activation-value min-motoception-activation)
             (/ motoception-persistence))
