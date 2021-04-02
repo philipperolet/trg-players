@@ -11,9 +11,7 @@
              [native :as nn]
              [random :as rnd]]
             [clojure.spec.alpha :as s]
-            [uncomplicate.neanderthal.vect-math :as nvm]
-            [clojure.data.generators :as g]
-            [mzero.utils.utils :as u]))
+            [clojure.data.generators :as g]))
 
 (s/fdef scale-float
   :args (s/cat :flt (-> (s/double-in 0 1)
@@ -32,7 +30,7 @@
    (int (inc (* (Math/sqrt dim) (scale-float flt 0.3 1.0)))))
   ([dim] (nonzero-weights-nb dim (g/float))))
 
-(defn- rand-nonzero-vector
+(defn- rand-nonzero-vector!
   [dim]
   (let [nzw (nonzero-weights-nb dim)
         
@@ -48,15 +46,16 @@
          (map #(/ % normalization-factor))
          g/shuffle)))
 
-(defn- sparse-weights!
+(defn- sparse-weights
   "Create a sparse matrix of size `m`*`n`, aimed to be used as weights.
 
   Every neuron (= column) has about sqrt(#rows)/2 non-zero weights,
   with a random ratio of negative weights averaging to
   `neg-weight-ratio`, all initialized to the same value (in ]0,1])
   such that they sum to one."
-  [m n]
-  (nn/fge m n (repeatedly n #(rand-nonzero-vector m))))
+  [m n rng]
+  (binding [g/*rnd* rng]
+    (nn/fge m n (repeatedly n #(rand-nonzero-vector! m)))))
 
 (defn- create-ndt-rng
   "Neanderthal needs its own rng-state in addition to the player's
@@ -89,10 +88,10 @@
           senses (mzs/initialize-senses! brain-tau game-state)
           input-dim (count (::mzs/input-vector senses))
           ndt-rng (create-ndt-rng opts)
-          random-init #(rnd/rand-uniform! ndt-rng (nn/fge %1 %2))
+          patterns-init! #(rnd/rand-uniform! ndt-rng (nn/fge %1 %2))
+          weights-init! #(sparse-weights %1 %2 (:rng player))
           initial-layers
-          (binding [g/*rnd* (:rng player)]
-            (initialize-layers layer-dims input-dim random-init sparse-weights!))]
+          (initialize-layers layer-dims input-dim patterns-init! weights-init!)]
       (assoc player :layers initial-layers ::mzs/senses senses)))
 
   (update-player [player {:as world, :keys [::gs/game-state]}]
