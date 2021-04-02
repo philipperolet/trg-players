@@ -1,6 +1,6 @@
 (ns mzero.ai.players.motoneurons-test
   (:require [mzero.ai.players.motoneurons :as sut]
-            [clojure.test :refer [is]]
+            [clojure.test :refer [is testing]]
             [mzero.utils.testing :refer [deftest check-spec]]
             [mzero.utils.utils :as u]
             [mzero.ai.main :as aim]
@@ -27,7 +27,9 @@
 
     (is (->> [:up :down]
              (map #(u/almost= (% random-10000-freqs) (% perfect-average) 50))
-             (every? true?)))))
+             (every? true?)))
+    (testing "Should return nil if no value is at one"
+      (is (nil? (sut/next-direction rng [0.1 0.99 0.2 0.3]))))))
 
 (deftest setup-fruit-arcreflex-in-direction
   (let [layer {::mzn/weights (nn/fge 200 sut/motoneuron-number)
@@ -38,6 +40,7 @@
     (is (every? #(= (nc/entry p-col %) 0.5) [31 39 41 49]))
     (is (every? #(= (nc/entry w-col %) -500.0) [31 39 49]))
     (is (= (nc/entry w-col 41) 1000.0))))
+
 (deftest next-fruit-arcreflex-test
   :unstrumented
   (let [test-board
@@ -48,7 +51,7 @@
             (assoc-in [::gs/game-state ::gs/player-position] [0 0]))
         player-opts {:seed seed :layer-dims (repeat 8 1024)}
         game-opts
-        (aim/parse-run-args "-t m00 -o '%s' -n 10" player-opts)
+        (aim/parse-run-args "-v WARNING -t m00 -o '%s' -n 10" player-opts)
         game-run
         (aim/run game-opts test-world)]
     (is (gb/empty-board? (-> game-run :world ::gs/game-state ::gb/game-board)))))

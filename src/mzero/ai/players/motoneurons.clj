@@ -90,11 +90,14 @@
   :args (s/cat :rng (-> (partial instance? java.util.Random)
                         (s/with-gen #(gen/return (java.util.Random.))))
                :motoneurons ::motoneurons)
-  :ret ::ge/direction)
+  :ret (s/or :direction ::ge/direction
+             :nil nil?))
 
 (defn next-direction
   "Next direction is chosen by picking randomly among neurons whose
-  value is one."
+  value is one, nil if no value is > 1"
   [rng motoneurons]
   (binding [g/*rnd* rng]
-    (u/weighted-rand-nth ge/directions (map #(Math/floor %) motoneurons))))
+    (when-let [directions-indices
+               (seq (keep-indexed #(when (>= %2 1.0) %1) motoneurons))]
+      (nth ge/directions (g/rand-nth directions-indices)))))
