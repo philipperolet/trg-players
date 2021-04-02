@@ -43,17 +43,27 @@
 
 (deftest next-fruit-arcreflex-test
   :unstrumented
+  (testing "Should eat all the fruits without going anywhere else on
+  the board, since there is always a fruit next to the player until
+  the board is empty.")
   (let [test-board
-        (-> (gb/empty-board 20)
-            (gg/sow-path :fruit [0 0] [:down :down :left :left :left :up :up]))
+        (-> (gb/empty-board 20) ;; path below sows fruits up to [0 3]
+            (gg/sow-path :fruit [0 0] [:down :down :right :right :right :up :up]))
         test-world
         (-> (aiw/new-world (gs/init-game-state test-board 0))
             (assoc-in [::gs/game-state ::gs/player-position] [0 0]))
         player-opts {:seed seed :layer-dims (repeat 8 1024)}
         game-opts
-        (aim/parse-run-args "-v WARNING -t m00 -o '%s' -n 10" player-opts)
-        game-run
-        (aim/run game-opts test-world)]
+        (aim/parse-run-args "-v WARNING -t m00 -o '%s' -n 1" player-opts)
+        stays-in-path
+        (fn [g] (some #{(-> g :world ::gs/game-state ::gs/player-position)}
+                      [[1 0] [2 0] [2 1] [2 2] [2 3] [1 3]]))
+        run-step #(aim/run game-opts (:world %) (:player %))
+        game-run ;; WARNING : use of iterate for a fn with side-effects
+        (->> (iterate run-step (aim/run game-opts test-world))
+             (remove stays-in-path)
+             first)]
+    (is (= [0 3] (-> game-run :world ::gs/game-state ::gs/player-position)))
     (is (gb/empty-board? (-> game-run :world ::gs/game-state ::gb/game-board)))))
 
 ;; Will become a randomness-reflex test
