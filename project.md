@@ -1,8 +1,8 @@
 # Todo
-- m00 ne devrait pas bouger ou pas souvent
-- test m00-randomness: à adapter
 - arc-réflexe d'inhibition motrice
 
+- refact
+  - :unstrumented in meta rather than body for utils.testing.deftest
 # Backlog  - v0.2.4 - M0.0.1
 
 Cf arch-minor:

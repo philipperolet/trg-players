@@ -55,3 +55,15 @@
         game-run
         (aim/run game-opts test-world)]
     (is (gb/empty-board? (-> game-run :world ::gs/game-state ::gb/game-board)))))
+
+;; Will become a randomness-reflex test
+#_(deftest m00-randomness
+  :unstrumented
+  (testing "Checks that over 1000 steps, more than 100 moves"
+    (let [test-world (world 25 seed)
+          m00-opts {:seed seed :layer-dims (repeat 8 512)}
+          m00-player
+          (aip/load-player "m00" m00-opts test-world)
+          dl-updates
+          (u/timed (run-n-steps m00-player 1000 test-world []))]
+      (is (every? #(> % 20) (map (frequencies (second dl-updates)) ge/directions))))))

@@ -35,30 +35,30 @@
           (-> player (aip/update-player world) :next-movement)
           next-world
           (aiw/compute-new-state
-           (assoc world ::aiw/requested-movements {:player next-movement}))]
+           (assoc world ::aiw/requested-movements
+                  (if next-movement {:player next-movement} {})))]
       
       (recur player (dec size) next-world (conj acc next-movement)))
     acc))
 
 
-(deftest m00-randomness
+(deftest m00-instrumented-test
   ;; WARNING : seeded random not working here (but test seems valid
   ;; apart from that)
   ;;
-  ;; this is because instrumentation checks calls to new-layers,
-  ;; taking as arg unpure random functions. The check calls those
+  ;; this is because instrumentation checks calls to new-layers, 
+ ;; taking as arg unpure random functions. The check calls those
   ;; function, messing with the state. 
-  (let [test-world (world 25 seed)
-        m00-opts {:seed seed :layer-dims [18 170]}
-        m00-player
-        (aip/load-player "m00" m00-opts test-world)
-        dl-updates
-        (u/timed (run-n-steps m00-player 100 test-world []))]
-    (testing "Chosen direction approximately random, more than say 20
-    each dir. Note: this is not a real property fof m00. Here we
-    purposely found a setup of layers, patterns & inputs exhibiting
-    this property, for testing purposes."
-      (is (every? #(> % 20) (map (frequencies (second dl-updates)) ge/directions))))))
+  (testing "Runs intrumented version of m00 to check fn calls, and
+  checks than in 25 steps there are more than 2 moves but less than 20
+  -- player should move sometimes but not all the time"
+    (let [test-world (world 25 seed)
+          m00-opts {:seed seed :layer-dims [50 50 50 150]}
+          m00-player
+          (aip/load-player "m00" m00-opts test-world)
+          dl-updates
+          (u/timed (run-n-steps m00-player 25 test-world []))]
+      (is (< 2 (count (remove nil? (second dl-updates))) 18)))))
 
 (deftest ^:integration m00-run
   :unstrumented
