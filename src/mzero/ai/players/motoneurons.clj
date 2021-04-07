@@ -73,29 +73,67 @@
                mzs/motoception-index (col-index direction)
                motoinhibition-ar-weight)))
 
-(defn- setup-fruit-arcreflex-in-direction!
-  [layer direction]
-  (-> layer
-      (update ::mzn/patterns set-fruit-ar-patterns! direction)
-      (update ::mzn/weights set-fruit-ar-weights! direction)))
-
 (defn- setup-motoinhibition-arcreflex-in-direction!
+  "Player will not move for a while if he just made a movement. This is
+  to let it process the fact it just moved."
   [layer direction]
   (-> layer
       (update ::mzn/patterns set-motoinhibition-ar-patterns! direction)
       (update ::mzn/weights set-motoinhibition-ar-weights! direction)))
 
-(defn setup-arcreflexes!
+(defn- setup-fruit-arcreflex-in-direction!
   "Player will move to a fruit next to it: fruit pattern with strong
   weights are put on visual cells for each motoneuron, stimulating
   when the motoneuron would move to a fruit if activated, inhibiting
   if another motoneuron would do so."
+  [layer direction]
+  (-> layer
+      (update ::mzn/patterns set-fruit-ar-patterns! direction)
+      (update ::mzn/weights set-fruit-ar-weights! direction)))
+
+(defn setup-arcreflexes!
   [layers]
   (-> layers
       (update (dec (count layers)) ;; update last layer
               #(reduce setup-fruit-arcreflex-in-direction! % ge/directions))
       (update (dec (count layers))
               #(reduce setup-motoinhibition-arcreflex-in-direction! % ge/directions))))
+
+(defn- update-synapse
+  "Updates pattern & weight at a single position in a layer. Accepts
+  signed `srow` & `scol` indices, -1 being converted to the last index,
+  etc."
+  [layer srow scol pattern weight]
+  (let [row (if (nat-int? srow) srow (+ (nc/mrows (-> layer ::mzn/patterns)) srow))
+        col (if (nat-int? scol) scol (+ (nc/ncols (-> layer ::mzn/patterns)) scol))]
+    (-> layer
+        (update ::mzn/patterns nr/entry! row col pattern)
+        (update ::mzn/weights nr/entry! row col weight))))
+
+(def rmr-weight "Random move reflex weight" 200.0)
+(def rmr-neuron "Index of neuron used for rand move reflex" -1)
+
+(defn update-rmr-intermediate-layers
+  [layers]
+  (reduce #(update %1 %2 update-synapse rmr-neuron rmr-neuron 1 rmr-weight)
+          layers
+          (range 1 (dec (count layers))))) ;; first & last layers not updated
+
+(defn setup-random-move-reflex
+  "Reflex to move randomly when player has not moved for a
+  while--relying on motoception so the while length is defined by
+  motoception-persistence"
+  [layers]
+  (let [update-last-layer-direction
+        #(update-synapse %1 rmr-neuron (col-index %2) 1 rmr-weight)] 
+    (-> layers
+        ;; Detect motoception at 0, meaning no movement has occured for a while
+        (update 0 update-synapse mzs/motoception-index rmr-neuron 0 rmr-weight)
+        ;; 1-neuron chain for all intermediate-layers
+        update-rmr-intermediate-layers
+        ;; last layer: for each direction, urge to move
+        (update (dec (count layers))
+                #(reduce update-last-layer-direction % ge/directions)))))
 
 (defn plug-motoneurons
   "Plug motoneurons to the network describe by `layers`.

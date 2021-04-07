@@ -11,7 +11,10 @@
             [uncomplicate.neanderthal.native :as nn]
             [mzero.ai.players.network :as mzn]
             [uncomplicate.neanderthal.core :as nc]
-            [mzero.ai.players.senses :as mzs]))
+            [mzero.ai.players.senses :as mzs]
+            [uncomplicate.neanderthal.random :as rnd]
+            [mzero.ai.player :as aip]
+            [mzero.game.events :as ge]))
 
 (check-spec `sut/next-direction)
 (def seed 30)
@@ -74,14 +77,36 @@
         (is (> (-> game-run :world ::aiw/game-step)
                (* 7 (mzs/motoception-persistence brain-tau))))))))
 
+(deftest random-move-reflex-setup
+  (let [layers
+        (sut/setup-random-move-reflex
+         (mzn/new-layers (cons 83 (repeat 6 64))
+                         #(rnd/rand-uniform! (nn/fge %1 %2))
+                         #(rnd/rand-uniform! (nn/fge %1 %2))))]
+    (is (every? #(= 200.0 %)
+                (->> layers last ::mzn/weights nc/cols (map last) (take 4))))
+    (is (every? #(= 1.0 %)
+                (->> layers (map ::mzn/patterns) rest butlast (map last) (map last))))))
+
 ;; Will become a randomness-reflex test
-#_(deftest m00-randomness
+(deftest ^:integration m00-randomness
   :unstrumented
-  (testing "Checks that over 1000 steps, more than 100 moves"
-    (let [test-world (world 25 seed)
-          m00-opts {:seed seed :layer-dims (repeat 8 512)}
-          m00-player
-          (aip/load-player "m00" m00-opts test-world)
-          dl-updates
-          (u/timed (run-n-steps m00-player 1000 test-world []))]
-      (is (every? #(> % 20) (map (frequencies (second dl-updates)) ge/directions))))))
+  (testing "Checks that over 1000 steps, 50 moves at least are made,
+  and over 10 in each direction (where the perfect split would be
+  12.5/12.5/12.5/12.5)"
+    (let [test-world (aiw/world 25 seed)
+          steps 1000
+          m00-opts {:seed seed :layer-dims (repeat 8 256)}
+          game-opts
+          (aim/parse-run-args "-v WARNING -n %d -t m00 -o'%s'" steps m00-opts)
+          request-and-store
+          (let [req-mov aip/request-movement]
+            (fn [player-st world-st]
+              (swap! player-st update :move-list
+                     conj [(-> @world-st ::aiw/game-step)
+                           (-> @player-st :next-movement)])
+              (req-mov player-st world-st)))]
+      (with-redefs [aip/request-movement request-and-store]
+        (let [pl (-> (aim/run game-opts test-world) :player)]
+          (is (every? #(> % 10) (map (frequencies (->> pl :move-list (map second))) ge/directions)))
+          (is (< 50 (count (->> pl :move-list (map second) (remove nil?))))))))))

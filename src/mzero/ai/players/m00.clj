@@ -77,7 +77,8 @@
       ;; custom init of first layer to zero patterns
       (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
       (mzm/plug-motoneurons weights-fn)
-      mzm/setup-arcreflexes!))
+      mzm/setup-arcreflexes!
+      mzm/setup-random-move-reflex))
 
 (defrecord M00Player []
   aip/Player
