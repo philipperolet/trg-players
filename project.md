@@ -1,17 +1,8 @@
 # Todo
-- visu de ton arcreflexed avec petite modif pour montrer quand il réfléchit
-- réflexe de mouvement aléatoire
-- renfo non-supervisé initial
 
-# Backlog  - v0.2.4 - M0.0.1
+# Backlog  - v0.2.6 - M0.0.2
+TBD
 
-Cf arch-minor:
-- Go on arc-réflexes moto
-- then reflexes moto
-- then renf
-- then plast
-
-- croissance de taille d'axone / de dendrites, ça peut atteindre une taille max, il faut le prévoir (genre je grossis pas exponentiellement jusqu'à exploser)
 # Icebox
 ## Vitesse
 - speed tests on mul -> to be redone later (possibly good surprises: 0.1ms for 1Mops => ~ 10GF ok)
