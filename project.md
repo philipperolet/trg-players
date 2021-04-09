@@ -44,6 +44,11 @@ TBD
 
 
 # Changelog
+### v0.2.5 | m0.0.1-reflexes
+- Added arcreflexes for fruit eating and motoinhibition
+- Added reflex for random movement
+- Changed movement computation and allowed nil movements
+- Fixed weight initialization issues
 ### v0.2.4 |  m0.0.1-halfway
 - **Motoneurons** alpha version (not yet as in arch docs)
 - **Activation** as in arch docs
