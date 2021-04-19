@@ -32,6 +32,7 @@
   number of remaining steps."
   [world remaining-steps]
   (cond
+    (Thread/interrupted) false
     (not (aiw/active? world)) false
     (nil? remaining-steps) :until-end
     (pos? remaining-steps) :until-no-steps
