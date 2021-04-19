@@ -113,6 +113,18 @@
   [spec fn]
   (s/with-gen spec #(gen/fmap fn (s/gen spec))))
 
+(defn ipmap
+  "Similar to pmap, but interruptible--all threads will receive an
+  interrupt signal if the main thread is interrupted. However,
+  contrarily to pmap, evaluation is eager."
+  [f & colls]
+  (let [rets (apply map (fn [& vals_] (future (apply f vals_))) colls)]
+    (try
+      (vec (map deref rets))
+      (catch InterruptedException _
+        (doall (map future-cancel rets))
+        (throw (InterruptedException.))))))
+
 (defn scaffold
   "Show all the interfaces implemented by given `iface`"
   [iface]

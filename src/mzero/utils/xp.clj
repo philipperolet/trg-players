@@ -71,7 +71,7 @@ Sum %,4G
        (vec (map get-nth-measures (range (count (first measure-seqs)))))
        nil)))
   ([xp-fn measure-fn args-list]
-   (measure xp-fn measure-fn args-list pmap)))
+   (measure xp-fn measure-fn args-list u/ipmap)))
 
 (defn display-measures
   ([measures data name]
