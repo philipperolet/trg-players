@@ -1,6 +1,7 @@
 (ns mzero.utils.xp
   "Utilities for performing experiments."
   (:require [clojure.spec.alpha :as s]
+            [clojure.java.shell :as sh]
             [mzero.utils.utils :as u]))
 
 (defn mean
@@ -30,12 +31,10 @@
       -1.0)))
 
 (def display-string "
-%s (%d measures)
----
-Mean %,4G +- %,4G
-Std %,4G
-Sum %,4G
----
+Results of %s: (%d measures)
+- mean %,4G +- %,4G
+- std %,4G
+- sum %,4G
 ")
 
 (defn stats-string
@@ -76,12 +75,12 @@ Sum %,4G
 (defn measures-string
   ([measures data name]
    (if measures
-     (apply str (format "---\nXp '%s'\nData %s\n---" name data)
+     (apply str (format "\nXp on %s\n---" data)
             (map-indexed #(stats-string (str name " " %1) %2) measures))
      (throw (Exception.
              (str "Invalid measurements, e.g. " (first measures))))))
   ([measure-seqs data]
-   (measures-string measure-seqs data "Measure")))
+   (measures-string measure-seqs data "xp")))
 
 (defn timed-measures
   "Convenience function to get `nb-xps` measures of `xp-fn` with `args`
@@ -93,3 +92,14 @@ Sum %,4G
            (u/timed (apply xp-fn args)))]
     (measure timed-fn measure-fn (repeat nb-xps args) map)))
 
+(defn experiment
+  "Print and save results of measures with given args"
+  [xp-fn measure-fn args-list data]
+  (let [measures-str (measures-string (measure xp-fn measure-fn args-list) data)
+        commit-nb (:out (sh/sh "git" "rev-parse" "--short" "HEAD"))
+        final-str
+        (format "%s\nTime: %tF %2$tT\nCommit: %s\n"
+                measures-str (System/currentTimeMillis) commit-nb)
+        xp-file "doc/xps/xp-spits.md"]
+    (print final-str)
+    (spit xp-file final-str :append true)))
