@@ -12,16 +12,16 @@
             [mzero.ai.player :as aip]
             [mzero.game.board :as gb]
             [clojure.string :as str]
-            [mzero.utils.xp :refer [measure display-measures]]))
+            [mzero.utils.xp :refer [measure measures-string]]))
 
 
 (defn -step-avg-xp [nb-xps player-type]
   (let [game-args (str  "-s 20 -v WARNING -t " player-type)]
-    (display-measures
-     (measure #(aim/go game-args)
-              (comp ::aiw/game-step :world)
-              (repeat (Integer/parseInt nb-xps) []))
-        game-args)))
+    (print (measures-string
+            (measure #(aim/go game-args)
+                    (comp ::aiw/game-step :world)
+                    (repeat (Integer/parseInt nb-xps) []))
+            game-args))))
 
 (defn -fastest-te-impl
   "A subsim is ~ an atomic operation in the tree exploration,
@@ -43,9 +43,9 @@
         (map (comp list aiw/get-initial-world-state)
              (gg/generate-game-states nb-xps board-size 41))]
     
-    (display-measures (measure timed-go measure-fn random-worlds map)
-                      game-args
-                      "Tree exploration op/s")))
+    (print (measures-string (measure timed-go measure-fn random-worlds map)
+                            game-args
+                            "Tree exploration op/s"))))
 
 (defn -compare-sht
   "For random, an op is just the number of steps played"
@@ -59,9 +59,9 @@
           random-worlds
           (map (comp list aiw/get-initial-world-state)
                (gg/generate-game-states nb-xps board-size 41 true))]
-      (display-measures (measure timed-go measure-fn random-worlds map)
-                        player-type
-                        "1.Time 2.Steps /"))))
+      (print (measures-string (measure timed-go measure-fn random-worlds map)
+                              player-type
+                              "1.Time 2.Steps /")))))
 
 (defn -runcli [& args]
   (apply (resolve (symbol (str "xp1000/" (first args))))

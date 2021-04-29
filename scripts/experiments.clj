@@ -9,7 +9,7 @@
             [mzero.ai.world :as aiw]
             [mzero.game.generation :as gg]
             [mzero.utils.utils :as u]
-            [mzero.utils.xp :refer [measure display-measures]]))
+            [mzero.utils.xp :refer [measure measures-string]]))
 
 (defn te-impl-speed-single-run
   [board-size nb-xps node-type & tunings]
@@ -36,11 +36,11 @@
             (u/timed (measure timed-go measure-fn random-worlds map))
             timing
             (first measures)]
-        (display-measures (second measures)
-                          (str node-type " " tunings)
-                          "Steps")
-        (println "Time: " timing)
-        (println "Time (Average per game): " (/ timing nb-xps) "\n\n")))
+    (print (measures-string (second measures)
+                            (str node-type " " tunings)
+                            "Steps"))
+    (println "Time: " timing)
+    (println "Time (Average per game): " (/ timing nb-xps) "\n\n")))
 
 (defn te-impl-speed
   "Experiment with 3 node types for tree-exploration: te-node, dag-node,

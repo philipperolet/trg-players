@@ -77,10 +77,10 @@
   ([op-to-time nb-iters dim]
    (let [[op-time op-gflops] (time-and-gigaflops-for-operation (op-for-dim dim op-to-time) nb-iters)
          fn-name (u/fn-name op-to-time)]
-     (xp/display-stats (str "Ms per op - " fn-name)
-                       op-time)
-     (xp/display-stats (str "Gflops per op - " fn-name)
-                       op-gflops)))
+     (print (xp/stats-string (str "Ms per op - " fn-name)
+                             op-time))
+     (print (xp/stats-string (str "Gflops per op - " fn-name)
+                             op-gflops))))
   ([op-to-time nb-iters]
    (time-op op-to-time nb-iters default-dim))
   ([op-to-time]
@@ -90,8 +90,8 @@
   the GFlops performed per op."}
   speed-xp
   (let [display-gflops-per-op
-        #(xp/display-stats (str "Gflops per op - " (u/fn-name (:fn %)))
-                           (map first (time-and-gigaflops-for-operation % default-nb-iters)))]
+        #(print (print (xp/stats-string (str "Gflops per op - " (u/fn-name (:fn %)))
+                                        (map first (time-and-gigaflops-for-operation % default-nb-iters)))))]
     (doall (map display-gflops-per-op (operations-to-time default-dim)))))
 
 

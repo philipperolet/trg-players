@@ -38,10 +38,10 @@ Sum %,4G
 ---
 ")
 
-(defn display-stats
-  "Display usual stats given a set of `measures`"
+(defn stats-string
+  "Generate a string with usual stats given a set of `measures`"
   [title measures]
-  (printf display-string
+  (format display-string
           title (count measures)
           (mean measures) (confidence measures)
           (std measures)
@@ -73,17 +73,15 @@ Sum %,4G
   ([xp-fn measure-fn args-list]
    (measure xp-fn measure-fn args-list u/ipmap)))
 
-(defn display-measures
+(defn measures-string
   ([measures data name]
-   (println (format "---\nXp '%s'\nData %s\n---" name data))
    (if measures
-     (dotimes [n (count measures)]
-       (display-stats (str name " " n) (nth measures n)))
+     (apply str (format "---\nXp '%s'\nData %s\n---" name data)
+            (map-indexed #(stats-string (str name " " %1) %2) measures))
      (throw (Exception.
              (str "Invalid measurements, e.g. " (first measures))))))
-
   ([measure-seqs data]
-   (display-measures measure-seqs data "Measure")))
+   (measures-string measure-seqs data "Measure")))
 
 (defn timed-measures
   "Convenience function to get `nb-xps` measures of `xp-fn` with `args`

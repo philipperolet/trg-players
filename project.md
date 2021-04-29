@@ -1,4 +1,8 @@
 # Todo
+- système pour enregistrer facilement et récupérer facilement les résultats
+- résultats de random, d'exhaust, de tree-expl
+- exhaustive-senses -- et résultats
+- tree-expl senses -- et résultats
 
 # Backlog  - v0.2.6 - M0.0.2
 TBD
