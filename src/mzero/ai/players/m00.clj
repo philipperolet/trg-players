@@ -84,7 +84,8 @@
   aip/Player
   (init-player
     [player {:as opts, :keys [layer-dims]} {:as world, :keys [::gs/game-state]}]
-    {:pre [(s/valid? (s/every ::mzn/dimension) layer-dims)]}
+    {:pre [(pos? (count layer-dims))
+           (s/valid? (s/every ::mzn/dimension) layer-dims)]}
     (let [brain-tau (inc (count layer-dims))
           senses (mzs/initialize-senses! brain-tau game-state)
           input-dim (count (::mzs/input-vector senses))
