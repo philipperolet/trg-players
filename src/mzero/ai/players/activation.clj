@@ -67,7 +67,7 @@
         ;; only keep values above or equal to s
         nullify-if-lower-than-s)))
 
-(s/fdef forward-pass!
+(s/fdef simultaneous-forward-pass!
   :args (-> (s/cat :layers ::mzn/layers
                    :inputs (s/every ::mzn/neural-value))
             (s/and (fn [{:keys [inputs layers]}]
@@ -75,9 +75,14 @@
                      (= (count inputs) (nc/dim (::mzn/inputs (first layers)))))))
   :ret ::mzn/layers)
 
-(defn forward-pass!
+(defn simultaneous-forward-pass!
   "Run the network of `layers`. Return the `outputs` of the last
   layer. Almost everything in `layers` is changed.
+
+  This pass is deemed simultaneous because all layers are computed at
+  once, using their previous layer's old output, rather than layers
+  computed in turn from first to last, with each layer using the
+  new value of its previous layer's output.
 
   The pass has 2 steps:
 

@@ -98,7 +98,7 @@
 
   (update-player [player {:as world, :keys [::gs/game-state]}]
     (let [player-forward-pass
-          #(mza/forward-pass! (-> % :layers)
+          #(mza/simultaneous-forward-pass! (-> % :layers)
                               (-> % ::mzs/senses ::mzs/input-vector))
 
           make-move
