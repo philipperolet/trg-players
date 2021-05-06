@@ -115,7 +115,7 @@
     (testing "Vector ops should be less than 0.1ms"
       (is (< (-> omr-time first (/ 1000)) 0.133)))
     (testing "A complete pass on 4 layers should take about 10 ms (
-    sum of ops time * 4), so less than 20ms coz we're nice at this time"
+    sum of ops time * 4), so less than 25ms coz we're nice at this time"
       (let [layers
             (mzn/new-layers (repeat 5 dim)
                             nn/fge
@@ -127,4 +127,4 @@
             (u/timed (vec (repeatedly 300 #(sut/forward-pass! layers inputs))))
             single-pass-time
             (/ (first forward-pass) 300)]
-        (is (< single-pass-time 20))))))
+        (is (< single-pass-time 25))))))

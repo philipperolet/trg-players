@@ -52,22 +52,22 @@
   ;; function, messing with the state. 
   (testing "Runs intrumented version of m00 to check fn calls, and
   checks than in 50 steps there are more than 3 moves (minimum moves
-  via rand-move-reflexes) but less than 5 (maximum nb via
-  motoinhibition) -- player should move sometimes but not all the
-  time"
+  via rand-move-reflexes) but less than 12 (maximum nb via
+  motoinhibition, move every 4 steps) -- player should move sometimes
+  but not all the time"
     (let [test-world (world 25 seed)
           m00-opts {:seed seed :layer-dims [50 50 150]}
           m00-player
           (aip/load-player "m00" m00-opts test-world)
           dl-updates
           (u/timed (run-n-steps m00-player 50 test-world []))]
-      (is (<= 3 (count (remove nil? (second dl-updates))) 5)))))
+      (is (<= 3 (count (remove nil? (second dl-updates))) 12)))))
 
 (deftest ^:integration m00-run
   :unstrumented
   (testing "Speed should be above ~2.5 GFlops, equivalently 25 iters per sec"
     (let [test-world (world 30 seed)
-          expected-gflops 2 ;; more than 2 Gflops => average probably more than 2.5
+          expected-gflops 1.5 ;; more than 1.5 Gflops => average probably around 2.5
           expected-iters-sec 20
           ;; layer constant ~= nb of ops for each matrix elt for a layer
           ;; layer nb is inc'd to take into account 

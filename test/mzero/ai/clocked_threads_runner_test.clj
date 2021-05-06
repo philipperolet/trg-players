@@ -40,7 +40,7 @@
         opts (parse-run-args "-p 50 -g 50 -r ClockedThreadsRunner -v WARNING")]
     (testing "When running a step takes less time to run than game
     step duration, it waits for the remaining time (at ~3ms resolution)"
-      (let [player-state (atom (->RandomPlayer))
+      (let [player-state (atom (aip/load-player "random" nil nil))
             _ (aip/request-movement player-state world-state)
             start-time (System/currentTimeMillis)]
         (ctr/run-timed-step world-state opts)
