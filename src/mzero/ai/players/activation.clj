@@ -41,7 +41,10 @@
          (nc/rk! (ones m) (ones n))
          (#(nvm/fmax! % (zeros-matr m n))))))
 
-(defmethod proximity-matrix! :layer [l] (proximity-matrix! (::mzn/working-matrix l)))
+(defmethod proximity-matrix! :layer
+  [l]
+  (proximity-matrix! (::mzn/working-matrix l))
+  l)
 
 (defn- unactivated-outputs!
   "Compute outputs from `working-matrix` before activating them with OMR,
@@ -74,6 +77,24 @@
                      (comment "Input dimension fits first layer")
                      (= (count inputs) (nc/dim (::mzn/inputs (first layers)))))))
   :ret ::mzn/layers)
+
+(defn sequential-forward-pass!
+  "Run the network of `layers`. Return the `outputs` of the last
+  layer. Almost everything in `layers` is changed.
+
+  This pass is deemed sequential because layers are computed in turn
+  from first to last, with each layer using the new value of its
+  previous layer's output, rather than being computed all at once,
+  using their previous layer's old output."
+  [layers inputs]
+  (nc/transfer! inputs (-> layers first ::mzn/inputs))
+  (let [layer-pass
+        (fn [layer]
+          (-> (pattern-distance-matrix! layer)
+              proximity-matrix!
+              unactivated-outputs!
+              ::mzn/outputs omr!))]
+    (last (map layer-pass layers))))
 
 (defn simultaneous-forward-pass!
   "Run the network of `layers`. Return the `outputs` of the last
