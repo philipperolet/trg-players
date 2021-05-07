@@ -35,47 +35,6 @@
     (testing "Should return nil if no value is at one"
       (is (nil? (sut/next-direction rng [0.1 0.99 0.2 0.3]))))))
 
-(deftest setup-fruit-arcreflex-in-direction
-  (let [layer {::mzn/weights (nn/fge 200 sut/motoneuron-number)
-               ::mzn/patterns (nn/fge 200 sut/motoneuron-number)}
-        w-col (nth (nc/cols (::mzn/weights layer)) 1)
-        p-col (nth (nc/cols (::mzn/patterns layer)) 1)]
-    (#'sut/setup-fruit-arcreflex-in-direction! layer :right)
-    (is (every? #(= (nc/entry p-col %) 0.5) [31 39 41 49]))
-    (is (every? #(= (nc/entry w-col %) -500.0) [31 39 49]))
-    (is (= (nc/entry w-col 41) 1000.0))))
-
-(deftest arcreflexes-test
-  :unstrumented
-  (testing "next-fruit arcreflex: should eat all the fruits without
-  going anywhere else on the board, since there is always a fruit next
-  to the player until the board is empty.")
-  (let [test-board
-        (-> (gb/empty-board 20) ;; path below sows fruits up to [0 3]
-            (gg/sow-path :fruit [0 0] [:down :down :right :right :right :up :up]))
-        test-world
-        (-> (aiw/new-world (gs/init-game-state test-board 0))
-            (assoc-in [::gs/game-state ::gs/player-position] [0 0]))
-        player-opts {:seed seed :layer-dims (repeat 8 1024)}
-        game-opts
-        (aim/parse-run-args "-v WARNING -t m00 -o '%s' -n 1" player-opts)
-        stays-in-path
-        (fn [g] (some #{(-> g :world ::gs/game-state ::gs/player-position)}
-                      [[1 0] [2 0] [2 1] [2 2] [2 3] [1 3]]))
-        run-step #(aim/run game-opts (:world %) (:player %))
-        game-run ;; WARNING : use of iterate for a fn with side-effects
-        (->> (iterate run-step (aim/run game-opts test-world))
-             (remove stays-in-path)
-             first)]
-    (is (= [0 3] (-> game-run :world ::gs/game-state ::gs/player-position)))
-    (is (gb/empty-board? (-> game-run :world ::gs/game-state ::gb/game-board)))
-    (testing "motoinhibition arcreflex: it should take at least 7 *
-    motoception-persistence steps to eat all fruits, since motoception
-    blocks movements for a while"
-      (let [brain-tau
-            (-> game-run :player ::mzs/senses ::mzs/params ::mzs/brain-tau)]
-        (is (> (-> game-run :world ::aiw/game-step)
-               (* 7 (mzs/motoception-persistence brain-tau))))))))
 
 (deftest random-move-reflex-setup
   (let [layers

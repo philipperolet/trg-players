@@ -70,14 +70,11 @@
   neurons are similar to what they might be when generation starts,
   and patterns randomized so that movements vary (otherwise the same
   direction is always picked)"
-  [layer-dims input-dim patterns-fn weights-fn]
-  (assert (< input-dim (last layer-dims))
-          "Arcreflexes need layer before motoneuron to be bigger than inputs")
+  [layer-dims input-dim patterns-fn weights-fn]  
   (-> (mzn/new-layers (cons input-dim layer-dims) patterns-fn weights-fn)
       ;; custom init of first layer to zero patterns
       (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
       (mzm/plug-motoneurons weights-fn)
-      mzm/setup-arcreflexes!
       mzm/setup-random-move-reflex))
 
 (defrecord M00Player []
@@ -109,6 +106,4 @@
       
       (as-> player p
         (update p ::mzs/senses mzs/update-senses world p)
-        (update p :layers mzm/arcreflexes-pass!
-                (-> p ::mzs/senses ::mzs/input-vector))
         (make-move p)))))

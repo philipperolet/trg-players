@@ -2,13 +2,9 @@
 
 # Backlog  - v0.2.6 - M0.0.2
 ### Coding roadmap for  ~ 2 - 3 days, then 1-2w then 1-2m...
-- passage en activation séquentielle
-  - enlever les réflexes liés à l'activation simultanée
 - passage en perceptron
   - check gflops increase
 - passage à une couche (confirme via lecture)
-- pouvoir avoir simplement plusieurs versions (e.g. alt, simult...)?
-- mise en pause de l'arcréflexe fruit, passage en réflexe
 - ajouter le réflexe de renf sup
   - renf sup : créer ou renforcer les synapses activées, inhiber les synapses désactivées
 - commencer avec 1 seul layer et rajouter des layers post convergence

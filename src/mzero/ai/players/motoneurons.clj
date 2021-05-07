@@ -24,80 +24,11 @@
 
 (s/def ::motoneurons (s/every ::mzn/neural-value :count motoneuron-number))
 
-(defn arcreflexes-pass!
-  "Copy `inputs` to last layer input so as-to enable arc-reflexes.
-  
-  Erases potentially computed values. This is suboptimal since a few
-  neuron values are computed by the network for nothing (and it may
-  have other side effects) but is guessed to be a minor issue."
-  [layers inputs]
-  {:pre [(< (count inputs) (nc/dim (::mzn/inputs (last layers))))]}
-  (update-in layers [(dec (count layers)) ::mzn/inputs]
-             #(nc/transfer! inputs %)))
-
 (defn- col-index [direction] (.indexOf ge/directions direction))
 
 (defn- row-index [direction]
   (let [relative-position {:up [-1 0] :left [0 -1] :down [1 0] :right [0 1]}]
     (mzs/vision-cell-index (relative-position direction))))
-
-(defn- set-fruit-ar-weights!
-  [weights direction]
-  (let [set-weight! (fn [w m v] (nr/entry! w m (col-index direction) v))
-        stimulating-weight 1000.0 inhibiting-weight -500.0
-        set-inhibiting-weights!
-        (fn [w c]
-          (reduce #(set-weight! %1 (row-index %2) inhibiting-weight) w c))]
-    (-> weights
-        (set-weight! (row-index direction) stimulating-weight)
-        (set-inhibiting-weights! (remove #{direction} ge/directions)))))
-
-(defn- set-fruit-ar-patterns!
-  [patterns direction]
-  (let [fruit-val (:fruit mzs/board-cell-to-float-map)]
-    (reduce 
-     (fn [p dir] (nr/entry! p (row-index dir) (col-index direction) fruit-val))
-     patterns
-     ge/directions)))
-
-(defn- set-motoinhibition-ar-patterns!
-  [patterns direction]
-  (nr/entry! patterns
-             mzs/motoception-index (col-index direction)
-             mzs/motoception-activation-value))
-
-(defn- set-motoinhibition-ar-weights!
-  [weights direction]
-  (let [motoinhibition-ar-weight -2000.0]
-    (nr/entry! weights
-               mzs/motoception-index (col-index direction)
-               motoinhibition-ar-weight)))
-
-(defn- setup-motoinhibition-arcreflex-in-direction!
-  "Player will not move for a while if he just made a movement. This is
-  to let it process the fact it just moved."
-  [layer direction]
-  (-> layer
-      (update ::mzn/patterns set-motoinhibition-ar-patterns! direction)
-      (update ::mzn/weights set-motoinhibition-ar-weights! direction)))
-
-(defn- setup-fruit-arcreflex-in-direction!
-  "Player will move to a fruit next to it: fruit pattern with strong
-  weights are put on visual cells for each motoneuron, stimulating
-  when the motoneuron would move to a fruit if activated, inhibiting
-  if another motoneuron would do so."
-  [layer direction]
-  (-> layer
-      (update ::mzn/patterns set-fruit-ar-patterns! direction)
-      (update ::mzn/weights set-fruit-ar-weights! direction)))
-
-(defn setup-arcreflexes!
-  [layers]
-  (-> layers
-      (update (dec (count layers)) ;; update last layer
-              #(reduce setup-fruit-arcreflex-in-direction! % ge/directions))
-      (update (dec (count layers))
-              #(reduce setup-motoinhibition-arcreflex-in-direction! % ge/directions))))
 
 (defn- update-synapse
   "Updates pattern & weight at a single position in a layer. Accepts
