@@ -10,52 +10,8 @@
             [mzero.ai.players.common :refer [ones zeros-matr zeros]]
             [mzero.ai.players.network :as mzn]))
 
-(defn- pattern-distance-matrix!
-  "Compute the layers' *weighted pattern distance matrix*, in
-  `working-matrix`, from the input vector with each neuron represented
-  by a col of matrix `patterns` (and weights, not used here)."
-  ([inputs patterns working-matrix]
-   (let [substract-inputs-to-cols!
-         #(nc/rk! -1 inputs (ones (nc/ncols patterns)) %)]
-     (-> (nc/copy! patterns working-matrix)
-         substract-inputs-to-cols!
-         nvm/abs!)))
-  ([{:as layer,
-     :keys [::mzn/inputs ::mzn/patterns ::mzn/working-matrix]}]
-   (pattern-distance-matrix! inputs patterns working-matrix)
-   layer))
-
 (def s "Activation threshold" 0.2)
 (def decrease-factor (- (/ (- 1.0 s) s)))
-
-(defmulti proximity-matrix!
-  "Computes the proximity matrix in-place given a pattern distance
-  matrix `working-matrix`"
-  #(if (::mzn/working-matrix %) :layer :working-matrix))
-
-(defmethod proximity-matrix! :working-matrix
-  [working-matrix]
-  (let [m (nc/mrows working-matrix) n (nc/ncols working-matrix)]
-    (->> working-matrix
-         (nc/scal! decrease-factor)
-         (nc/rk! (ones m) (ones n))
-         (#(nvm/fmax! % (zeros-matr m n))))))
-
-(defmethod proximity-matrix! :layer
-  [l]
-  (proximity-matrix! (::mzn/working-matrix l))
-  l)
-
-(defn- unactivated-outputs!
-  "Compute outputs from `working-matrix` before activating them with OMR,
-  by doing a `weights`ed sum of every column of
-  `working-matrix`. `outputs` is changed."
-  ([working-matrix weights outputs]
-   (-> (map nc/dot (nc/cols weights) (nc/cols working-matrix))
-       (nc/transfer! outputs)))
-  ([{:as layer, :keys [::mzn/working-matrix ::mzn/weights ::mzn/outputs]}]
-   (unactivated-outputs! working-matrix weights outputs)
-   layer))
 
 (defn- omr!
   "Computes offsetted max-relu activation function, see
@@ -88,33 +44,9 @@
   using their previous layer's old output."
   [layers inputs]
   (nc/transfer! inputs (-> layers first ::mzn/inputs))
+  (doseq [layer layers] (nc/scal! 0 (-> layer ::mzn/outputs)))
   (let [layer-pass
-        (fn [layer]
-          (-> (pattern-distance-matrix! layer)
-              proximity-matrix!
-              unactivated-outputs!
-              ::mzn/outputs omr!))]
+        (fn [{:keys [::mzn/inputs ::mzn/weights ::mzn/outputs] :as layer}]
+          (-> (nc/mv! (nc/trans weights) inputs outputs)
+              omr!))]
     (last (map layer-pass layers))))
-
-(defn simultaneous-forward-pass!
-  "Run the network of `layers`. Return the `outputs` of the last
-  layer. Almost everything in `layers` is changed.
-
-  This pass is deemed simultaneous because all layers are computed at
-  once, using their previous layer's old output, rather than layers
-  computed in turn from first to last, with each layer using the
-  new value of its previous layer's output.
-
-  The pass has 2 steps:
-
-  - First step uses layers' inputs to compute the working matrix: inputs
-  are read but not written to;
-
-  - Second step uses the working matrix to compute
-  outputs (i.e. inputs of next layer): inputs are written to but not
-  read."
-  [layers inputs]
-  (nc/transfer! inputs (-> layers first ::mzn/inputs))
-  (doall (pmap (comp proximity-matrix! pattern-distance-matrix!) layers))
-  (last (pmap (comp omr! ::mzn/outputs unactivated-outputs!)
-              layers)))

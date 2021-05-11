@@ -1,18 +1,21 @@
 # Todo
+- réflexe de mouvement aléatoire (conf. l'aléatoire hors renf) à refaire
+  - et réactiver m00-randomness, random-move-test, m00-instrum-test
+- dès que ça retombe, après 18, utilise la soft energy pour faire le boulout moy de trier / gérer / màj tes docs d'archi
 
 # Backlog  - v0.2.6 - M0.0.2
-### Coding roadmap for  ~ 2 - 3 days, then 1-2w then 1-2m...
-- passage en perceptron
-  - check gflops increase
-- passage à une couche (confirme via lecture)
-- ajouter le réflexe de renf sup
-  - renf sup : créer ou renforcer les synapses activées, inhiber les synapses désactivées
-- commencer avec 1 seul layer et rajouter des layers post convergence
-  - ajouter le temporel à ce layer
-- entrainement sur quelques centaines de millions de mouvements
-  - suffisamment rapide = viser 100K coups / seconde = 100 coups / ms
-  - développer les tools autour de ça
-
+- il faut avoir la vue d'un apprentissage du mouvement
+  - comment initialisation
+	- au début, un peu tout lié à tout pour laisser le temps au temps
+	  - càd: weight = 1/nb neurs
+	- réflexe de mouvement aléatoire
+  - comment temporalisation
+	- couche n+1 branchée au double de la couche n incluant les valeurs précédentes (triple, quadruple, quintuple si on augmente la temporalisation)
+  - comment renfo : 
+	- neurones activés : renforcer ce qui les excite et dégrader ce qui les inhibe
+	- neurones inactivés : idem dans l'autre sens, renforcer les inhibition et dégrader les excitations
+	- application à toutes les couches
+	- décroissance exp en fonction de la hauteur de couche
 
 # Icebox
 ## Vitesse

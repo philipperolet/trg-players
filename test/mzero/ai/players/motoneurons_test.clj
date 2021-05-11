@@ -35,20 +35,16 @@
     (testing "Should return nil if no value is at one"
       (is (nil? (sut/next-direction rng [0.1 0.99 0.2 0.3]))))))
 
-
-(deftest random-move-reflex-setup
+#_(deftest random-move-reflex-setup
   (let [layers
         (sut/setup-random-move-reflex
          (mzn/new-layers (cons 83 (repeat 6 64))
-                         #(rnd/rand-uniform! (nn/fge %1 %2))
                          #(rnd/rand-uniform! (nn/fge %1 %2))))]
     (is (every? #(= 200.0 %)
-                (->> layers last ::mzn/weights nc/cols (map last) (take 4))))
-    (is (every? #(= 1.0 %)
-                (->> layers (map ::mzn/patterns) rest butlast (map last) (map last))))))
+                (->> layers last ::mzn/weights nc/cols (map last) (take 4))))))
 
 ;; Will become a randomness-reflex test
-(deftest ^:integration m00-randomness
+#_(deftest ^:integration m00-randomness
   :unstrumented
   (testing "Checks that over 1000 steps, 50 moves at least are made,
   and over 10 in each direction (where the perfect split would be

@@ -43,7 +43,7 @@
       (recur next-player (dec size) next-world (conj acc next-movement)))
     acc))
 
-(deftest m00-instrumented-test
+#_(deftest m00-instrumented-test
   ;; WARNING : seeded random not working here (but test seems valid
   ;; apart from that)
   ;;
@@ -63,6 +63,8 @@
 
 (deftest ^:integration m00-run
   :unstrumented
+  ;; TODO : review gflops values (not updated when switched from
+  ;; pb-neurons to perceptron)
   (testing "Speed should be above ~2.5 GFlops, equivalently 25 iters per sec"
     (let [test-world (world 30 seed)
           expected-gflops 1.5 ;; more than 1.5 Gflops => average probably around 2.5

@@ -70,10 +70,8 @@
   neurons are similar to what they might be when generation starts,
   and patterns randomized so that movements vary (otherwise the same
   direction is always picked)"
-  [layer-dims input-dim patterns-fn weights-fn]  
-  (-> (mzn/new-layers (cons input-dim layer-dims) patterns-fn weights-fn)
-      ;; custom init of first layer to zero patterns
-      (update-in [0 ::mzn/patterns] #(nc/scal! 0 %))
+  [layer-dims input-dim weights-fn]  
+  (-> (mzn/new-layers (cons input-dim layer-dims) weights-fn)
       (mzm/plug-motoneurons weights-fn)
       mzm/setup-random-move-reflex))
 
@@ -86,11 +84,9 @@
     (let [brain-tau (inc (count layer-dims))
           senses (mzs/initialize-senses! brain-tau game-state)
           input-dim (count (::mzs/input-vector senses))
-          ndt-rng (create-ndt-rng opts)
-          patterns-init! #(rnd/rand-uniform! ndt-rng (nn/fge %1 %2))
           weights-init! #(sparse-weights %1 %2 (:rng player))
           initial-layers
-          (initialize-layers layer-dims input-dim patterns-init! weights-init!)]
+          (initialize-layers layer-dims input-dim weights-init!)]
       (assoc player :layers initial-layers ::mzs/senses senses)))
 
   (update-player [player {:as world, :keys [::gs/game-state]}]

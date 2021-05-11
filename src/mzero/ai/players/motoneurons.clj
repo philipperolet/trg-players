@@ -34,19 +34,18 @@
   "Updates pattern & weight at a single position in a layer. Accepts
   signed `srow` & `scol` indices, -1 being converted to the last index,
   etc."
-  [layer srow scol pattern weight]
-  (let [row (if (nat-int? srow) srow (+ (nc/mrows (-> layer ::mzn/patterns)) srow))
-        col (if (nat-int? scol) scol (+ (nc/ncols (-> layer ::mzn/patterns)) scol))]
+  [layer srow scol weight]
+  (let [row (if (nat-int? srow) srow (+ (nc/mrows (-> layer ::mzn/weights)) srow))
+        col (if (nat-int? scol) scol (+ (nc/ncols (-> layer ::mzn/weights)) scol))]
     (-> layer
-        (update ::mzn/patterns nr/entry! row col pattern)
         (update ::mzn/weights nr/entry! row col weight))))
 
 (def rmr-weight "Random move reflex weight" 200.0)
 (def rmr-neuron "Index of neuron used for rand move reflex" -1)
 
-(defn update-rmr-intermediate-layers
+(defn- update-rmr-intermediate-layers
   [layers]
-  (reduce #(update %1 %2 update-synapse rmr-neuron rmr-neuron 1 rmr-weight)
+  (reduce #(update %1 %2 update-synapse rmr-neuron rmr-neuron rmr-weight)
           layers
           (range 1 (dec (count layers))))) ;; first & last layers not updated
 
@@ -54,12 +53,13 @@
   "Reflex to move randomly when player has not moved for a
   while--relying on motoception so the while length is defined by
   motoception-persistence"
-  [layers]
-  (let [update-last-layer-direction
-        #(update-synapse %1 rmr-neuron (col-index %2) 1 rmr-weight)] 
+    [layers]
+  layers
+  #_(let [update-last-layer-direction
+        #(update-synapse %1 rmr-neuron (col-index %2) rmr-weight)] 
     (-> layers
         ;; Detect motoception at 0, meaning no movement has occured for a while
-        (update 0 update-synapse mzs/motoception-index rmr-neuron 0 rmr-weight)
+        (update 0 update-synapse mzs/motoception-index rmr-neuron rmr-weight)
         ;; 1-neuron chain for all intermediate-layers
         update-rmr-intermediate-layers
         ;; last layer: for each direction, urge to move
@@ -74,7 +74,6 @@
   [layers weights-fn]
   (mzn/append-layer layers
                     motoneuron-number
-                    nn/fge
                     weights-fn))
 
 (s/fdef next-direction

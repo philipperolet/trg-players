@@ -32,10 +32,7 @@
      {:fn-var #'nc/copy! :args [w wm] :cmpl (* dim dim)}
      {:fn-var #'nvm/mul! :args [w2 w wm] :cmpl (* dim dim)}
      {:fn-var #'nvm/abs! :args [wm] :cmpl (* dim dim)}
-     {:fn-var #'nc/rk! :args [-1.0 i (ones (nc/ncols w)) wm] :cmpl (* dim dim)}
-     {:fn-var #'sut/pattern-distance-matrix! :cmpl (* dim dim 4)
-      :args [i p w wm]}
-     {:fn-var #'sut/unactivated-outputs! :args [wm outputs] :cmpl (* dim dim 2)}]))
+     {:fn-var #'nc/rk! :args [-1.0 i (ones (nc/ncols w)) wm] :cmpl (* dim dim)}]))
 
 (defn- op-for-dim
   [dim op-to-time]
@@ -56,8 +53,6 @@
          {:fn-var #'nvm/fmax! :cmpl (* dim dim) :args []}
          {:fn-var #'nc/scal! :cmpl (* dim dim) :args [1.001 w]}
          {:fn-var #'nn/fge :cmpl (* dim dim) :args [dim dim]}
-         {:fn-var #'sut/unactivated-outputs! :cmpl (* dim dim)
-          :args [w w2 (nn/fv dim)]}
          {:fn-var #'nc/mm! :cmpl (* dim dim) :args [w (nn/fgd dim (repeat dim 1.001))]}]]
     (first (filter #(= (:fn-var %) op-to-time) ops-list))))
 

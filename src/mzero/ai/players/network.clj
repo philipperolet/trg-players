@@ -21,17 +21,6 @@
                (comment "At least a non-0 val per neuron (column)")
                (every? #(pos? (nc/asum %)) (nc/cols m))))))
 
-(s/def ::patterns
-  (-> nc/matrix?
-      (s/and (mzc/per-element-spec ::neural-value)
-             #(s/valid? ::dimension (nc/mrows %))
-             #(s/valid? ::dimension (nc/ncols %)))))
-
-(s/def ::working-matrix (-> nc/matrix?
-                            (s/and #(mzc/values-in? % 0.0 Float/MAX_VALUE)
-                                   #(s/valid? ::dimension (nc/ncols %))
-                                   #(s/valid? ::dimension (nc/mrows %)))))
-
 (s/def ::neural-vector (-> nc/vctr?
                            (s/and (mzc/per-element-spec ::neural-value)
                                   #(s/valid? ::dimension (nc/dim %)))))
@@ -40,13 +29,11 @@
 (s/def ::outputs ::neural-vector)
 
 (s/def ::layer
-  (-> (s/keys :req [::weights ::patterns ::inputs ::outputs ::working-matrix])
+  (-> (s/keys :req [::weights ::inputs ::outputs])
       (s/and
-       (fn [{:keys [::weights ::patterns ::inputs ::outputs ::working-matrix]}]
+       (fn [{:keys [::weights ::inputs ::outputs]}]
          (comment "Dimensions fit")
-         (and (= (nc/dim weights) (nc/dim patterns) (nc/dim working-matrix))
-              (= (nc/mrows weights) (nc/mrows patterns) (nc/mrows working-matrix))
-              (= (nc/dim inputs) (nc/mrows weights))
+         (and (= (nc/dim inputs) (nc/mrows weights))
               (= (nc/dim outputs) (nc/ncols weights)))))))
 
 (s/def ::layers
@@ -58,17 +45,15 @@
                  layers)))))
 
 (defn- new-unplugged-layer
-  [m n patterns-fn weights-fn]
+  [m n weights-fn]
   (hash-map ::inputs nil
             ::weights (weights-fn m n)
-            ::patterns (patterns-fn m n)
-            ::working-matrix (nn/fge m n)
             ::outputs (nn/fv n)))
 
 (defn append-layer
-  [layers new-dim patterns-fn weights-fn]
+  [layers new-dim weights-fn]
   (-> (new-unplugged-layer (nc/dim (::outputs (last layers))) new-dim
-                           patterns-fn weights-fn)
+                           weights-fn)
       (assoc ::inputs (::outputs (last layers)))
       (#(conj layers %))))
 
@@ -81,7 +66,6 @@
 
 (s/fdef new-layers
   :args (s/cat :dimensions (s/every ::dimension :min-count 2)
-               :patterns-fn matrix-generating-fn-spec
                :weights-fn matrix-generating-fn-spec)
   :ret ::layers
   :fn (fn [{{:keys [dimensions]} :args, layers :ret}]
@@ -94,14 +78,14 @@
   
   `dimensions` is the list of number of units in the layers; elt 0 is
   the input dimension, elt 1 the number of units in the first layer,
-  etc.  `patterns-fn` and `weights-fn` create new matrices of size
+  etc.  `weights-fn` create new matrices of size
   `m`*`n` (their 2 args) "
-  [dimensions patterns-fn weights-fn]
+  [dimensions weights-fn]
   {:pre [(>= (count dimensions) 2) (every? #(s/valid? ::dimension %) dimensions)]}
   (let [[input-dim first-dim & next-dims] dimensions
         first-layer
-        (-> (new-unplugged-layer input-dim first-dim patterns-fn weights-fn)
+        (-> (new-unplugged-layer input-dim first-dim weights-fn)
             (assoc ::inputs (nn/fv input-dim)))
         append-random-init-layer
-        #(append-layer %1 %2 patterns-fn weights-fn)]
+        #(append-layer %1 %2 weights-fn)]
     (reduce append-random-init-layer [first-layer] next-dims)))
