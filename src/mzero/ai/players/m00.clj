@@ -65,15 +65,32 @@
     (rnd/rng-state nn/native-float seed)
     (rnd/rng-state nn/native-float)))
 
+(defn- reset-b-values
+  "Set the last value of each layer's input vector to 1.
+
+  Therefore, the last value of a layer's input represents the `b` in
+  perceptron computation `w.x+b`"
+  [layers]
+  (doseq [layer-input (map ::mzn/inputs layers)]
+    (nc/entry! layer-input (dec (nc/dim layer-input)) 1.0))
+  layers)
+
 (defn- initialize-layers
   "Initialize layers, with inner layers' weights sparsified, so that
   neurons are similar to what they might be when generation starts,
   and patterns randomized so that movements vary (otherwise the same
-  direction is always picked)"
-  [layer-dims input-dim weights-fn]  
-  (-> (mzn/new-layers (cons input-dim layer-dims) weights-fn)
-      (mzm/plug-motoneurons weights-fn)
-      mzm/setup-random-move-reflex))
+  direction is always picked).
+
+  Layer and input dimensions are increased of 1 to allow for b in
+  w.x+b perceptron formula. Later, propagation ensures it is always
+  set to 1."
+  [layer-dims input-dim weights-fn]
+  (let [dimensions (map inc (cons input-dim layer-dims))]
+    (-> (mzn/new-layers dimensions weights-fn)
+        (mzm/plug-motoneurons weights-fn)
+        mzm/setup-random-move-reflex)))
+
+
 
 (defrecord M00Player []
   aip/Player
@@ -100,6 +117,7 @@
                 (mzm/next-direction (:rng player))
                 (assoc % :next-movement))]
       
-      (as-> player p
-        (update p ::mzs/senses mzs/update-senses world p)
-        (make-move p)))))
+      (-> player 
+          (update ::mzs/senses mzs/update-senses world player)
+          (update :layers reset-b-values)
+          make-move))))

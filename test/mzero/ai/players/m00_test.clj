@@ -9,11 +9,13 @@
             [mzero.ai.main :as aim]
             [mzero.ai.players.m00 :as sut]
             [mzero.ai.players.network :as mzn]
+            
             [uncomplicate.neanderthal.random :as rnd]
             [uncomplicate.neanderthal.native :as nn]
             [uncomplicate.neanderthal.vect-math :as nvm]
             [uncomplicate.neanderthal.core :as nc]
-            [clojure.data.generators :as g]))
+            [clojure.data.generators :as g]
+            [mzero.ai.players.senses :as mzs]))
 
 (def seed 44)
 (deftest sparsify-test
@@ -60,6 +62,61 @@
           dl-updates
           (u/timed (run-n-steps m00-player 50 test-world []))]
       (is (<= 3 (count (remove nil? (second dl-updates))))))))
+
+(deftest m00-player-computation-check
+  (testing "Computation is correct on a few hand-adjusted
+  weights (purpose is to test addition of 1-valued `b` at end of each
+  layer's input)"
+    ;;Player viz after 5 steps
+    ;;|### o|
+    ;;|#    |
+    ;;| o@  |
+    ;;|     |
+    ;;|  o  |
+    (with-redefs [mzs/vision-depth 2
+                  mzs/visible-matrix-edge-size 5
+                  mzs/input-vector-size 29
+                  mzs/motoception-index 25
+                  mzs/satiety-index 26
+                  mzs/aleaception-index 27]
+      (let [test-world (world 30 seed)
+            m00-opts {:seed seed :layer-dims [128]}
+            game-opts
+            (aim/parse-run-args "-v WARNING -n %d -t m00 -o'%s'" 5 m00-opts)
+            {:keys [world player]} (aim/run game-opts test-world)
+            expected-visible-vector
+            (->> [1 1 1 0 0.5 1 0 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0.5 0 0]
+                 (map float)
+                 vec)
+            weights1 ;; computation should yield 0
+            (-> (vec (repeat (inc mzs/input-vector-size) 0))
+                (assoc 0 0.5
+                       1 0.5
+                       3 1
+                       4 3
+                       mzs/input-vector-size -5))
+            weights2 ;; computation should yield 1
+            (-> (vec (repeat (inc mzs/input-vector-size) 0))
+                (assoc 0 -0.5
+                       1 -0.5
+                       3 -1
+                       4 -3
+                       mzs/input-vector-size 5))
+            weights3 ;; computation should yield activation-fn(0.85)
+            (-> (vec (repeat (inc mzs/input-vector-size) 0))
+                (assoc 0 0.1
+                       3 1
+                       4 0.5
+                       mzs/input-vector-size 0.5))
+            three-weights-lines
+            (->> player :layers first ::mzn/weights nc/cols (take 3))]
+        ;; copy weights
+        (doall (map nc/transfer! [weights1 weights2 weights3] three-weights-lines))
+        (is (map u/almost=
+                 (->> (aip/update-player player world)
+                      :layers first ::mzn/outputs
+                      (take 3))
+                 [0 1 0.85]))))))
 
 (deftest ^:integration m00-run
   :unstrumented

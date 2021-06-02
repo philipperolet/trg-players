@@ -1,8 +1,8 @@
 # Todo
-- ajout des sens aléatoires
-  - tests
-  - doc
-- réflexe de mouvement aléatoire (conf. l'aléatoire hors renf) à refaire, avec un b
++ ajout des sens aléatoires
++ ajouter un b
+  + tests, doc
+- réflexe de mouvement aléatoire (conf. l'aléatoire hors renf) à refaire
   - et réactiver m00-randomness, random-move-test, m00-instrum-test
 - passer le truc en mxnet
 
