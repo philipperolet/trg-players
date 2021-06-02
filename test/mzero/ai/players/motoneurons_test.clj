@@ -1,25 +1,24 @@
 (ns mzero.ai.players.motoneurons-test
-  (:require [mzero.ai.players.motoneurons :as sut]
-            [clojure.test :refer [is testing]]
-            [mzero.utils.testing :refer [deftest check-spec]]
+  (:require [clojure.test :refer [is testing]]
+            [mzero.ai.players.motoneurons :as sut]
+            [mzero.utils.testing :refer [check-spec deftest]]
             [mzero.utils.utils :as u]
-            [mzero.ai.main :as aim]
-            [mzero.game.state :as gs]
-            [mzero.game.board :as gb]
-            [mzero.game.generation :as gg]
-            [mzero.ai.world :as aiw]
-            [uncomplicate.neanderthal.native :as nn]
-            [mzero.ai.players.network :as mzn]
             [uncomplicate.neanderthal.core :as nc]
-            [mzero.ai.players.senses :as mzs]
-            [uncomplicate.neanderthal.random :as rnd]
-            [mzero.ai.player :as aip]
-            [mzero.game.events :as ge]))
+            [mzero.ai.players.network :as mzn]
+            [mzero.ai.world :as aiw]))
 
 (check-spec `sut/next-direction)
 (def seed 30)
 
 (deftest next-direction-test
+  (doseq [[motos dir] [[[0 0 0 0] nil]
+                       [[-1 0 0.5 0] :down]
+                       [[0.15 0.1 0.14 0.11] nil]
+                       [[5.0 5.0 0 0] nil]
+                       [[5.0 0.1 0.1 -6.0] :up]]]
+    (is (= (sut/next-direction (vec (map double motos))) dir))))
+
+#_(deftest next-direction-test
   (let [rng (java.util.Random. seed)
         random-10000-freqs
         (->> #(sut/next-direction rng [1.0 0.4 1.0 0.99])

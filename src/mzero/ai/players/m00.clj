@@ -76,10 +76,8 @@
   layers)
 
 (defn- initialize-layers
-  "Initialize layers, with inner layers' weights sparsified, so that
-  neurons are similar to what they might be when generation starts,
-  and patterns randomized so that movements vary (otherwise the same
-  direction is always picked).
+  "Initialize layers with given `layer-dims` and `input-dim`, using
+  weight initialization function `weights-fn`
 
   Layer and input dimensions are increased of 1 to allow for b in
   w.x+b perceptron formula. Later, propagation ensures it is always
@@ -101,6 +99,10 @@
     (let [brain-tau (inc (count layer-dims))
           senses (mzs/initialize-senses! brain-tau game-state (:rng player))
           input-dim (count (::mzs/input-vector senses))
+          ;; Inner layers' weights are sparsified, so that neurons are
+          ;; similar to what they might be when generation starts, and
+          ;; patterns randomized so that movements vary (otherwise the
+          ;; same direction is always picked).
           weights-init! #(sparse-weights %1 %2 (:rng player))
           initial-layers
           (initialize-layers layer-dims input-dim weights-init!)]
@@ -114,7 +116,7 @@
           make-move
           #(->> (player-forward-pass %)
                 seq
-                (mzm/next-direction (:rng player))
+                mzm/next-direction
                 (assoc % :next-movement))]
       
       (-> player 

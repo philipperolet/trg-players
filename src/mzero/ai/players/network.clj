@@ -21,12 +21,21 @@
                (comment "At least a non-0 val per neuron (column)")
                (every? #(pos? (nc/asum %)) (nc/cols m))))))
 
-(s/def ::neural-vector (-> nc/vctr?
-                           (s/and (mzc/per-element-spec ::neural-value)
-                                  #(s/valid? ::dimension (nc/dim %)))))
+;; Theoretically, a layer's output vector should be spec'ed like an
+;; input (bounded by 0.0 and 1.00) except for the last layer, whose
+;; output vector may not have gone through an activation function (so
+;; any float value goes). So, output vector is unconstrained, but
+;; since for intermediate layers, outputs are inputs of the next
+;; layer, intermediate outputs are indeed indirectly spec'ed as
+;; between 0.0 and 1.0
 
-(s/def ::inputs ::neural-vector)
-(s/def ::outputs ::neural-vector)
+(s/def ::inputs (-> nc/vctr?
+                    (s/and (mzc/per-element-spec ::neural-value)
+                           #(s/valid? ::dimension (nc/dim %)))))
+
+(s/def ::outputs (-> nc/vctr?
+                     (s/and (mzc/per-element-spec float?)
+                            #(s/valid? ::dimension (nc/dim %)))))
 
 (s/def ::layer
   (-> (s/keys :req [::weights ::inputs ::outputs])

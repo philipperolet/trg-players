@@ -3,7 +3,7 @@
 + ajouter un b
   + tests, doc
 + absence d'af pour les motoneurones
-- next-direction correspondant à l'absence d'af: maximum (mais seuil min)
++ next-direction correspondant à l'absence d'af: maximum (mais seuil min)
 - réflexe de mouvement aléatoire (conf. l'aléatoire hors renf) à refaire
   - et réactiver m00-randomness, random-move-test, m00-instrum-test
 - passer le truc en mxnet

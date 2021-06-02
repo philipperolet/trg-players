@@ -18,11 +18,12 @@
             [uncomplicate.neanderthal.real :as nr]
             [mzero.utils.utils :as u]
             [mzero.ai.players.senses :as mzs]
-            [uncomplicate.neanderthal.native :as nn]))
+            [uncomplicate.neanderthal.native :as nn]
+            [mzero.ai.players.activation :as mza]))
 
 (def motoneuron-number 4)
 
-(s/def ::motoneurons (s/every ::mzn/neural-value :count motoneuron-number))
+(s/def ::motoneurons (s/every double? :count motoneuron-number))
 
 (defn- col-index [direction] (.indexOf ge/directions direction))
 
@@ -77,17 +78,16 @@
                     weights-fn))
 
 (s/fdef next-direction
-  :args (s/cat :rng (-> (partial instance? java.util.Random)
-                        (s/with-gen #(gen/return (java.util.Random.))))
-               :motoneurons ::motoneurons)
+  :args (s/cat :motoneurons ::motoneurons)
   :ret (s/or :direction ::ge/direction
              :nil nil?))
 
 (defn next-direction
-  "Next direction is chosen by picking randomly among neurons whose
-  value is one, nil if no value is > 1"
-  [rng motoneurons]
-  (binding [g/*rnd* rng]
-    (when-let [directions-indices
-               (seq (keep-indexed #(when (>= %2 1.0) %1) motoneurons))]
-      (nth ge/directions (g/rand-nth directions-indices)))))
+  "Next direction is chosen by picking the motoneuron with the largest
+  value above the activation threshold. If no value is above, or if 2
+  values are equal, no direction is picked."
+  [motoneurons]
+  (let [max-value (apply max motoneurons)]
+    (when (and (< (count (filter #{max-value} motoneurons)) 2)
+               (> max-value mza/s))
+      (nth ge/directions (.indexOf motoneurons max-value)))))
