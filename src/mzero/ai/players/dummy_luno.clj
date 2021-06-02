@@ -61,7 +61,7 @@
   aip/Player
   (init-player [player opts {:keys [::gs/game-state]}]
     (let [brain-tau 5 ;; brain-tau not relevant for dummy-luno, any value is fine
-          senses (mzs/initialize-senses! brain-tau game-state) 
+          senses (mzs/initialize-senses! brain-tau game-state (java.util.Random. (:seed opts))) 
           hl-size (:hidden-layer-size opts dl-default-hidden-layer-size)
           rng (if-let [seed (:seed opts)]
                 (rnd/rng-state native-float seed)

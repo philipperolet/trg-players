@@ -9,8 +9,7 @@
             [mzero.game.generation :as gg]
             [mzero.game.board :as gb]
             [mzero.ai.main :as aim]
-            [mzero.utils.utils :as u]
-            [mzero.ai.players.senses :as mzs]))
+            [mzero.utils.utils :as u]))
 
 (check-spec `sut/update-senses-data
             {:clojure.spec.test.check/opts {:num-tests 50}})
@@ -78,12 +77,19 @@
           (is (u/almost= 0.975 (sut/motoception (-> iter-5 senses-of-iter))))
           (is (= 0.0 (sut/motoception (-> iter-10 senses-of-iter)))))))))
 
+(deftest new-aleaception-test
+  (testing "Generate correctly 2 random 0-1 floats, properly seeded"
+    (let [rnd (java.util.Random. 41)]
+      (is (= (#'sut/new-aleaception rnd) [0.727294921875 0.8617618680000305]))
+      (is (= (#'sut/new-aleaception rnd)  [0.19185662269592285 0.4512230157852173])))))
+
 (deftest ^:integration update-senses-test
   (with-redefs [sut/vision-depth 2
                 sut/visible-matrix-edge-size 5
-                sut/input-vector-size 27
+                sut/input-vector-size 29
                 sut/motoception-index 25
-                sut/satiety-index 26]
+                sut/satiety-index 26
+                sut/aleaception-index 27]
     (let [player-options
           "{:seed 40}"
           run-args
@@ -93,19 +99,22 @@
           (aim/run run-args (world 25 41))]
       (testing "Correct update of senses data in player"
         ;; new vision is as follows
+        ;; |  #o |
+        ;; |  # o|
+        ;; |  @  |
         ;; |     |
         ;; |     |
-        ;; |  @ o|
-        ;; |#  ##|
-        ;; |# ###|
-        (is (= (sut/update-senses (:senses player) world player)
-               #::sut{:input-vector (vec (concat (repeat 14 0.0)
-                                                 [0.5 1.0 0.0 0.0 1.0 1.0]
-                                                 [1.0 0.0 1.0 1.0 1.0]
-                                                 [1.0 0.24525345171117205]))
-                      :params {::sut/brain-tau 5}
+        (is (= (dissoc (sut/update-senses (:senses player) world player) ::sut/params)
+               #::sut{:input-vector (vec (concat [0.0 0.0 1.0 0.5 0.0]
+                                                 [0.0 0.0 1.0 0.0 0.5]
+                                                 [0.0 0.0 0.0 0.0 0.0]
+                                                 [0.0 0.0 0.0 0.0 0.0]
+                                                 [0.0 0.0 0.0 0.0 0.0]
+                                                 [1.0 0.0]
+                                                 [0.15973079204559326
+                                                  0.16758990287780762]))
                       :data {::sut/previous-score 1
-                             ::sut/last-move :right
+                             ::sut/last-move :up
                              ::gs/game-state (::gs/game-state world)}}))))))
 
 (deftest vision-cell-index

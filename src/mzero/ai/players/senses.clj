@@ -1,7 +1,7 @@
 (ns mzero.ai.players.senses
   "Module to compute player senses given world and player data at a
   given time, as a float-valued `::input-vector`containing valid
-  neural values (see activation.clj).
+  `::neural-value`s (see network.clj).
 
   Senses are the part of the player interfacing between the player's
   brain and the rest of the world.
@@ -13,6 +13,8 @@
   it doesn't;
   - its `motoception`, short for motricity perception, which activates
   when it moves and stays on for a while
+  - its `aleaception`, random perception, 2 floats in [0,1[ with a new
+  random value each time.
 
   Senses comprise:
   - `::input-vector` fed to the player brain;
@@ -22,7 +24,7 @@
 
   The module provide functions `initialize-senses!` and `udpate-senses`.
 
-  See arch minor for more details."
+  See arbre & version docs for more details."
   (:require [mzero.game.board :as gb]
             [clojure.spec.alpha :as s]
             [mzero.utils.modsubvec :refer [modsubvec]]
@@ -30,7 +32,8 @@
             [clojure.spec.gen.alpha :as gen]
             [mzero.ai.players.network :as mzn]
             [mzero.game.events :as ge]
-            [mzero.utils.utils :as u]))
+            [mzero.utils.utils :as u]
+            [clojure.data.generators :as g]))
 
 ;; Brain time constant
 (s/def ::brain-tau (s/int-in 1 200))
@@ -163,14 +166,22 @@
       (> new-satiety 1) 1.0
       :else new-satiety)))
 
+;; Aleaception
+;;;;;;;;;;;;;;
+(def aleaception-index (inc satiety-index))
+(defn- new-aleaception
+  "Compute aleaception given a RNG : 2 floats between 0 and 1"
+  [rng]
+  (binding [g/*rnd* rng]
+    [(g/float) (g/float)]))
 
 ;; Input vector
 ;;;;;;;;;;;;;;;;
 
 (def input-vector-size
   "Size of senses vector = number of visible cells + 1 (satiety) +
-  1 (motoception)"
-  (int (+ 2 (Math/pow visible-matrix-edge-size 2))))
+  1 (motoception) + 2 (aleaception)"
+  (int (+ 4 (Math/pow visible-matrix-edge-size 2))))
 
 (s/def ::input-vector
   (-> (s/every ::mzn/neural-value :kind vector? :count input-vector-size)
@@ -184,8 +195,8 @@
                (fn [sv]
                  (comment "Vector must have a valid motoception")
                  (s/valid? ::motoception (motoception sv))))))
-
-(s/def ::params (s/keys :req [::brain-tau]))
+(s/def ::rng #(instance? java.util.Random %))
+(s/def ::params (s/keys :req [::brain-tau ::rng]))
 (s/def ::data (s/keys :req [::previous-score ::gs/game-state ::last-move]))
 
 (defn- update-data
@@ -207,28 +218,30 @@
 
 (defn- update-input-vector
   [old-input-vector
-   {:as params, :keys [::brain-tau]}
+   {:as params, :keys [::brain-tau ::rng]}
    {:as data, :keys [::previous-score ::last-move]
     {:keys [::gb/game-board ::gs/player-position ::gs/score]} ::gs/game-state}]
-  (let [visible-matrix (visible-matrix game-board player-position)]
+  (let [visible-matrix (visible-matrix game-board player-position)
+        [alea1 alea2] (new-aleaception rng)]
     (conj (visible-matrix-vector visible-matrix)
           (new-motoception (motoception old-input-vector) brain-tau last-move)
-          (new-satiety (satiety old-input-vector) previous-score score brain-tau))))
+          (new-satiety (satiety old-input-vector) previous-score score brain-tau)
+          alea1 alea2)))
 
 (s/def ::senses (s/keys :req [::input-vector ::params ::data]))
 
 (defn- initialize-senses
-  [brain-tau game-state]
+  [brain-tau game-state rng]
   {::input-vector (vec (repeat input-vector-size 0.0))
-   ::params {::brain-tau brain-tau}
+   ::params {::brain-tau brain-tau ::rng rng}
    ::data {::previous-score 0
            ::gs/game-state game-state
            ::last-move nil}})
 
 (defn initialize-senses!
-  [brain-tau game-state]
+  [brain-tau game-state rng]
   (if (vision-depth-fits-game? (::gb/game-board game-state))
-    (initialize-senses brain-tau game-state)
+    (initialize-senses brain-tau game-state rng)
     (throw (java.lang.RuntimeException. "Vision depth incompatible w. game board"))))
 
 (defn update-senses

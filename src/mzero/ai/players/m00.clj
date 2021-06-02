@@ -1,5 +1,5 @@
 (ns mzero.ai.players.m00
-  "M0 player, early version. See arch-major/minor."
+  "M0 player, early version. See arbre/version docs."
   (:require [mzero.ai.player :as aip]
             [mzero.ai.players.senses :as mzs]
             [mzero.ai.players.activation :as mza]
@@ -82,7 +82,7 @@
     {:pre [(pos? (count layer-dims))
            (s/valid? (s/every ::mzn/dimension) layer-dims)]}
     (let [brain-tau (inc (count layer-dims))
-          senses (mzs/initialize-senses! brain-tau game-state)
+          senses (mzs/initialize-senses! brain-tau game-state (:rng player))
           input-dim (count (::mzs/input-vector senses))
           weights-init! #(sparse-weights %1 %2 (:rng player))
           initial-layers

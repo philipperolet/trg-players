@@ -1,21 +1,12 @@
 # Todo
-- réflexe de mouvement aléatoire (conf. l'aléatoire hors renf) à refaire
+- ajout des sens aléatoires
+  - tests
+  - doc
+- réflexe de mouvement aléatoire (conf. l'aléatoire hors renf) à refaire, avec un b
   - et réactiver m00-randomness, random-move-test, m00-instrum-test
-- dès que ça retombe, après 18, utilise la soft energy pour faire le boulout moy de trier / gérer / màj tes docs d'archi
+- passer le truc en mxnet
 
-# Backlog  - v0.2.6 - M0.0.2
-- il faut avoir la vue d'un apprentissage du mouvement
-  - comment initialisation
-	- au début, un peu tout lié à tout pour laisser le temps au temps
-	  - càd: weight = 1/nb neurs
-	- réflexe de mouvement aléatoire
-  - comment temporalisation
-	- couche n+1 branchée au double de la couche n incluant les valeurs précédentes (triple, quadruple, quintuple si on augmente la temporalisation)
-  - comment renfo : 
-	- neurones activés : renforcer ce qui les excite et dégrader ce qui les inhibe
-	- neurones inactivés : idem dans l'autre sens, renforcer les inhibition et dégrader les excitations
-	- application à toutes les couches
-	- décroissance exp en fonction de la hauteur de couche
+- dès que ça retombe, après 18, utilise la soft energy pour faire le boulout moy de trier / gérer / màj tes docs d'archi
 
 # Icebox
 ## Vitesse

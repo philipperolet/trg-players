@@ -1,7 +1,7 @@
 (ns mzero.ai.players.activation
-  "Details in arch-major/arch minor.
+  "Details in arbre & version docs.
 
-  Warning: for performance, lots of computations alter
+  Note: for performance, lots of computations alter
   matrices/vectors in place."
   (:require [uncomplicate.neanderthal
              [core :as nc]
@@ -14,8 +14,7 @@
 (def decrease-factor (- (/ (- 1.0 s) s)))
 
 (defn- omr!
-  "Computes offsetted max-relu activation function, see
-  arch-major/minor"
+  "Computes offsetted max-relu activation function, see arbre & version docs"
   [outputs]
   (let [dim (nc/dim outputs)
         nullify-if-lower-than-s
