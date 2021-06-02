@@ -10,9 +10,9 @@
             [clojure.data.generators :as g]
             [uncomplicate.neanderthal.core :as nc]))
 
-(deftest omr-test
+(deftest af-test
   (let [test-vec (nn/fv 0.0 1.0 3.5 0.2 0.19 0.01 0.9 0.8 0.79 -0.5 -9.0)]
-    (#'sut/omr! test-vec)
+    (#'sut/af! test-vec)
     (is (vect= test-vec
                (nn/fv 0.0 1.0 1.0 0.2 0.0 0.0 0.9 0.8 0.79 0.0 0.0)))))
 
@@ -42,17 +42,18 @@
         {::mzn/inputs (nn/fv 3) ;; [.5 .425 1.0] then [.1 .225 0.0]
          ::mzn/weights (nn/fge 3 2 [[-0.3 0.8 1.0] [0.5 2.0 -0.2]])
          ;; unactivated [1.19 0.9] [0.15 0.5]
-         ::mzn/outputs (nn/fv 2)} ;; omr [1.0 0.9] then [0.0 0.5]
+         ::mzn/outputs (nn/fv 2)} ;; af [1.0 0.9] then [0.0 0.5]
         layer2
         {::mzn/inputs (::mzn/outputs layer1)
          ::mzn/weights (nn/fge 2 2 [[0.7 0.7] [2.0 0.1]])
          ;; unactivated [1.33 2.09] then [0.35 0.05]
-         ::mzn/outputs (nn/fv 2)} ;; omr [1.0 1.0] then [0.35 0.0]
+         ::mzn/outputs (nn/fv 2)} ;; af [1.0 1.0] then [0.35 0.0]
         layer3
         {::mzn/inputs (::mzn/outputs layer2)
-         ::mzn/weights (nn/fge 2 2 [[1.0 -0.7] [1.0 -1.0]])
-         ;; unactivated [0.3 0.0] then [0.35 0.35]
-         ::mzn/outputs (nn/fv 2)} ;; omr [0.3 0.0] then [0.35 0.35]
+         ::mzn/weights (nn/fge 2 2 [[6.0 -5.7] [0.3 -0.3]])
+         ;; unactivated [0.3 0.0] then [2.1 0.105]
+         ::mzn/outputs (nn/fv 2)} ;; af [0.3 0.0] then [1.0 0]
+        ;; BUT af not applied on Last layer 
         layers [layer1 layer2 layer3]]
     (sut/sequential-forward-pass! layers '(0.5 0.425 1.0))
     (is (vect= (::mzn/outputs layer1) (nn/fv [1.0 0.9])))
@@ -61,4 +62,4 @@
     (sut/sequential-forward-pass! layers '(0.1 0.225 0.0))
     (is (vect= (::mzn/outputs layer1) (nn/fv [0.0 0.5])))
     (is (vect= (::mzn/outputs layer2) (nn/fv [0.35 0.0])))
-    (is (vect= (::mzn/outputs layer3) (nn/fv [0.35 0.35])))))
+    (is (vect= (::mzn/outputs layer3) (nn/fv [2.1 0.105])))))

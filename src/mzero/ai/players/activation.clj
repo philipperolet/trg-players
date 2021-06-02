@@ -13,8 +13,8 @@
 (def s "Activation threshold" 0.2)
 (def decrease-factor (- (/ (- 1.0 s) s)))
 
-(defn- omr!
-  "Computes offsetted max-relu activation function, see arbre & version docs"
+(defn- af!
+  "Computes activation function, see arbre & version docs"
   [outputs]
   (let [dim (nc/dim outputs)
         nullify-if-lower-than-s
@@ -37,6 +37,8 @@
   "Run the network of `layers`. Return the `outputs` of the last
   layer. Almost everything in `layers` is changed.
 
+  Note : activation function is not applied to last layer.
+  
   This pass is deemed sequential because layers are computed in turn
   from first to last, with each layer using the new value of its
   previous layer's output, rather than being computed all at once,
@@ -44,8 +46,8 @@
   [layers inputs]
   (nc/transfer! inputs (-> layers first ::mzn/inputs))
   (doseq [layer layers] (nc/scal! 0 (-> layer ::mzn/outputs)))
-  (let [layer-pass
+  (let [wxplusb!
         (fn [{:keys [::mzn/inputs ::mzn/weights ::mzn/outputs] :as layer}]
-          (-> (nc/mv! (nc/trans weights) inputs outputs)
-              omr!))]
-    (last (map layer-pass layers))))
+          (-> (nc/mv! (nc/trans weights) inputs outputs)))]
+    (doall (map (comp af! wxplusb!) (butlast layers)))
+    (wxplusb! (last layers))))
