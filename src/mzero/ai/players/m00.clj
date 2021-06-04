@@ -65,16 +65,6 @@
     (rnd/rng-state nn/native-float seed)
     (rnd/rng-state nn/native-float)))
 
-(defn- reset-b-values
-  "Set the last value of each layer's input vector to 1.
-
-  Therefore, the last value of a layer's input represents the `b` in
-  perceptron computation `w.x+b`"
-  [layers]
-  (doseq [layer-input (map ::mzn/inputs layers)]
-    (nc/entry! layer-input (dec (nc/dim layer-input)) 1.0))
-  layers)
-
 (defn- initialize-layers
   "Initialize layers with given `layer-dims` and `input-dim`, using
   weight initialization function `weights-fn`
@@ -86,7 +76,7 @@
   (let [dimensions (map inc (cons input-dim layer-dims))]
     (-> (mzn/new-layers dimensions weights-fn)
         (mzm/plug-motoneurons weights-fn)
-        mzm/setup-random-move-reflex)))
+        #_mzm/setup-random-move-reflex)))
 
 
 
@@ -111,7 +101,8 @@
   (update-player [player {:as world, :keys [::gs/game-state]}]
     (let [player-forward-pass
           #(mza/sequential-forward-pass! (-> % :layers)
-                              (-> % ::mzs/senses ::mzs/input-vector))
+                                         (-> % ::mzs/senses ::mzs/input-vector)
+                                         true)
 
           make-move
           #(->> (player-forward-pass %)
@@ -121,5 +112,4 @@
       
       (-> player 
           (update ::mzs/senses mzs/update-senses world player)
-          (update :layers reset-b-values)
           make-move))))

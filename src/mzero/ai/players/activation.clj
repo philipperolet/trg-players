@@ -27,15 +27,24 @@
 
 (s/fdef simultaneous-forward-pass!
   :args (-> (s/cat :layers ::mzn/layers
-                   :inputs (s/every ::mzn/neural-value))
+                   :inputs (s/every ::mzn/neural-value)
+                   :plusb? (s/? boolean?))
             (s/and (fn [{:keys [inputs layers]}]
                      (comment "Input dimension fits first layer")
                      (= (count inputs) (nc/dim (::mzn/inputs (first layers)))))))
   :ret ::mzn/layers)
 
 (defn sequential-forward-pass!
-  "Run the network of `layers`. Return the `outputs` of the last
-  layer. Almost everything in `layers` is changed.
+  "Run the network of `layers` using an initial seq `inputs`. Return the
+  `outputs` of the last layer. Almost everything in `layers` is
+  changed. 
+
+  For each layers it will compute weights * input and run the
+  activation function. If called with flag `plusb?` on, before
+  processing a layer, it will reset its input's last element to
+  1. This allows computation of `w*x+b` rather than `w*x`, provided
+  the rest of the code is aware that inputs' last elements are
+  dedicated to this use.
 
   Note : activation function is not applied to last layer.
   
@@ -43,11 +52,15 @@
   from first to last, with each layer using the new value of its
   previous layer's output, rather than being computed all at once,
   using their previous layer's old output."
-  [layers inputs]
-  (nc/transfer! inputs (-> layers first ::mzn/inputs))
-  (doseq [layer layers] (nc/scal! 0 (-> layer ::mzn/outputs)))
-  (let [wxplusb!
-        (fn [{:keys [::mzn/inputs ::mzn/weights ::mzn/outputs] :as layer}]
-          (-> (nc/mv! (nc/trans weights) inputs outputs)))]
-    (doall (map (comp af! wxplusb!) (butlast layers)))
-    (wxplusb! (last layers))))
+  ([layers inputs plusb?]
+   (nc/transfer! inputs (-> layers first ::mzn/inputs))
+   (doseq [layer layers] (nc/scal! 0 (-> layer ::mzn/outputs)))
+   (let [wtimesx!
+         (fn [{:keys [::mzn/inputs ::mzn/weights ::mzn/outputs] :as layer}]
+           (nc/mv! (nc/trans weights)
+                   (if plusb? (nc/entry! inputs (dec (nc/dim inputs)) 1.0) inputs)
+                   outputs))]
+     (doall (map (comp af! wtimesx!) (butlast layers)))
+     (wtimesx! (last layers))))
+  ([layers inputs]
+   (sequential-forward-pass! layers inputs false)))

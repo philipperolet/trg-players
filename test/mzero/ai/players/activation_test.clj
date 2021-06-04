@@ -63,3 +63,30 @@
     (is (vect= (::mzn/outputs layer1) (nn/fv [0.0 0.5])))
     (is (vect= (::mzn/outputs layer2) (nn/fv [0.35 0.0])))
     (is (vect= (::mzn/outputs layer3) (nn/fv [2.1 0.105])))))
+
+(deftest sequential-forward-pass-with-b-test
+  (let [layer1
+        {::mzn/inputs (nn/fv 3) ;; [.5 .425 1.0] then [.1 .225 1.0]
+         ::mzn/weights (nn/fge 3 2 [[3.0 -0.5 0.0] [0.5 2.0 -0.2]])
+         ;; unactivated [1.19 0.9] [0.15 0.5]
+         ::mzn/outputs (nn/fv 2)} ;; af [1.0 1.0] then [0.0 1.0]
+        layer2
+        {::mzn/inputs (::mzn/outputs layer1)
+         ::mzn/weights (nn/fge 2 2 [[0.7 0.7] [2.0 0.1]])
+         ;; unactivated [1.4 2.1] then [0.7 0.1]
+         ::mzn/outputs (nn/fv 2)} ;; af [1.0 1.0] then [0.7 1.0]
+        layer3
+        {::mzn/inputs (::mzn/outputs layer2)
+         ::mzn/weights (nn/fge 2 2 [[6.0 -5.7] [0.3 -0.3]])
+         ;; unactivated [0.3 0.0] then [-1.5 -0.09]
+         ::mzn/outputs (nn/fv 2)} ;; af not applied on last layer
+        ;; BUT af not applied on Last layer 
+        layers [layer1 layer2 layer3]]
+    (sut/sequential-forward-pass! layers '(0.5 0.425 1.0) true)
+    (is (vect= (::mzn/outputs layer1) (nn/fv [1.0 1.0])))
+    (is (vect= (::mzn/outputs layer2) (nn/fv [1.0 1.0])))
+    (is (vect= (::mzn/outputs layer3) (nn/fv [0.3 0.0])))
+    (sut/sequential-forward-pass! layers '(0.1 0.225 0.0) true)
+    (is (vect= (::mzn/outputs layer1) (nn/fv [0.0 1.0])))
+    (is (vect= (::mzn/outputs layer2) (nn/fv [0.7 1.0])))
+    (is (vect= (::mzn/outputs layer3) (nn/fv [-1.5 -0.09])))))

@@ -40,7 +40,7 @@
   the :next-movement field, every time a movement is requested."))
 
 (defn request-movement
-  "Updates the player state, and indicates the player wishes "
+  "Update the player state, and indicate the player's move if any."
   [player-state world-state]
   (swap! player-state update-player @world-state)
   (when (-> @player-state :next-movement)
