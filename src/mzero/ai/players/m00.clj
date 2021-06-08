@@ -76,7 +76,7 @@
   (let [dimensions (map inc (cons input-dim layer-dims))]
     (-> (mzn/new-layers dimensions weights-fn)
         (mzm/plug-motoneurons weights-fn)
-        #_mzm/setup-random-move-reflex)))
+        mzm/setup-random-move-reflex!)))
 
 
 

@@ -8,7 +8,12 @@
   - et réactiver m00-randomness, random-move-test, m00-instrum-test
 - passer le truc en mxnet
 
-- dès que ça retombe, après 18, utilise la soft energy pour faire le boulout moy de trier / gérer / màj tes docs d'archi
+## Refact
+- renommer activation.clj en forward.clj
+  - et adapter les refs à l'omr
+- tant pis mais pitié versionne arbre et version
+
+- dès que ça retombe, après 18, utilise la soft energy pour faire le boulot moy de trier / gérer / màj tes docs d'archi
 
 # Icebox
 ## Vitesse
