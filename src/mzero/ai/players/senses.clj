@@ -22,9 +22,13 @@
   - `::data` on the player and the world, updated at each iteration along
   with `::input-vector`.
 
-  The module provide functions `initialize-senses!` and `udpate-senses`.
+  **Brain time constant, brain-tau**
+  Represents the time taken to perceive things in 'brain iterations'
+  -- it is for now the brain depth in # of layers, conditionning
+  persistence for satiety & motoception. In humans, ~ 50ms to perceive
+  things indicate a depth of about 50 for 1ms synapses.
 
-  See arbre & version docs for more details."
+  The module provide functions `initialize-senses!` and `udpate-senses`."
   (:require [mzero.game.board :as gb]
             [clojure.spec.alpha :as s]
             [mzero.utils.modsubvec :refer [modsubvec]]
@@ -43,7 +47,17 @@
 ;; Vision
 ;;;;;;;;;
 
-(def vision-depth 4)
+(def vision-depth
+  "A player's `vision-depth` is the distance up to which it can see a
+  cell content relatively to its current position.
+
+  E.g. a player with vision depth 2 in position [3 0] can see cells [3
+  2], [1 0] or [1 2] but not [3 3] or [0 0].
+
+  Therefore, the player can *see* a square matrix of visible cells of
+  edge length vision-depth*2 + 1."
+  4)
+
 (def visible-matrix-edge-size
   "Edge size of the matrix of visible cells"
   (inc (* vision-depth 2)))
@@ -83,6 +97,18 @@
 
 ;; Motoception
 ;;;;;;;;;;;;;;
+
+"Sens de taille 1, activé lorsque le joueur essaie de bouger
+
+- donc si volonté de mouvement contre un mur, activé quand même (même
+  si pas de mouvement effectif)
+- Reste actif pendant *motoception-persistence* itérations si pas de
+nouveaux movements, désactivé ensuite 
+- similairement à la satiété, *motoception-persistence* dépend de
+*brain-tau* 
+- Si mouvement à nouveau pendant la persistence, on repart pour le
+nombre total d'itérations (cas limite, devrait peu arriver)"
+
 (def min-motoception-activation 0.95)
 (def motoception-activation-value 1.0)
 
@@ -105,7 +131,7 @@
 (defn motoception-persistence [brain-tau] brain-tau)
 
 (defn- new-motoception
-  "Compute the motoception value. See arch minor for details.
+  "Compute the motoception value.
 
   To know if motoception should deactivate, i.e. if
   *motoception-persistence* iterations, computed from `brain-tau`,
@@ -133,6 +159,25 @@
 ;; Satiety
 ;;;;;;;;;;
 
+"Sens de taille 1. Se calcule comme suit (dans `new-satiety`):
+
+- à chaque fruit mangé on ajoute à (< 1) à sa valeur précédente, le *fruit-increment*
+- décroit chaque tour, valeur multipliée par b (< 1)
+- cappé à 1 max, c (< 1) min. c est la *minimal-satiety*
+
+Le sentiment de fruit mangé reste ainsi K tours (eq : a * b^k < c)
+
+Valeurs: on part sur a = 0.3, k ~ 40, c ~ 0.04 => b=0.95
+
+On ajuste k en fonction de la constante de temps du cerveau,
+*brain-tau*, liée à la profondeur du réseau.  La logique sous-jacente
+c'est que la persistence rétinienne doit correspondre à la durée de
+prise de conscience du réseau, càd sa profondeur
+
+Raisonnement : possibilité de manger 4 fruits de suite (après plus
+d'impact), besoin de garder le sens qu'on a mangé un fruit disponible
+pendant quelques tours."
+
 (def minimal-satiety 0.04)
 (def satiety-index (inc motoception-index))
 (s/def ::previous-score ::gs/score)
@@ -154,7 +199,7 @@
 
 (defn- new-satiety
   "Compute satiety from its former value `old-satiety` and whether the
-  score increased at this step. see m0.0.1 arch minor for explanations."
+  score increased at this step."
   [old-satiety previous-score score brain-tau]
   (let [fruit-increment 0.3
         satiety-persistence (default-persistence brain-tau)
@@ -168,6 +213,8 @@
 
 ;; Aleaception
 ;;;;;;;;;;;;;;
+"Sens de taille 2, perception aléatoire."
+
 (def aleaception-index (inc satiety-index))
 (defn- new-aleaception
   "Compute aleaception given a RNG : 2 floats between 0 and 1"

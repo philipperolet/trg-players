@@ -8,7 +8,8 @@
             [mzero.ai.players.senses :as mzs]
             [mzero.game.events :as ge]
             [mzero.ai.players.activation :as mza]
-            [mzero.ai.players.m00 :as m00]))
+            [mzero.ai.players.m00 :as m00]
+            [uncomplicate.neanderthal.native :as nn]))
 
 (check-spec `sut/next-direction)
 (def seed 30)

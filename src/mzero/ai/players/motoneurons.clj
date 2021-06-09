@@ -4,22 +4,24 @@
   A single output value is a `motoneuron`, controlling a single action
   of the player.
 
-  The network has 4 motoneurons, one for each movement in each direction.
+  The network has 4 motoneurons, one for each movement in each
+  direction. Note that motoneuron values, contrarily to other neurons,
+  are unbounded : the activation function was not applied when
+  computing the values.
 
   The main function, `next-direction`, computes the direction to move
-  to given an output vector."
+  to given an output vector.
+
+  The 'random move reflex' (rmr) is also implemented here, in
+  `setup-random-move-reflex!`"
   (:require [clojure.spec.alpha :as s]
-            [mzero.game.events :as ge]
-            [clojure.data.generators :as g]
+            [mzero.ai.players.activation :as mza]
             [mzero.ai.players.network :as mzn]
-            [clojure.spec.gen.alpha :as gen]
-            [uncomplicate.neanderthal.core :as nc]
-            [uncomplicate.neanderthal.random :as rnd]
-            [uncomplicate.neanderthal.real :as nr]
-            [mzero.utils.utils :as u]
             [mzero.ai.players.senses :as mzs]
-            [uncomplicate.neanderthal.native :as nn]
-            [mzero.ai.players.activation :as mza]))
+            [mzero.game.events :as ge]
+            [mzero.utils.utils :as u]
+            [uncomplicate.neanderthal.core :as nc]
+            [uncomplicate.neanderthal.real :as nr]))
 
 (def motoneuron-number 4)
 
@@ -146,7 +148,19 @@
   while--relying on motoception so the while length is defined by
   motoception-persistence.
 
-  There are actually 4 reflexes to setup, 1 for each direction"
+  There are actually 4 reflexes to setup, 1 for each direction.
+
+  In the first layer, 2 neurons compute whether random senses 1 and 2
+  are over 0.5. Then, using motoception, it activates a direction for
+  movement that is propagated to the last layer. Description of the
+  setup is on [this schema](doc/rmr-schema.jpg).
+
+  Note : there can be mishaps in the reflex in rare cases when
+  aleaception 1 and 2 are very close to 0.5, in which case the reflex
+  will not push any direction. The move after, it probably will, since
+  it is very unlikely to have aleaceptions very close to 0.5
+  twice. This is rare and does not seem to have consequences worthy of
+  more effort."
   [layers]
   (let [setup-rmr-last-layer!
         (fn [layer direction]

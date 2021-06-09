@@ -56,7 +56,7 @@
     :validate [map?]]
    ["-L" "--level LEVEL"
     "Level of game, conforming to `:mzero.game.generation/level`"
-    :default {::gg/density-map {:fruit 5}}
+    :default {::gg/density-map {:fruit 15}}
     :parse-fn read-string
     :validate [#(s/valid? ::gg/level %)]]
    ["-r" "--game-runner GAME-RUNNER"

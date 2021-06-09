@@ -1,12 +1,22 @@
 # Todo
-+ ajout des sens aléatoires
-+ ajouter un b
-  + tests, doc
-+ absence d'af pour les motoneurones
-+ next-direction correspondant à l'absence d'af: maximum (mais seuil min)
-- réflexe de mouvement aléatoire (conf. l'aléatoire hors renf) à refaire
-  - et réactiver m00-randomness, random-move-test, m00-instrum-test
+
+## Version suivante
+- check initialization
+- coder le renfo squelette
+- ajouter le renfo calculé mse
 - passer le truc en mxnet
+- vérifier qu'on a la même chose avec les 2
+- permettre entrainement sur plusieurs games, reset tous les 1000 coups
+- métrique de FEM : nombre de mouvements réussis par game
+  - plotter
+- permettre entrainement GPU
+- faire 1 ou 2 grosses XP
+
+## Version N+2
+- faire marcher le FEM
+- Ajouter couche temporelle
+
+
 
 ## Refact
 - renommer activation.clj en forward.clj
