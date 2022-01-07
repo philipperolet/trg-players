@@ -1,7 +1,9 @@
 # Mzero-game deep players
 AI players for the [Mzero Game](https://github.com/sittingbull/mzero-game) using Deep Neural Networks.
 
-Try the Mzero Game (as a human) here: http://pyrinthe.filou.tech/index.html
+Try the Mzero Game (as a human) here: [game.machine-zero.com](https://game.machine-zero.com). Click on the big red question mark to start the game.
+
+**Note**: Game tested on chromium-based and firefox browsers, **not** mobile compliant.
 
 Below are instructions to train currently implemented AI players, plot their performance and watch them play.
 
@@ -90,9 +92,9 @@ Games are capped to `mzero.ai.train/nb-steps-per-game`, defaulting to 5000, and 
 - **:ann-impl**: either an instance of a neural network implementation, or a map of options to generate it:
   - **:computation-mode**: can be one of `:cpu`, `:gpu-cuda` or `:gpu-opencl`;
   - **:ann-impl-name**: the name of the implementation, currently only `neanderthal-impl` is available (see [below](#code-overview) for details);
-  - **:act-fns**: activation function pairs, to be chosen from [src/mzero/ai/ann/activations.clj]();
-  - **:label-distribution-fn**: how to compute proba distributions from the network output, to be chosen from [src/mzero/ai/ann/label_distributions.clj]();
-- **:weight-generation-fn**: function to initialize the networks' weights (independently of the network's implementation), to be chosen from [src/mzero/ai/ann/initialization.clj]();
+  - **:act-fns**: activation function pairs, to be chosen from [activations.clj](src/mzero/ai/ann/activations.clj);
+  - **:label-distribution-fn**: how to compute proba distributions from the network output, to be chosen from [label_distributions.clj](src/mzero/ai/ann/label_distributions.clj);
+- **:weight-generation-fn**: function to initialize the networks' weights (independently of the network's implementation), to be chosen from [initialization.clj](src/mzero/ai/ann/initialization.clj);
 ### Run training from command line
 Training can be run from command line rather than repl:
 ```
@@ -131,30 +133,30 @@ mzero.ai.train> (require '[mzero.ai.main :refer [gon]])
 At each gon invocation, starting and ending game board will be displayed. `gon` with no args or integer arg runs a few steps on the current game. `gon` with string / world / player starts a new game, see [Mzero Game](https://github.com/sittingbull/mzero-game).
 
 ## Code overview
-The entry point to the code is [src/mzero/ai/train.clj](). The M00 player is implemented at [src/mzero/ai/players/m00.clj](). Below are details on other main namespaces.
+The entry point to the code is [train.clj](src/mzero/ai/train.clj). The M00 player is implemented at [src/mzero/ai/players/m00.clj](src/mzero/ai/players/m00.clj). Below are details on other main namespaces.
 
 ### Neural Network implementations
 Namespace `mzero.ai.ann` contains all code pertaining to neural net implementation--which is independant of the mzero game and the M00 player.
 
-Currently, the only available implementation is [src/mzero/ai/ann/neanderthal_impl.clj](), using the Neanderthal tensor computation library. Many thanks to Dragan Djuric for the very useful [Neanderthal lib](https://neanderthal.uncomplicate.org/).
+Currently, the only available implementation is [src/mzero/ai/ann/neanderthal_impl.clj](src/mzero/ai/ann/neanderthal_impl.clj), using the Neanderthal tensor computation library. Many thanks to Dragan Djuric for the very useful [Neanderthal lib](https://neanderthal.uncomplicate.org/).
 
 The namespace also notably contains
 
-- [src/mzero/ai/ann/network.clj]() neural network component specifications;
-- [src/mzero/ai/ann/ann.clj]() the neural network protocol;
-- [src/mzero/ai/ann/initialization.clj]() weight initialization functions;
-- [src/mzero/ai/ann/activations.clj]() activation functions implementations for neanderthal_impl.clj;
+- [src/mzero/ai/ann/network.clj](src/mzero/ai/ann/network.clj) neural network component specifications;
+- [src/mzero/ai/ann/ann.clj](src/mzero/ai/ann/ann.clj) the neural network protocol;
+- [src/mzero/ai/ann/initialization.clj](src/mzero/ai/ann/initialization.clj) weight initialization functions;
+- [src/mzero/ai/ann/activations.clj](src/mzero/ai/ann/activations.clj) activation functions implementations for neanderthal_impl.clj;
 
 ### Game measurements
-[src/mzero/ai/measure.clj](): during training, a `step-measure` function will take measures at each game step and be reset after each game. A `game-measure` function will aggregate step measurement data from a game into a single set of measures for this game and append it to the measurement sequence in `:game-measurements` in the player.
+[src/mzero/ai/measure.clj](src/mzero/ai/measure.clj): during training, a `step-measure` function will take measures at each game step and be reset after each game. A `game-measure` function will aggregate step measurement data from a game into a single set of measures for this game and append it to the measurement sequence in `:game-measurements` in the player.
 
 Current measures are the score, the `fruit-move-ratio`, number of times a player next to a fruit made the *correct* move to eat it, and the `wall-move-ratio`, number of times a player next to the wall made the *incorrect* move towards the wall.
 
 ### M00 modules
 In namespace `mzero.ai.players.m0_modules` are:
-- [src/mzero/ai/players/m0_modules/senses.clj](): compute input to the network from environment;
-- [src/mzero/ai/players/m0_modules/m00_reinforcement.clj](): when and how to perform backpropagation according to game events;
-- [src/mzero/ai/players/m0_modules/motoneurons.clj](): final output layer logic.
+- [src/mzero/ai/players/m0_modules/senses.clj](src/mzero/ai/players/m0_modules/senses.clj): compute input to the network from environment;
+- [src/mzero/ai/players/m0_modules/m00_reinforcement.clj](src/mzero/ai/players/m0_modules/m00_reinforcement.clj): when and how to perform backpropagation according to game events;
+- [src/mzero/ai/players/m0_modules/motoneurons.clj](src/mzero/ai/players/m0_modules/motoneurons.clj): final output layer logic.
 
 #### Details on senses / inputs
 At each step, the environment data is converted into [senses](src/mzero/ai/players/m0_modules/senses.clj):
