@@ -12,7 +12,8 @@
             [mzero.ai.players.m0-modules.m00-reinforcement :as m00r]
             [clojure.data.generators :as g]
             [mzero.ai.players.m00-test :refer [reference-world reference-player]]
-            [mzero.ai.players.m0-modules.senses :as mzs]))
+            [mzero.ai.players.m0-modules.senses :as mzs]
+            [clojure.spec.alpha :as s]))
 
 (check-spec `sut/update-senses-data
             {:clojure.spec.test.check/opts {:num-tests 50}})
@@ -183,3 +184,9 @@
          (+ (* sut/vision-depth sut/visible-matrix-edge-size) (inc sut/vision-depth))))
   (is (= (sut/vision-cell-index [sut/vision-depth sut/vision-depth])
          (dec (* sut/visible-matrix-edge-size sut/visible-matrix-edge-size)))))
+
+(deftest stm-input-vector-test
+  (let [previous-dps '([[1 2] :up] [[3 4] :down] [[4 5] :left] [[5 6] :left])
+        senses {::sut/input-vector [7 7]
+                ::sut/previous-datapoints previous-dps}]
+    (is (= [[7 7] [1 2] [3 4] [4 5]] (sut/stm-input-vector senses)))))

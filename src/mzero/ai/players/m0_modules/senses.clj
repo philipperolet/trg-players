@@ -1,10 +1,11 @@
 (ns mzero.ai.players.m0-modules.senses
   "Module to compute player senses given world and player data at a
-  given time, as a float-valued `::input-vector`containing valid
-  `::neural-value`s (see network.clj).
-
+  given time. The module provide functions `initialize-senses!`,
+  `udpate-senses` and `stm-input-vector`.
+  
   Senses are the part of the player interfacing between the player's
   brain and the rest of the world.
+  
 
   Player senses are:
   -  its `vision`, which is a subset of the board cells
@@ -17,18 +18,24 @@
   random value each time.
 
   Senses comprise:
-  - `::input-vector` fed to the player brain;
+  - a float-valued `::input-vector` fed to the player;
   - inial `::params` necessary to compute them;
   - `::data` on the player and the world, updated at each iteration along
   with `::input-vector`.
 
+  **Short-term memory**
+
+  `stm-input-vector` merges input vectors of the last N steps into a
+  single vector. It is a way to implement a 'memory' of the last steps
+  for the player. N is defined by `short-term-memory-length`.
+  
   **Brain time constant, brain-tau**
   Represents the time taken to perceive things in 'brain iterations'
   -- it is for now the brain depth in # of layers, conditionning
   persistence for satiety & motoception. In humans, ~ 50ms to perceive
   things indicate a depth of about 50 for 1ms synapses.
 
-  The module provide functions `initialize-senses!` and `udpate-senses`."
+  "
   (:require [clojure.data.generators :as g]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
@@ -38,6 +45,12 @@
             [mzero.utils.modsubvec :refer [modsubvec]]
             [mzero.utils.utils :as u]
             [mzero.ai.players.m0-modules.motoneurons :as mzm]))
+
+
+(def short-term-memory-length
+  "Number of last steps, including current one, included in the full
+  input vector."
+  4)
 
 ;; Brain time constant
 (s/def ::brain-tau (s/int-in 1 200))
@@ -229,7 +242,7 @@ pendant quelques tours."
 (def input-vector-size
   "Size of senses vector = number of visible cells + 1 (satiety) +
   1 (motoception) + 2 (aleaception)"
-  (int (+ 4 (Math/pow visible-matrix-edge-size 2))))
+  (* (int (+ 4 (Math/pow visible-matrix-edge-size 2)))))
 
 (s/def ::input-vector
   (-> (s/every ::mzn/neural-value :kind vector? :count input-vector-size)
@@ -313,3 +326,11 @@ pendant quelques tours."
   (-> senses
       (update ::data update-data world player)
       (#(update % ::input-vector update-input-vector (::params %) (::data %)))))
+
+(defn stm-input-vector
+  [{:as senses :keys [::input-vector ::previous-datapoints]}]
+  (->> previous-datapoints
+       (map first)
+       (take (dec short-term-memory-length))
+       (cons input-vector)
+       vec))

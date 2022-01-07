@@ -57,7 +57,8 @@
 (defn- create-ann-impl-from-opts
   [{:as opts :keys [weights-generation-fn ann-impl layer-dims]}
    seed]
-  (let [network-dims (cons mzs/input-vector-size layer-dims)
+  (let [network-dims
+        (cons (* mzs/input-vector-size mzs/short-term-memory-length) layer-dims)
         layers (initialize-layers network-dims weights-generation-fn seed)
         ann-impl-with-defaults (merge ann-default-opts ann-impl)]
     (-> (u/load-impl (-> ann-impl-with-defaults :ann-impl-name) "mzero.ai.ann")
@@ -130,9 +131,8 @@
              ::step-measure-fn (:step-measure-fn opts))))
 
   (update-player [player {:as world, :keys [::gs/game-state ::aiw/game-step]}]
-    (let [forward-pass
-          (fn [{:as player {:keys [::mzs/input-vector]} ::mzs/senses}]
-            (update player :ann-impl mzann/forward-pass! [input-vector]))
+    (let [flattened-input-matrix
+          (reduce into (mzs/stm-input-vector (-> player ::mzs/senses)))
           step-measure #((::step-measure-fn player) world %)]
       (binding [g/*rnd* (-> player :rng)]
         (-> player
@@ -140,7 +140,7 @@
             step-measure
             (update ::mzs/senses mzs/update-senses world player)
             (m00r/backward-pass game-state game-step)
-            forward-pass
+            (update :ann-impl mzann/forward-pass! [flattened-input-matrix])
             make-move))))
   
   Releaseable
