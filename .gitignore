@@ -22,3 +22,6 @@ pom.xml
 /flycheck_.dir-locals.elc
 /.idea/
 mzero.iml
+*.pyc
+/.install
+/res.out

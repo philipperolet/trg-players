@@ -1,35 +1,24 @@
 (ns mzero.ai.players.m00-test
-  (:require [clojure.tools.logging :as log]
-            [clojure.test :refer [is testing]]
-            [mzero.utils.testing :refer [deftest]]
-            [mzero.utils.utils :as u]
-            [mzero.game.events :as ge]
-            [mzero.ai.player :as aip]
-            [mzero.ai.world :as aiw :refer [world]]
+  (:require [clojure.test :refer [is testing]]
+            [clojure.tools.logging :as log]
+            [mzero.ai.ann.activations :as mza]
+            [mzero.ai.ann.ann :as mzann]
+            [mzero.ai.ann.common :as mzc]
+            [mzero.ai.ann.initialization :as mzi]
+            [mzero.ai.ann.label-distributions :as mzld]
+            [mzero.ai.ann.neanderthal-impl :as mzni]
             [mzero.ai.main :as aim]
+            [mzero.ai.player :as aip]
+            [mzero.ai.players.m0-modules.motoneurons :as mzm]
+            [mzero.ai.players.m0-modules.senses :as mzs]
             [mzero.ai.players.m00 :as sut]
-            [mzero.ai.players.network :as mzn]
-            
-            [uncomplicate.neanderthal.random :as rnd]
-            [uncomplicate.neanderthal.native :as nn]
-            [uncomplicate.neanderthal.vect-math :as nvm]
-            [uncomplicate.neanderthal.core :as nc]
-            [clojure.data.generators :as g]
-            [mzero.ai.players.senses :as mzs]))
+            [mzero.ai.world :as aiw :refer [world]]
+            [mzero.game.generation :as gg]
+            [mzero.game.state :as gs]
+            [mzero.utils.testing :refer [check-spec deftest]]
+            [mzero.utils.utils :as u]))
 
 (def seed 44)
-(deftest sparsify-test
-  (let [input-dim 1024 nb-cols 1000
-        w (#'sut/sparse-weights input-dim nb-cols (java.util.Random. seed))
-        nb-nonzero-weights (nc/sum (nvm/ceil (nvm/abs w)))
-        nb-neg-weights (- (nc/sum (nvm/floor w)))
-        neg-ratio (/ nb-neg-weights nb-nonzero-weights)
-        total-ratio (/ nb-nonzero-weights (nc/dim w))
-        expected-total-ratio (/ (sut/nonzero-weights-nb input-dim 0.5) input-dim)]
-    (is (u/almost= neg-ratio sut/neg-weight-ratio (* 0.05 neg-ratio)))
-    (is (every? #(u/almost= 1.0 (nc/sum %)) (nc/cols w)))
-    (is (u/almost= total-ratio expected-total-ratio (* 0.05 total-ratio)))))
-
 (defn run-n-steps
   [player size world acc]
   (if (> size 0)
@@ -45,102 +34,93 @@
       (recur next-player (dec size) next-world (conj acc next-movement)))
     acc))
 
-#_(deftest m00-instrumented-test
-  ;; WARNING : seeded random not working here (but test seems valid
-  ;; apart from that)
-  ;;
-  ;; this is because instrumentation checks calls to new-layers, 
-  ;; taking as arg unpure random functions. The check calls those
-  ;; function, messing with the state. 
-  (testing "Runs intrumented version of m00 to check fn calls, and
-  checks than in 50 steps there are more than 3 moves (minimum moves
-  via rand-move-reflexes)"
-    (let [test-world (world 25 seed)
-          m00-opts {:seed seed :layer-dims [50 50 150]}
-          m00-player
-          (aip/load-player "m00" m00-opts test-world)
-          dl-updates
-          (u/timed (run-n-steps m00-player 50 test-world []))]
-      (is (<= 3 (count (remove nil? (second dl-updates))))))))
+(def reference-m00-opts {:seed seed
+                         :layer-dims (repeat 3 512)
+                         :weights-generation-fn mzi/angle-sparse-weights
+                         :ann-impl {:label-distribution-fn mzld/ansp
+                                    :act-fns mza/usual}})
 
-(deftest m00-player-computation-check
-  (testing "Computation is correct on a few hand-adjusted
-  weights (purpose is to test addition of 1-valued `b` at end of each
-  layer's input)"
-    ;;Player viz after 5 steps
-    ;;|### o|
-    ;;|#    |
-    ;;| o@  |
-    ;;|     |
-    ;;|  o  |
-    (with-redefs [mzs/vision-depth 2
-                  mzs/visible-matrix-edge-size 5
-                  mzs/input-vector-size 29
-                  mzs/motoception-index 25
-                  mzs/satiety-index 26
-                  mzs/aleaception-index 27]
-      (let [test-world (world 30 seed)
-            m00-opts {:seed seed :layer-dims [128]}
-            game-opts
-            (aim/parse-run-args "-v WARNING -n %d -t m00 -o'%s'" 5 m00-opts)
-            {:keys [world player]} (aim/run game-opts test-world)
-            expected-visible-vector
-            (->> [1 1 1 0 0.5 1 0 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0.5 0 0]
-                 (map float)
-                 vec)
-            weights1 ;; computation should yield 0
-            (-> (vec (repeat (inc mzs/input-vector-size) 0))
-                (assoc 0 0.5
-                       1 0.5
-                       3 1
-                       4 3
-                       mzs/input-vector-size -5))
-            weights2 ;; computation should yield 1
-            (-> (vec (repeat (inc mzs/input-vector-size) 0))
-                (assoc 0 -0.5
-                       1 -0.5
-                       3 -1
-                       4 -3
-                       mzs/input-vector-size 5))
-            weights3 ;; computation should yield activation-fn(0.85)
-            (-> (vec (repeat (inc mzs/input-vector-size) 0))
-                (assoc 0 0.1
-                       3 1
-                       4 0.5
-                       mzs/input-vector-size 0.5))
-            three-weights-lines
-            (->> player :layers first ::mzn/weights nc/cols (take 3))]
-        ;; copy weights
-        (doall (map nc/transfer! [weights1 weights2 weights3] three-weights-lines))
-        (is (map u/almost=
-                 (->> (aip/update-player player world)
-                      :layers first ::mzn/outputs
-                      (take 3))
-                 [0 1 0.85]))))))
+(def reference-world (aiw/world 30 seed))
+;; A player is stateful, due to its field RNG :/ So, function to get it from start 
+(def reference-player #(aip/load-player "m00" reference-m00-opts reference-world))
+
+(deftest m00-instrumented-check
+  (testing "Run player with fixed set of options, should therefore
+  always end up at the same place with the same score. Also used to
+  check specs on fn calls during a real run.
+  
+  NOT used to check any kind of speed/score performance of any
+  specific options, therefore the default options chosen below should
+  not matter")
+  (let [m00-opts-difseed (update reference-m00-opts :seed inc)
+        result1
+        (->> (aim/run (aim/parse-run-args "-v WARNING -n 1000")
+               reference-world
+               (reference-player))
+             :world ::gs/game-state)
+        result2
+        (->> (aip/load-player "m00" m00-opts-difseed reference-world)
+             (aim/run (aim/parse-run-args "-v WARNING -n 1000") reference-world)
+             :world ::gs/game-state)]
+    (is (= (-> result1 ::gs/player-position) [22 12]))
+    (is (= (-> result1 ::gs/score) 29))
+    (is (= (-> result2 ::gs/player-position) [2 28]))
+    (is (= (-> result2 ::gs/score) 42))))
 
 (deftest ^:integration m00-run
   :unstrumented
-  ;; TODO : review gflops values (not updated when switched from
-  ;; pb-neurons to perceptron)
-  (testing "Speed should be above ~2.5 GFlops, equivalently 25 iters per sec"
-    (let [test-world (world 30 seed)
-          expected-gflops 1.5 ;; more than 1.5 Gflops => average probably around 2.5
-          expected-iters-sec 20
-          ;; layer constant ~= nb of ops for each matrix elt for a layer
-          ;; layer nb is inc'd to take into account 
-          layer-nb 8 dim 1024 layer-constant 10 steps 250
-          forward-pass-ops (* dim dim (inc layer-nb) layer-constant steps)
-          m00-opts {:seed seed :layer-dims (repeat layer-nb dim)}
-          game-opts
-          (aim/parse-run-args "-v WARNING -n %d -t m00 -o'%s'" steps m00-opts)
-          time-ms
-          (first (u/timed (aim/run game-opts test-world)))
-          actual-gflops
-          (/ forward-pass-ops time-ms 1000000)
-          iterations-per-sec
-          (/ steps time-ms 0.001)]
-      (log/info actual-gflops " GFlops, " iterations-per-sec " iters/sec")
-      (is (< expected-gflops actual-gflops))
-      (is (< expected-iters-sec iterations-per-sec)))))
+  ;; TODO : regularly review gflops values
 
+  ;; Torch impl deactivated since breaking change in v0.0.5, see
+  ;; version doc for more info
 
+  ;; WARNING: Gflops used to be correlated to actual gflops when there
+  ;; was only a forward pass; now there is a backward pass which does
+  ;; not always occur, so Gflops are an indicative, relative measure
+  (doseq [ann-impl ["neanderthal-impl"]]
+    (testing (str ann-impl " - Speed should be above 25 GFlops,
+    equivalently 250 iters per sec")
+      (let [test-world (world 30 seed)
+            expected-gflops 25
+            expected-iters-sec 250
+            ;; layer constant ~= nb of ops for each matrix elt for a layer
+            ;; layer nb is inc'd to take into account 
+            layer-nb 8 dim 1024 layer-constant 10 steps 250
+            forward-pass-ops (* dim dim (inc layer-nb) layer-constant steps)
+            m00-opts {:seed seed :layer-dims (repeat layer-nb dim) :ann-impl {}}
+            game-opts
+            #(aim/parse-run-args "-v WARNING -n %d -t m00 -o'%s'" % m00-opts)
+            ;; prewarm : load player
+            [time-ms-loading {:keys [world player]}] 
+            (u/timed (aim/run (game-opts 1) test-world))
+            time-ms
+            (first (u/timed (aim/run (game-opts steps) world player)))
+            actual-gflops
+            (/ forward-pass-ops time-ms 1000000)
+            iterations-per-sec
+            (/ steps time-ms 0.001)]
+        (log/info
+         (format  "%,3G GFlops, %,3G iters/sec, %,3G s loading time"
+                  actual-gflops iterations-per-sec (/ time-ms-loading 1000)))
+        (is (< expected-gflops actual-gflops))
+        (is (< expected-iters-sec iterations-per-sec))))))
+
+(deftest m00-initialization
+  (testing "m00 player can be initialized with an already-existing ann"
+    (let [ann
+          (#'sut/create-ann-impl-from-opts
+           {:layer-dims (repeat 11 11)
+            :weights-generation-fn mzi/angle-sparse-weights
+            :ann-impl (assoc sut/ann-default-opts :act-fns mza/spike)}
+           25)
+          test-world (aiw/world 26 26)
+          m00 (aip/load-player "m00" {:layer-dims (repeat 11 11) :ann-impl ann} test-world)
+          {{:keys [ann-impl]} :player}
+          (aim/run (aim/parse-run-args "-v WARNING -n 1") test-world m00)]
+      ;; act-fns should not be equal to default
+      (is (not= (:act-fns sut/ann-default-opts) (mzann/act-fns ann-impl)))
+      ;; should be equal to what we initialized it with
+      (is (= mza/spike (mzann/act-fns ann-impl)))
+      ;; and layers too
+      (is (= (mzann/nb-layers ann-impl) 12))
+      (is (= (count (first (mzann/layer-data ann-impl 1 "inputs"))) 12)))))

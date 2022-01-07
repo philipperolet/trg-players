@@ -1,0 +1,2749 @@
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Dec 13, 2021 8:42:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: Starting with options:  {:seed 26, :nb-games 1024, :label-distr-fn ansp, :player-opts {:computation-mode :cpu, :layer-dims (2048 2048), :batch-size 1}}
+Dec 13, 2021 8:42:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 0 
+Dec 13, 2021 8:42:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1 
+Dec 13, 2021 8:42:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 2 
+Dec 13, 2021 8:42:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 3 
+Dec 13, 2021 8:42:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 4 
+Dec 13, 2021 8:42:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 5 
+Dec 13, 2021 8:42:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 6 
+Dec 13, 2021 8:42:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 7 
+Dec 13, 2021 8:42:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 8 
+Dec 13, 2021 8:42:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 9 
+Dec 13, 2021 8:42:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 10 
+Dec 13, 2021 8:42:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 11 
+Dec 13, 2021 8:42:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 12 
+Dec 13, 2021 8:42:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 13 
+Dec 13, 2021 8:42:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 14 
+Dec 13, 2021 8:42:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 15 
+Dec 13, 2021 8:42:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 16 
+Dec 13, 2021 8:42:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 17 
+Dec 13, 2021 8:42:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 18 
+Dec 13, 2021 8:42:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 19 
+Dec 13, 2021 8:42:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 20 
+Dec 13, 2021 8:43:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 21 
+Dec 13, 2021 8:43:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 22 
+Dec 13, 2021 8:43:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 23 
+Dec 13, 2021 8:43:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 24 
+Dec 13, 2021 8:43:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 25 
+Dec 13, 2021 8:43:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 26 
+Dec 13, 2021 8:43:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 27 
+Dec 13, 2021 8:43:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 28 
+Dec 13, 2021 8:43:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 29 
+Dec 13, 2021 8:43:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 30 
+Dec 13, 2021 8:43:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 31 
+Dec 13, 2021 8:43:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 32 
+Dec 13, 2021 8:43:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 33 
+Dec 13, 2021 8:43:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 34 
+Dec 13, 2021 8:43:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 35 
+Dec 13, 2021 8:43:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 36 
+Dec 13, 2021 8:43:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 37 
+Dec 13, 2021 8:43:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 38 
+Dec 13, 2021 8:43:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 39 
+Dec 13, 2021 8:43:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 40 
+Dec 13, 2021 8:43:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 41 
+Dec 13, 2021 8:43:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 42 
+Dec 13, 2021 8:43:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 43 
+Dec 13, 2021 8:43:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 44 
+Dec 13, 2021 8:43:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 45 
+Dec 13, 2021 8:43:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 46 
+Dec 13, 2021 8:43:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 47 
+Dec 13, 2021 8:43:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 48 
+Dec 13, 2021 8:43:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 49 
+Dec 13, 2021 8:43:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 50 
+Dec 13, 2021 8:43:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 51 
+Dec 13, 2021 8:44:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 52 
+Dec 13, 2021 8:44:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 53 
+Dec 13, 2021 8:44:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 54 
+Dec 13, 2021 8:44:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 55 
+Dec 13, 2021 8:44:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 56 
+Dec 13, 2021 8:44:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 57 
+Dec 13, 2021 8:44:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 58 
+Dec 13, 2021 8:44:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 59 
+Dec 13, 2021 8:44:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 60 
+Dec 13, 2021 8:44:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 61 
+Dec 13, 2021 8:44:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 62 
+Dec 13, 2021 8:44:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 63 
+Dec 13, 2021 8:44:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 64 
+Dec 13, 2021 8:44:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 65 
+Dec 13, 2021 8:44:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 66 
+Dec 13, 2021 8:44:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 67 
+Dec 13, 2021 8:44:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 68 
+Dec 13, 2021 8:44:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 69 
+Dec 13, 2021 8:44:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 70 
+Dec 13, 2021 8:44:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 71 
+Dec 13, 2021 8:44:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 72 
+Dec 13, 2021 8:44:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 73 
+Dec 13, 2021 8:44:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 74 
+Dec 13, 2021 8:44:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 75 
+Dec 13, 2021 8:44:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 76 
+Dec 13, 2021 8:44:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 77 
+Dec 13, 2021 8:44:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 78 
+Dec 13, 2021 8:44:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 79 
+Dec 13, 2021 8:44:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 80 
+Dec 13, 2021 8:44:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 81 
+Dec 13, 2021 8:44:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 82 
+Dec 13, 2021 8:44:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 83 
+Dec 13, 2021 8:44:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 84 
+Dec 13, 2021 8:45:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 85 
+Dec 13, 2021 8:45:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 86 
+Dec 13, 2021 8:45:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 87 
+Dec 13, 2021 8:45:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 88 
+Dec 13, 2021 8:45:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 89 
+Dec 13, 2021 8:45:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 90 
+Dec 13, 2021 8:45:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 91 
+Dec 13, 2021 8:45:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 92 
+Dec 13, 2021 8:45:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 93 
+Dec 13, 2021 8:45:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 94 
+Dec 13, 2021 8:45:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 95 
+Dec 13, 2021 8:45:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 96 
+Dec 13, 2021 8:45:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 97 
+Dec 13, 2021 8:45:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 98 
+Dec 13, 2021 8:45:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 99 
+Dec 13, 2021 8:45:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 100 
+Dec 13, 2021 8:45:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 101 
+Dec 13, 2021 8:45:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 102 
+Dec 13, 2021 8:45:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 103 
+Dec 13, 2021 8:45:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 104 
+Dec 13, 2021 8:45:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 105 
+Dec 13, 2021 8:45:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 106 
+Dec 13, 2021 8:45:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 107 
+Dec 13, 2021 8:45:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 108 
+Dec 13, 2021 8:45:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 109 
+Dec 13, 2021 8:45:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 110 
+Dec 13, 2021 8:45:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 111 
+Dec 13, 2021 8:45:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 112 
+Dec 13, 2021 8:45:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 113 
+Dec 13, 2021 8:45:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 114 
+Dec 13, 2021 8:46:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 115 
+Dec 13, 2021 8:46:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 116 
+Dec 13, 2021 8:46:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 117 
+Dec 13, 2021 8:46:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 118 
+Dec 13, 2021 8:46:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 119 
+Dec 13, 2021 8:46:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 120 
+Dec 13, 2021 8:46:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 121 
+Dec 13, 2021 8:46:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 122 
+Dec 13, 2021 8:46:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 123 
+Dec 13, 2021 8:46:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 124 
+Dec 13, 2021 8:46:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 125 
+Dec 13, 2021 8:46:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 126 
+Dec 13, 2021 8:46:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 127 
+Dec 13, 2021 8:46:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 128 
+Dec 13, 2021 8:46:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 129 
+Dec 13, 2021 8:46:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 130 
+Dec 13, 2021 8:46:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 131 
+Dec 13, 2021 8:46:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 132 
+Dec 13, 2021 8:46:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 133 
+Dec 13, 2021 8:46:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 134 
+Dec 13, 2021 8:46:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 135 
+Dec 13, 2021 8:46:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 136 
+Dec 13, 2021 8:46:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 137 
+Dec 13, 2021 8:46:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 138 
+Dec 13, 2021 8:46:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 139 
+Dec 13, 2021 8:46:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 140 
+Dec 13, 2021 8:46:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 141 
+Dec 13, 2021 8:46:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 142 
+Dec 13, 2021 8:46:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 143 
+Dec 13, 2021 8:46:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 144 
+Dec 13, 2021 8:46:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 145 
+Dec 13, 2021 8:46:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 146 
+Dec 13, 2021 8:46:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 147 
+Dec 13, 2021 8:47:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 148 
+Dec 13, 2021 8:47:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 149 
+Dec 13, 2021 8:47:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 150 
+Dec 13, 2021 8:47:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 151 
+Dec 13, 2021 8:47:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 152 
+Dec 13, 2021 8:47:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 153 
+Dec 13, 2021 8:47:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 154 
+Dec 13, 2021 8:47:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 155 
+Dec 13, 2021 8:47:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 156 
+Dec 13, 2021 8:47:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 157 
+Dec 13, 2021 8:47:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 158 
+Dec 13, 2021 8:47:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 159 
+Dec 13, 2021 8:47:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 160 
+Dec 13, 2021 8:47:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 161 
+Dec 13, 2021 8:47:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 162 
+Dec 13, 2021 8:47:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 163 
+Dec 13, 2021 8:47:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 164 
+Dec 13, 2021 8:47:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 165 
+Dec 13, 2021 8:47:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 166 
+Dec 13, 2021 8:47:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 167 
+Dec 13, 2021 8:47:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 168 
+Dec 13, 2021 8:47:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 169 
+Dec 13, 2021 8:47:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 170 
+Dec 13, 2021 8:47:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 171 
+Dec 13, 2021 8:47:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 172 
+Dec 13, 2021 8:47:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 173 
+Dec 13, 2021 8:47:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 174 
+Dec 13, 2021 8:47:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 175 
+Dec 13, 2021 8:47:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 176 
+Dec 13, 2021 8:47:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 177 
+Dec 13, 2021 8:47:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 178 
+Dec 13, 2021 8:47:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 179 
+Dec 13, 2021 8:47:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 180 
+Dec 13, 2021 8:48:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 181 
+Dec 13, 2021 8:48:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 182 
+Dec 13, 2021 8:48:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 183 
+Dec 13, 2021 8:48:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 184 
+Dec 13, 2021 8:48:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 185 
+Dec 13, 2021 8:48:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 186 
+Dec 13, 2021 8:48:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 187 
+Dec 13, 2021 8:48:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 188 
+Dec 13, 2021 8:48:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 189 
+Dec 13, 2021 8:48:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 190 
+Dec 13, 2021 8:48:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 191 
+Dec 13, 2021 8:48:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 192 
+Dec 13, 2021 8:48:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 193 
+Dec 13, 2021 8:48:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 194 
+Dec 13, 2021 8:48:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 195 
+Dec 13, 2021 8:48:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 196 
+Dec 13, 2021 8:48:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 197 
+Dec 13, 2021 8:48:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 198 
+Dec 13, 2021 8:48:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 199 
+Dec 13, 2021 8:48:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 200 
+Dec 13, 2021 8:48:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 201 
+Dec 13, 2021 8:48:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 202 
+Dec 13, 2021 8:48:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 203 
+Dec 13, 2021 8:48:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 204 
+Dec 13, 2021 8:48:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 205 
+Dec 13, 2021 8:48:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 206 
+Dec 13, 2021 8:48:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 207 
+Dec 13, 2021 8:48:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 208 
+Dec 13, 2021 8:48:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 209 
+Dec 13, 2021 8:48:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 210 
+Dec 13, 2021 8:48:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 211 
+Dec 13, 2021 8:48:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 212 
+Dec 13, 2021 8:48:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 213 
+Dec 13, 2021 8:48:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 214 
+Dec 13, 2021 8:48:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 215 
+Dec 13, 2021 8:48:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 216 
+Dec 13, 2021 8:49:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 217 
+Dec 13, 2021 8:49:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 218 
+Dec 13, 2021 8:49:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 219 
+Dec 13, 2021 8:49:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 220 
+Dec 13, 2021 8:49:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 221 
+Dec 13, 2021 8:49:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 222 
+Dec 13, 2021 8:49:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 223 
+Dec 13, 2021 8:49:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 224 
+Dec 13, 2021 8:49:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 225 
+Dec 13, 2021 8:49:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 226 
+Dec 13, 2021 8:49:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 227 
+Dec 13, 2021 8:49:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 228 
+Dec 13, 2021 8:49:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 229 
+Dec 13, 2021 8:49:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 230 
+Dec 13, 2021 8:49:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 231 
+Dec 13, 2021 8:49:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 232 
+Dec 13, 2021 8:49:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 233 
+Dec 13, 2021 8:49:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 234 
+Dec 13, 2021 8:49:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 235 
+Dec 13, 2021 8:49:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 236 
+Dec 13, 2021 8:49:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 237 
+Dec 13, 2021 8:49:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 238 
+Dec 13, 2021 8:49:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 239 
+Dec 13, 2021 8:49:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 240 
+Dec 13, 2021 8:49:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 241 
+Dec 13, 2021 8:49:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 242 
+Dec 13, 2021 8:49:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 243 
+Dec 13, 2021 8:49:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 244 
+Dec 13, 2021 8:49:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 245 
+Dec 13, 2021 8:49:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 246 
+Dec 13, 2021 8:49:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 247 
+Dec 13, 2021 8:49:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 248 
+Dec 13, 2021 8:49:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 249 
+Dec 13, 2021 8:49:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 250 
+Dec 13, 2021 8:49:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 251 
+Dec 13, 2021 8:49:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 252 
+Dec 13, 2021 8:50:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 253 
+Dec 13, 2021 8:50:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 254 
+Dec 13, 2021 8:50:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 255 
+Dec 13, 2021 8:50:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 256 
+Dec 13, 2021 8:50:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 257 
+Dec 13, 2021 8:50:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 258 
+Dec 13, 2021 8:50:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 259 
+Dec 13, 2021 8:50:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 260 
+Dec 13, 2021 8:50:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 261 
+Dec 13, 2021 8:50:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 262 
+Dec 13, 2021 8:50:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 263 
+Dec 13, 2021 8:50:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 264 
+Dec 13, 2021 8:50:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 265 
+Dec 13, 2021 8:50:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 266 
+Dec 13, 2021 8:50:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 267 
+Dec 13, 2021 8:50:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 268 
+Dec 13, 2021 8:50:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 269 
+Dec 13, 2021 8:50:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 270 
+Dec 13, 2021 8:50:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 271 
+Dec 13, 2021 8:50:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 272 
+Dec 13, 2021 8:50:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 273 
+Dec 13, 2021 8:50:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 274 
+Dec 13, 2021 8:50:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 275 
+Dec 13, 2021 8:50:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 276 
+Dec 13, 2021 8:50:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 277 
+Dec 13, 2021 8:50:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 278 
+Dec 13, 2021 8:50:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 279 
+Dec 13, 2021 8:50:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 280 
+Dec 13, 2021 8:50:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 281 
+Dec 13, 2021 8:50:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 282 
+Dec 13, 2021 8:50:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 283 
+Dec 13, 2021 8:50:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 284 
+Dec 13, 2021 8:50:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 285 
+Dec 13, 2021 8:50:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 286 
+Dec 13, 2021 8:50:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 287 
+Dec 13, 2021 8:50:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 288 
+Dec 13, 2021 8:50:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 289 
+Dec 13, 2021 8:51:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 290 
+Dec 13, 2021 8:51:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 291 
+Dec 13, 2021 8:51:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 292 
+Dec 13, 2021 8:51:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 293 
+Dec 13, 2021 8:51:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 294 
+Dec 13, 2021 8:51:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 295 
+Dec 13, 2021 8:51:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 296 
+Dec 13, 2021 8:51:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 297 
+Dec 13, 2021 8:51:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 298 
+Dec 13, 2021 8:51:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 299 
+Dec 13, 2021 8:51:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 300 
+Dec 13, 2021 8:51:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 301 
+Dec 13, 2021 8:51:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 302 
+Dec 13, 2021 8:51:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 303 
+Dec 13, 2021 8:51:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 304 
+Dec 13, 2021 8:51:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 305 
+Dec 13, 2021 8:51:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 306 
+Dec 13, 2021 8:51:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 307 
+Dec 13, 2021 8:51:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 308 
+Dec 13, 2021 8:51:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 309 
+Dec 13, 2021 8:51:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 310 
+Dec 13, 2021 8:51:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 311 
+Dec 13, 2021 8:51:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 312 
+Dec 13, 2021 8:51:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 313 
+Dec 13, 2021 8:51:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 314 
+Dec 13, 2021 8:51:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 315 
+Dec 13, 2021 8:51:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 316 
+Dec 13, 2021 8:51:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 317 
+Dec 13, 2021 8:51:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 318 
+Dec 13, 2021 8:51:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 319 
+Dec 13, 2021 8:51:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 320 
+Dec 13, 2021 8:51:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 321 
+Dec 13, 2021 8:51:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 322 
+Dec 13, 2021 8:52:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 323 
+Dec 13, 2021 8:52:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 324 
+Dec 13, 2021 8:52:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 325 
+Dec 13, 2021 8:52:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 326 
+Dec 13, 2021 8:52:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 327 
+Dec 13, 2021 8:52:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 328 
+Dec 13, 2021 8:52:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 329 
+Dec 13, 2021 8:52:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 330 
+Dec 13, 2021 8:52:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 331 
+Dec 13, 2021 8:52:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 332 
+Dec 13, 2021 8:52:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 333 
+Dec 13, 2021 8:52:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 334 
+Dec 13, 2021 8:52:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 335 
+Dec 13, 2021 8:52:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 336 
+Dec 13, 2021 8:52:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 337 
+Dec 13, 2021 8:52:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 338 
+Dec 13, 2021 8:52:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 339 
+Dec 13, 2021 8:52:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 340 
+Dec 13, 2021 8:52:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 341 
+Dec 13, 2021 8:52:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 342 
+Dec 13, 2021 8:52:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 343 
+Dec 13, 2021 8:52:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 344 
+Dec 13, 2021 8:52:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 345 
+Dec 13, 2021 8:52:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 346 
+Dec 13, 2021 8:52:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 347 
+Dec 13, 2021 8:52:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 348 
+Dec 13, 2021 8:52:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 349 
+Dec 13, 2021 8:52:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 350 
+Dec 13, 2021 8:52:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 351 
+Dec 13, 2021 8:52:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 352 
+Dec 13, 2021 8:52:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 353 
+Dec 13, 2021 8:52:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 354 
+Dec 13, 2021 8:52:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 355 
+Dec 13, 2021 8:52:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 356 
+Dec 13, 2021 8:52:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 357 
+Dec 13, 2021 8:52:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 358 
+Dec 13, 2021 8:53:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 359 
+Dec 13, 2021 8:53:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 360 
+Dec 13, 2021 8:53:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 361 
+Dec 13, 2021 8:53:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 362 
+Dec 13, 2021 8:53:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 363 
+Dec 13, 2021 8:53:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 364 
+Dec 13, 2021 8:53:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 365 
+Dec 13, 2021 8:53:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 366 
+Dec 13, 2021 8:53:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 367 
+Dec 13, 2021 8:53:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 368 
+Dec 13, 2021 8:53:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 369 
+Dec 13, 2021 8:53:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 370 
+Dec 13, 2021 8:53:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 371 
+Dec 13, 2021 8:53:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 372 
+Dec 13, 2021 8:53:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 373 
+Dec 13, 2021 8:53:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 374 
+Dec 13, 2021 8:53:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 375 
+Dec 13, 2021 8:53:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 376 
+Dec 13, 2021 8:53:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 377 
+Dec 13, 2021 8:53:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 378 
+Dec 13, 2021 8:53:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 379 
+Dec 13, 2021 8:53:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 380 
+Dec 13, 2021 8:53:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 381 
+Dec 13, 2021 8:53:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 382 
+Dec 13, 2021 8:53:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 383 
+Dec 13, 2021 8:53:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 384 
+Dec 13, 2021 8:53:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 385 
+Dec 13, 2021 8:53:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 386 
+Dec 13, 2021 8:53:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 387 
+Dec 13, 2021 8:53:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 388 
+Dec 13, 2021 8:53:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 389 
+Dec 13, 2021 8:53:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 390 
+Dec 13, 2021 8:53:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 391 
+Dec 13, 2021 8:53:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 392 
+Dec 13, 2021 8:53:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 393 
+Dec 13, 2021 8:53:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 394 
+Dec 13, 2021 8:53:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 395 
+Dec 13, 2021 8:53:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 396 
+Dec 13, 2021 8:54:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 397 
+Dec 13, 2021 8:54:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 398 
+Dec 13, 2021 8:54:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 399 
+Dec 13, 2021 8:54:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 400 
+Dec 13, 2021 8:54:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 401 
+Dec 13, 2021 8:54:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 402 
+Dec 13, 2021 8:54:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 403 
+Dec 13, 2021 8:54:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 404 
+Dec 13, 2021 8:54:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 405 
+Dec 13, 2021 8:54:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 406 
+Dec 13, 2021 8:54:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 407 
+Dec 13, 2021 8:54:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 408 
+Dec 13, 2021 8:54:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 409 
+Dec 13, 2021 8:54:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 410 
+Dec 13, 2021 8:54:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 411 
+Dec 13, 2021 8:54:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 412 
+Dec 13, 2021 8:54:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 413 
+Dec 13, 2021 8:54:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 414 
+Dec 13, 2021 8:54:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 415 
+Dec 13, 2021 8:54:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 416 
+Dec 13, 2021 8:54:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 417 
+Dec 13, 2021 8:54:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 418 
+Dec 13, 2021 8:54:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 419 
+Dec 13, 2021 8:54:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 420 
+Dec 13, 2021 8:54:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 421 
+Dec 13, 2021 8:54:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 422 
+Dec 13, 2021 8:54:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 423 
+Dec 13, 2021 8:54:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 424 
+Dec 13, 2021 8:54:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 425 
+Dec 13, 2021 8:54:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 426 
+Dec 13, 2021 8:54:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 427 
+Dec 13, 2021 8:54:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 428 
+Dec 13, 2021 8:54:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 429 
+Dec 13, 2021 8:54:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 430 
+Dec 13, 2021 8:54:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 431 
+Dec 13, 2021 8:54:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 432 
+Dec 13, 2021 8:55:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 433 
+Dec 13, 2021 8:55:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 434 
+Dec 13, 2021 8:55:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 435 
+Dec 13, 2021 8:55:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 436 
+Dec 13, 2021 8:55:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 437 
+Dec 13, 2021 8:55:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 438 
+Dec 13, 2021 8:55:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 439 
+Dec 13, 2021 8:55:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 440 
+Dec 13, 2021 8:55:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 441 
+Dec 13, 2021 8:55:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 442 
+Dec 13, 2021 8:55:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 443 
+Dec 13, 2021 8:55:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 444 
+Dec 13, 2021 8:55:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 445 
+Dec 13, 2021 8:55:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 446 
+Dec 13, 2021 8:55:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 447 
+Dec 13, 2021 8:55:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 448 
+Dec 13, 2021 8:55:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 449 
+Dec 13, 2021 8:55:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 450 
+Dec 13, 2021 8:55:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 451 
+Dec 13, 2021 8:55:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 452 
+Dec 13, 2021 8:55:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 453 
+Dec 13, 2021 8:55:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 454 
+Dec 13, 2021 8:55:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 455 
+Dec 13, 2021 8:55:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 456 
+Dec 13, 2021 8:55:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 457 
+Dec 13, 2021 8:55:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 458 
+Dec 13, 2021 8:55:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 459 
+Dec 13, 2021 8:55:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 460 
+Dec 13, 2021 8:55:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 461 
+Dec 13, 2021 8:55:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 462 
+Dec 13, 2021 8:55:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 463 
+Dec 13, 2021 8:55:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 464 
+Dec 13, 2021 8:55:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 465 
+Dec 13, 2021 8:55:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 466 
+Dec 13, 2021 8:55:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 467 
+Dec 13, 2021 8:55:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 468 
+Dec 13, 2021 8:56:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 469 
+Dec 13, 2021 8:56:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 470 
+Dec 13, 2021 8:56:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 471 
+Dec 13, 2021 8:56:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 472 
+Dec 13, 2021 8:56:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 473 
+Dec 13, 2021 8:56:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 474 
+Dec 13, 2021 8:56:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 475 
+Dec 13, 2021 8:56:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 476 
+Dec 13, 2021 8:56:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 477 
+Dec 13, 2021 8:56:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 478 
+Dec 13, 2021 8:56:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 479 
+Dec 13, 2021 8:56:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 480 
+Dec 13, 2021 8:56:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 481 
+Dec 13, 2021 8:56:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 482 
+Dec 13, 2021 8:56:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 483 
+Dec 13, 2021 8:56:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 484 
+Dec 13, 2021 8:56:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 485 
+Dec 13, 2021 8:56:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 486 
+Dec 13, 2021 8:56:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 487 
+Dec 13, 2021 8:56:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 488 
+Dec 13, 2021 8:56:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 489 
+Dec 13, 2021 8:56:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 490 
+Dec 13, 2021 8:56:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 491 
+Dec 13, 2021 8:56:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 492 
+Dec 13, 2021 8:56:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 493 
+Dec 13, 2021 8:56:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 494 
+Dec 13, 2021 8:56:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 495 
+Dec 13, 2021 8:56:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 496 
+Dec 13, 2021 8:56:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 497 
+Dec 13, 2021 8:56:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 498 
+Dec 13, 2021 8:56:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 499 
+Dec 13, 2021 8:56:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 500 
+Dec 13, 2021 8:56:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 501 
+Dec 13, 2021 8:56:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 502 
+Dec 13, 2021 8:56:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 503 
+Dec 13, 2021 8:56:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 504 
+Dec 13, 2021 8:56:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 505 
+Dec 13, 2021 8:56:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 506 
+Dec 13, 2021 8:57:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 507 
+Dec 13, 2021 8:57:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 508 
+Dec 13, 2021 8:57:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 509 
+Dec 13, 2021 8:57:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 510 
+Dec 13, 2021 8:57:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 511 
+Dec 13, 2021 8:57:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 512 
+Dec 13, 2021 8:57:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 513 
+Dec 13, 2021 8:57:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 514 
+Dec 13, 2021 8:57:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 515 
+Dec 13, 2021 8:57:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 516 
+Dec 13, 2021 8:57:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 517 
+Dec 13, 2021 8:57:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 518 
+Dec 13, 2021 8:57:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 519 
+Dec 13, 2021 8:57:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 520 
+Dec 13, 2021 8:57:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 521 
+Dec 13, 2021 8:57:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 522 
+Dec 13, 2021 8:57:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 523 
+Dec 13, 2021 8:57:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 524 
+Dec 13, 2021 8:57:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 525 
+Dec 13, 2021 8:57:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 526 
+Dec 13, 2021 8:57:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 527 
+Dec 13, 2021 8:57:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 528 
+Dec 13, 2021 8:57:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 529 
+Dec 13, 2021 8:57:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 530 
+Dec 13, 2021 8:57:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 531 
+Dec 13, 2021 8:57:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 532 
+Dec 13, 2021 8:57:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 533 
+Dec 13, 2021 8:57:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 534 
+Dec 13, 2021 8:57:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 535 
+Dec 13, 2021 8:57:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 536 
+Dec 13, 2021 8:57:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 537 
+Dec 13, 2021 8:57:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 538 
+Dec 13, 2021 8:57:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 539 
+Dec 13, 2021 8:57:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 540 
+Dec 13, 2021 8:57:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 541 
+Dec 13, 2021 8:57:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 542 
+Dec 13, 2021 8:57:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 543 
+Dec 13, 2021 8:57:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 544 
+Dec 13, 2021 8:58:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 545 
+Dec 13, 2021 8:58:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 546 
+Dec 13, 2021 8:58:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 547 
+Dec 13, 2021 8:58:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 548 
+Dec 13, 2021 8:58:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 549 
+Dec 13, 2021 8:58:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 550 
+Dec 13, 2021 8:58:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 551 
+Dec 13, 2021 8:58:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 552 
+Dec 13, 2021 8:58:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 553 
+Dec 13, 2021 8:58:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 554 
+Dec 13, 2021 8:58:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 555 
+Dec 13, 2021 8:58:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 556 
+Dec 13, 2021 8:58:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 557 
+Dec 13, 2021 8:58:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 558 
+Dec 13, 2021 8:58:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 559 
+Dec 13, 2021 8:58:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 560 
+Dec 13, 2021 8:58:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 561 
+Dec 13, 2021 8:58:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 562 
+Dec 13, 2021 8:58:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 563 
+Dec 13, 2021 8:58:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 564 
+Dec 13, 2021 8:58:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 565 
+Dec 13, 2021 8:58:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 566 
+Dec 13, 2021 8:58:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 567 
+Dec 13, 2021 8:58:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 568 
+Dec 13, 2021 8:58:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 569 
+Dec 13, 2021 8:58:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 570 
+Dec 13, 2021 8:58:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 571 
+Dec 13, 2021 8:58:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 572 
+Dec 13, 2021 8:58:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 573 
+Dec 13, 2021 8:58:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 574 
+Dec 13, 2021 8:58:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 575 
+Dec 13, 2021 8:58:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 576 
+Dec 13, 2021 8:58:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 577 
+Dec 13, 2021 8:58:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 578 
+Dec 13, 2021 8:58:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 579 
+Dec 13, 2021 8:58:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 580 
+Dec 13, 2021 8:58:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 581 
+Dec 13, 2021 8:59:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 582 
+Dec 13, 2021 8:59:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 583 
+Dec 13, 2021 8:59:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 584 
+Dec 13, 2021 8:59:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 585 
+Dec 13, 2021 8:59:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 586 
+Dec 13, 2021 8:59:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 587 
+Dec 13, 2021 8:59:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 588 
+Dec 13, 2021 8:59:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 589 
+Dec 13, 2021 8:59:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 590 
+Dec 13, 2021 8:59:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 591 
+Dec 13, 2021 8:59:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 592 
+Dec 13, 2021 8:59:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 593 
+Dec 13, 2021 8:59:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 594 
+Dec 13, 2021 8:59:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 595 
+Dec 13, 2021 8:59:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 596 
+Dec 13, 2021 8:59:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 597 
+Dec 13, 2021 8:59:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 598 
+Dec 13, 2021 8:59:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 599 
+Dec 13, 2021 8:59:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 600 
+Dec 13, 2021 8:59:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 601 
+Dec 13, 2021 8:59:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 602 
+Dec 13, 2021 8:59:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 603 
+Dec 13, 2021 8:59:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 604 
+Dec 13, 2021 8:59:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 605 
+Dec 13, 2021 8:59:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 606 
+Dec 13, 2021 8:59:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 607 
+Dec 13, 2021 8:59:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 608 
+Dec 13, 2021 8:59:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 609 
+Dec 13, 2021 8:59:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 610 
+Dec 13, 2021 8:59:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 611 
+Dec 13, 2021 8:59:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 612 
+Dec 13, 2021 8:59:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 613 
+Dec 13, 2021 8:59:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 614 
+Dec 13, 2021 8:59:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 615 
+Dec 13, 2021 8:59:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 616 
+Dec 13, 2021 8:59:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 617 
+Dec 13, 2021 8:59:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 618 
+Dec 13, 2021 8:59:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 619 
+Dec 13, 2021 9:00:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 620 
+Dec 13, 2021 9:00:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 621 
+Dec 13, 2021 9:00:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 622 
+Dec 13, 2021 9:00:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 623 
+Dec 13, 2021 9:00:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 624 
+Dec 13, 2021 9:00:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 625 
+Dec 13, 2021 9:00:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 626 
+Dec 13, 2021 9:00:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 627 
+Dec 13, 2021 9:00:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 628 
+Dec 13, 2021 9:00:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 629 
+Dec 13, 2021 9:00:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 630 
+Dec 13, 2021 9:00:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 631 
+Dec 13, 2021 9:00:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 632 
+Dec 13, 2021 9:00:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 633 
+Dec 13, 2021 9:00:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 634 
+Dec 13, 2021 9:00:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 635 
+Dec 13, 2021 9:00:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 636 
+Dec 13, 2021 9:00:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 637 
+Dec 13, 2021 9:00:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 638 
+Dec 13, 2021 9:00:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 639 
+Dec 13, 2021 9:00:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 640 
+Dec 13, 2021 9:00:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 641 
+Dec 13, 2021 9:00:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 642 
+Dec 13, 2021 9:00:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 643 
+Dec 13, 2021 9:00:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 644 
+Dec 13, 2021 9:00:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 645 
+Dec 13, 2021 9:00:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 646 
+Dec 13, 2021 9:00:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 647 
+Dec 13, 2021 9:00:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 648 
+Dec 13, 2021 9:00:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 649 
+Dec 13, 2021 9:00:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 650 
+Dec 13, 2021 9:00:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 651 
+Dec 13, 2021 9:00:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 652 
+Dec 13, 2021 9:00:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 653 
+Dec 13, 2021 9:00:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 654 
+Dec 13, 2021 9:00:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 655 
+Dec 13, 2021 9:00:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 656 
+Dec 13, 2021 9:00:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 657 
+Dec 13, 2021 9:00:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 658 
+Dec 13, 2021 9:01:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 659 
+Dec 13, 2021 9:01:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 660 
+Dec 13, 2021 9:01:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 661 
+Dec 13, 2021 9:01:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 662 
+Dec 13, 2021 9:01:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 663 
+Dec 13, 2021 9:01:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 664 
+Dec 13, 2021 9:01:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 665 
+Dec 13, 2021 9:01:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 666 
+Dec 13, 2021 9:01:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 667 
+Dec 13, 2021 9:01:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 668 
+Dec 13, 2021 9:01:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 669 
+Dec 13, 2021 9:01:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 670 
+Dec 13, 2021 9:01:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 671 
+Dec 13, 2021 9:01:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 672 
+Dec 13, 2021 9:01:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 673 
+Dec 13, 2021 9:01:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 674 
+Dec 13, 2021 9:01:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 675 
+Dec 13, 2021 9:01:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 676 
+Dec 13, 2021 9:01:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 677 
+Dec 13, 2021 9:01:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 678 
+Dec 13, 2021 9:01:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 679 
+Dec 13, 2021 9:01:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 680 
+Dec 13, 2021 9:01:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 681 
+Dec 13, 2021 9:01:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 682 
+Dec 13, 2021 9:01:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 683 
+Dec 13, 2021 9:01:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 684 
+Dec 13, 2021 9:01:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 685 
+Dec 13, 2021 9:01:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 686 
+Dec 13, 2021 9:01:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 687 
+Dec 13, 2021 9:01:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 688 
+Dec 13, 2021 9:01:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 689 
+Dec 13, 2021 9:01:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 690 
+Dec 13, 2021 9:01:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 691 
+Dec 13, 2021 9:01:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 692 
+Dec 13, 2021 9:01:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 693 
+Dec 13, 2021 9:01:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 694 
+Dec 13, 2021 9:01:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 695 
+Dec 13, 2021 9:01:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 696 
+Dec 13, 2021 9:01:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 697 
+Dec 13, 2021 9:01:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 698 
+Dec 13, 2021 9:02:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 699 
+Dec 13, 2021 9:02:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 700 
+Dec 13, 2021 9:02:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 701 
+Dec 13, 2021 9:02:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 702 
+Dec 13, 2021 9:02:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 703 
+Dec 13, 2021 9:02:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 704 
+Dec 13, 2021 9:02:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 705 
+Dec 13, 2021 9:02:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 706 
+Dec 13, 2021 9:02:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 707 
+Dec 13, 2021 9:02:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 708 
+Dec 13, 2021 9:02:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 709 
+Dec 13, 2021 9:02:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 710 
+Dec 13, 2021 9:02:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 711 
+Dec 13, 2021 9:02:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 712 
+Dec 13, 2021 9:02:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 713 
+Dec 13, 2021 9:02:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 714 
+Dec 13, 2021 9:02:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 715 
+Dec 13, 2021 9:02:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 716 
+Dec 13, 2021 9:02:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 717 
+Dec 13, 2021 9:02:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 718 
+Dec 13, 2021 9:02:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 719 
+Dec 13, 2021 9:02:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 720 
+Dec 13, 2021 9:02:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 721 
+Dec 13, 2021 9:02:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 722 
+Dec 13, 2021 9:02:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 723 
+Dec 13, 2021 9:02:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 724 
+Dec 13, 2021 9:02:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 725 
+Dec 13, 2021 9:02:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 726 
+Dec 13, 2021 9:02:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 727 
+Dec 13, 2021 9:02:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 728 
+Dec 13, 2021 9:02:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 729 
+Dec 13, 2021 9:02:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 730 
+Dec 13, 2021 9:02:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 731 
+Dec 13, 2021 9:02:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 732 
+Dec 13, 2021 9:02:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 733 
+Dec 13, 2021 9:02:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 734 
+Dec 13, 2021 9:02:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 735 
+Dec 13, 2021 9:02:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 736 
+Dec 13, 2021 9:02:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 737 
+Dec 13, 2021 9:03:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 738 
+Dec 13, 2021 9:03:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 739 
+Dec 13, 2021 9:03:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 740 
+Dec 13, 2021 9:03:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 741 
+Dec 13, 2021 9:03:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 742 
+Dec 13, 2021 9:03:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 743 
+Dec 13, 2021 9:03:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 744 
+Dec 13, 2021 9:03:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 745 
+Dec 13, 2021 9:03:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 746 
+Dec 13, 2021 9:03:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 747 
+Dec 13, 2021 9:03:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 748 
+Dec 13, 2021 9:03:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 749 
+Dec 13, 2021 9:03:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 750 
+Dec 13, 2021 9:03:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 751 
+Dec 13, 2021 9:03:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 752 
+Dec 13, 2021 9:03:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 753 
+Dec 13, 2021 9:03:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 754 
+Dec 13, 2021 9:03:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 755 
+Dec 13, 2021 9:03:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 756 
+Dec 13, 2021 9:03:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 757 
+Dec 13, 2021 9:03:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 758 
+Dec 13, 2021 9:03:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 759 
+Dec 13, 2021 9:03:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 760 
+Dec 13, 2021 9:03:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 761 
+Dec 13, 2021 9:03:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 762 
+Dec 13, 2021 9:03:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 763 
+Dec 13, 2021 9:03:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 764 
+Dec 13, 2021 9:03:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 765 
+Dec 13, 2021 9:03:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 766 
+Dec 13, 2021 9:03:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 767 
+Dec 13, 2021 9:03:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 768 
+Dec 13, 2021 9:03:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 769 
+Dec 13, 2021 9:03:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 770 
+Dec 13, 2021 9:03:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 771 
+Dec 13, 2021 9:03:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 772 
+Dec 13, 2021 9:03:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 773 
+Dec 13, 2021 9:03:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 774 
+Dec 13, 2021 9:03:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 775 
+Dec 13, 2021 9:04:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 776 
+Dec 13, 2021 9:04:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 777 
+Dec 13, 2021 9:04:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 778 
+Dec 13, 2021 9:04:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 779 
+Dec 13, 2021 9:04:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 780 
+Dec 13, 2021 9:04:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 781 
+Dec 13, 2021 9:04:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 782 
+Dec 13, 2021 9:04:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 783 
+Dec 13, 2021 9:04:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 784 
+Dec 13, 2021 9:04:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 785 
+Dec 13, 2021 9:04:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 786 
+Dec 13, 2021 9:04:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 787 
+Dec 13, 2021 9:04:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 788 
+Dec 13, 2021 9:04:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 789 
+Dec 13, 2021 9:04:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 790 
+Dec 13, 2021 9:04:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 791 
+Dec 13, 2021 9:04:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 792 
+Dec 13, 2021 9:04:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 793 
+Dec 13, 2021 9:04:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 794 
+Dec 13, 2021 9:04:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 795 
+Dec 13, 2021 9:04:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 796 
+Dec 13, 2021 9:04:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 797 
+Dec 13, 2021 9:04:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 798 
+Dec 13, 2021 9:04:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 799 
+Dec 13, 2021 9:04:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 800 
+Dec 13, 2021 9:04:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 801 
+Dec 13, 2021 9:04:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 802 
+Dec 13, 2021 9:04:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 803 
+Dec 13, 2021 9:04:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 804 
+Dec 13, 2021 9:04:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 805 
+Dec 13, 2021 9:04:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 806 
+Dec 13, 2021 9:04:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 807 
+Dec 13, 2021 9:04:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 808 
+Dec 13, 2021 9:04:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 809 
+Dec 13, 2021 9:05:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 810 
+Dec 13, 2021 9:05:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 811 
+Dec 13, 2021 9:05:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 812 
+Dec 13, 2021 9:05:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 813 
+Dec 13, 2021 9:05:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 814 
+Dec 13, 2021 9:05:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 815 
+Dec 13, 2021 9:05:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 816 
+Dec 13, 2021 9:05:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 817 
+Dec 13, 2021 9:05:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 818 
+Dec 13, 2021 9:05:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 819 
+Dec 13, 2021 9:05:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 820 
+Dec 13, 2021 9:05:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 821 
+Dec 13, 2021 9:05:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 822 
+Dec 13, 2021 9:05:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 823 
+Dec 13, 2021 9:05:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 824 
+Dec 13, 2021 9:05:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 825 
+Dec 13, 2021 9:05:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 826 
+Dec 13, 2021 9:05:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 827 
+Dec 13, 2021 9:05:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 828 
+Dec 13, 2021 9:05:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 829 
+Dec 13, 2021 9:05:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 830 
+Dec 13, 2021 9:05:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 831 
+Dec 13, 2021 9:05:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 832 
+Dec 13, 2021 9:05:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 833 
+Dec 13, 2021 9:05:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 834 
+Dec 13, 2021 9:05:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 835 
+Dec 13, 2021 9:05:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 836 
+Dec 13, 2021 9:05:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 837 
+Dec 13, 2021 9:05:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 838 
+Dec 13, 2021 9:05:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 839 
+Dec 13, 2021 9:05:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 840 
+Dec 13, 2021 9:05:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 841 
+Dec 13, 2021 9:05:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 842 
+Dec 13, 2021 9:05:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 843 
+Dec 13, 2021 9:05:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 844 
+Dec 13, 2021 9:05:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 845 
+Dec 13, 2021 9:05:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 846 
+Dec 13, 2021 9:05:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 847 
+Dec 13, 2021 9:05:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 848 
+Dec 13, 2021 9:06:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 849 
+Dec 13, 2021 9:06:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 850 
+Dec 13, 2021 9:06:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 851 
+Dec 13, 2021 9:06:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 852 
+Dec 13, 2021 9:06:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 853 
+Dec 13, 2021 9:06:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 854 
+Dec 13, 2021 9:06:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 855 
+Dec 13, 2021 9:06:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 856 
+Dec 13, 2021 9:06:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 857 
+Dec 13, 2021 9:06:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 858 
+Dec 13, 2021 9:06:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 859 
+Dec 13, 2021 9:06:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 860 
+Dec 13, 2021 9:06:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 861 
+Dec 13, 2021 9:06:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 862 
+Dec 13, 2021 9:06:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 863 
+Dec 13, 2021 9:06:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 864 
+Dec 13, 2021 9:06:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 865 
+Dec 13, 2021 9:06:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 866 
+Dec 13, 2021 9:06:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 867 
+Dec 13, 2021 9:06:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 868 
+Dec 13, 2021 9:06:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 869 
+Dec 13, 2021 9:06:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 870 
+Dec 13, 2021 9:06:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 871 
+Dec 13, 2021 9:06:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 872 
+Dec 13, 2021 9:06:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 873 
+Dec 13, 2021 9:06:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 874 
+Dec 13, 2021 9:06:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 875 
+Dec 13, 2021 9:06:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 876 
+Dec 13, 2021 9:06:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 877 
+Dec 13, 2021 9:06:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 878 
+Dec 13, 2021 9:06:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 879 
+Dec 13, 2021 9:06:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 880 
+Dec 13, 2021 9:06:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 881 
+Dec 13, 2021 9:06:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 882 
+Dec 13, 2021 9:06:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 883 
+Dec 13, 2021 9:06:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 884 
+Dec 13, 2021 9:06:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 885 
+Dec 13, 2021 9:06:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 886 
+Dec 13, 2021 9:07:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 887 
+Dec 13, 2021 9:07:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 888 
+Dec 13, 2021 9:07:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 889 
+Dec 13, 2021 9:07:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 890 
+Dec 13, 2021 9:07:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 891 
+Dec 13, 2021 9:07:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 892 
+Dec 13, 2021 9:07:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 893 
+Dec 13, 2021 9:07:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 894 
+Dec 13, 2021 9:07:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 895 
+Dec 13, 2021 9:07:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 896 
+Dec 13, 2021 9:07:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 897 
+Dec 13, 2021 9:07:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 898 
+Dec 13, 2021 9:07:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 899 
+Dec 13, 2021 9:07:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 900 
+Dec 13, 2021 9:07:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 901 
+Dec 13, 2021 9:07:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 902 
+Dec 13, 2021 9:07:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 903 
+Dec 13, 2021 9:07:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 904 
+Dec 13, 2021 9:07:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 905 
+Dec 13, 2021 9:07:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 906 
+Dec 13, 2021 9:07:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 907 
+Dec 13, 2021 9:07:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 908 
+Dec 13, 2021 9:07:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 909 
+Dec 13, 2021 9:07:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 910 
+Dec 13, 2021 9:07:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 911 
+Dec 13, 2021 9:07:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 912 
+Dec 13, 2021 9:07:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 913 
+Dec 13, 2021 9:07:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 914 
+Dec 13, 2021 9:07:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 915 
+Dec 13, 2021 9:07:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 916 
+Dec 13, 2021 9:07:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 917 
+Dec 13, 2021 9:07:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 918 
+Dec 13, 2021 9:07:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 919 
+Dec 13, 2021 9:07:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 920 
+Dec 13, 2021 9:07:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 921 
+Dec 13, 2021 9:07:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 922 
+Dec 13, 2021 9:07:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 923 
+Dec 13, 2021 9:07:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 924 
+Dec 13, 2021 9:08:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 925 
+Dec 13, 2021 9:08:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 926 
+Dec 13, 2021 9:08:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 927 
+Dec 13, 2021 9:08:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 928 
+Dec 13, 2021 9:08:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 929 
+Dec 13, 2021 9:08:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 930 
+Dec 13, 2021 9:08:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 931 
+Dec 13, 2021 9:08:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 932 
+Dec 13, 2021 9:08:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 933 
+Dec 13, 2021 9:08:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 934 
+Dec 13, 2021 9:08:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 935 
+Dec 13, 2021 9:08:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 936 
+Dec 13, 2021 9:08:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 937 
+Dec 13, 2021 9:08:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 938 
+Dec 13, 2021 9:08:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 939 
+Dec 13, 2021 9:08:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 940 
+Dec 13, 2021 9:08:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 941 
+Dec 13, 2021 9:08:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 942 
+Dec 13, 2021 9:08:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 943 
+Dec 13, 2021 9:08:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 944 
+Dec 13, 2021 9:08:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 945 
+Dec 13, 2021 9:08:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 946 
+Dec 13, 2021 9:08:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 947 
+Dec 13, 2021 9:08:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 948 
+Dec 13, 2021 9:08:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 949 
+Dec 13, 2021 9:08:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 950 
+Dec 13, 2021 9:08:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 951 
+Dec 13, 2021 9:08:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 952 
+Dec 13, 2021 9:08:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 953 
+Dec 13, 2021 9:08:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 954 
+Dec 13, 2021 9:08:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 955 
+Dec 13, 2021 9:08:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 956 
+Dec 13, 2021 9:08:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 957 
+Dec 13, 2021 9:08:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 958 
+Dec 13, 2021 9:08:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 959 
+Dec 13, 2021 9:08:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 960 
+Dec 13, 2021 9:08:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 961 
+Dec 13, 2021 9:08:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 962 
+Dec 13, 2021 9:09:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 963 
+Dec 13, 2021 9:09:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 964 
+Dec 13, 2021 9:09:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 965 
+Dec 13, 2021 9:09:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 966 
+Dec 13, 2021 9:09:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 967 
+Dec 13, 2021 9:09:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 968 
+Dec 13, 2021 9:09:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 969 
+Dec 13, 2021 9:09:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 970 
+Dec 13, 2021 9:09:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 971 
+Dec 13, 2021 9:09:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 972 
+Dec 13, 2021 9:09:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 973 
+Dec 13, 2021 9:09:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 974 
+Dec 13, 2021 9:09:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 975 
+Dec 13, 2021 9:09:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 976 
+Dec 13, 2021 9:09:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 977 
+Dec 13, 2021 9:09:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 978 
+Dec 13, 2021 9:09:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 979 
+Dec 13, 2021 9:09:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 980 
+Dec 13, 2021 9:09:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 981 
+Dec 13, 2021 9:09:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 982 
+Dec 13, 2021 9:09:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 983 
+Dec 13, 2021 9:09:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 984 
+Dec 13, 2021 9:09:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 985 
+Dec 13, 2021 9:09:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 986 
+Dec 13, 2021 9:09:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 987 
+Dec 13, 2021 9:09:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 988 
+Dec 13, 2021 9:09:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 989 
+Dec 13, 2021 9:09:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 990 
+Dec 13, 2021 9:09:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 991 
+Dec 13, 2021 9:09:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 992 
+Dec 13, 2021 9:09:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 993 
+Dec 13, 2021 9:09:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 994 
+Dec 13, 2021 9:09:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 995 
+Dec 13, 2021 9:09:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 996 
+Dec 13, 2021 9:09:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 997 
+Dec 13, 2021 9:09:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 998 
+Dec 13, 2021 9:09:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 999 
+Dec 13, 2021 9:09:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1000 
+Dec 13, 2021 9:09:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1001 
+Dec 13, 2021 9:10:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1002 
+Dec 13, 2021 9:10:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1003 
+Dec 13, 2021 9:10:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1004 
+Dec 13, 2021 9:10:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1005 
+Dec 13, 2021 9:10:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1006 
+Dec 13, 2021 9:10:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1007 
+Dec 13, 2021 9:10:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1008 
+Dec 13, 2021 9:10:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1009 
+Dec 13, 2021 9:10:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1010 
+Dec 13, 2021 9:10:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1011 
+Dec 13, 2021 9:10:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1012 
+Dec 13, 2021 9:10:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1013 
+Dec 13, 2021 9:10:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1014 
+Dec 13, 2021 9:10:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1015 
+Dec 13, 2021 9:10:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1016 
+Dec 13, 2021 9:10:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1017 
+Dec 13, 2021 9:10:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1018 
+Dec 13, 2021 9:10:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1019 
+Dec 13, 2021 9:10:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1020 
+Dec 13, 2021 9:10:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1021 
+Dec 13, 2021 9:10:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1022 
+Dec 13, 2021 9:10:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1023 
+Dec 13, 2021 9:10:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: Starting with options:  {:seed 26, :nb-games 1024, :label-distr-fn ansp, :player-opts {:computation-mode :cpu, :layer-dims (2048 2048), :batch-size 4}}
+Dec 13, 2021 9:10:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 0 
+Dec 13, 2021 9:10:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1 
+Dec 13, 2021 9:10:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 2 
+Dec 13, 2021 9:10:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 3 
+Dec 13, 2021 9:10:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 4 
+Dec 13, 2021 9:11:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 5 
+Dec 13, 2021 9:11:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 6 
+Dec 13, 2021 9:11:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 7 
+Dec 13, 2021 9:11:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 8 
+Dec 13, 2021 9:11:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 9 
+Dec 13, 2021 9:11:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 10 
+Dec 13, 2021 9:11:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 11 
+Dec 13, 2021 9:11:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 12 
+Dec 13, 2021 9:11:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 13 
+Dec 13, 2021 9:11:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 14 
+Dec 13, 2021 9:11:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 15 
+Dec 13, 2021 9:11:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 16 
+Dec 13, 2021 9:11:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 17 
+Dec 13, 2021 9:11:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 18 
+Dec 13, 2021 9:11:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 19 
+Dec 13, 2021 9:12:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 20 
+Dec 13, 2021 9:12:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 21 
+Dec 13, 2021 9:12:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 22 
+Dec 13, 2021 9:12:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 23 
+Dec 13, 2021 9:12:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 24 
+Dec 13, 2021 9:12:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 25 
+Dec 13, 2021 9:12:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 26 
+Dec 13, 2021 9:12:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 27 
+Dec 13, 2021 9:12:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 28 
+Dec 13, 2021 9:12:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 29 
+Dec 13, 2021 9:12:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 30 
+Dec 13, 2021 9:12:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 31 
+Dec 13, 2021 9:12:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 32 
+Dec 13, 2021 9:12:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 33 
+Dec 13, 2021 9:12:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 34 
+Dec 13, 2021 9:13:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 35 
+Dec 13, 2021 9:13:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 36 
+Dec 13, 2021 9:13:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 37 
+Dec 13, 2021 9:13:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 38 
+Dec 13, 2021 9:13:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 39 
+Dec 13, 2021 9:13:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 40 
+Dec 13, 2021 9:13:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 41 
+Dec 13, 2021 9:13:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 42 
+Dec 13, 2021 9:13:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 43 
+Dec 13, 2021 9:13:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 44 
+Dec 13, 2021 9:13:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 45 
+Dec 13, 2021 9:13:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 46 
+Dec 13, 2021 9:13:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 47 
+Dec 13, 2021 9:13:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 48 
+Dec 13, 2021 9:13:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 49 
+Dec 13, 2021 9:14:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 50 
+Dec 13, 2021 9:14:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 51 
+Dec 13, 2021 9:14:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 52 
+Dec 13, 2021 9:14:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 53 
+Dec 13, 2021 9:14:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 54 
+Dec 13, 2021 9:14:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 55 
+Dec 13, 2021 9:14:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 56 
+Dec 13, 2021 9:14:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 57 
+Dec 13, 2021 9:14:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 58 
+Dec 13, 2021 9:14:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 59 
+Dec 13, 2021 9:14:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 60 
+Dec 13, 2021 9:14:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 61 
+Dec 13, 2021 9:14:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 62 
+Dec 13, 2021 9:14:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 63 
+Dec 13, 2021 9:14:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 64 
+Dec 13, 2021 9:14:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 65 
+Dec 13, 2021 9:14:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 66 
+Dec 13, 2021 9:14:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 67 
+Dec 13, 2021 9:15:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 68 
+Dec 13, 2021 9:15:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 69 
+Dec 13, 2021 9:15:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 70 
+Dec 13, 2021 9:15:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 71 
+Dec 13, 2021 9:15:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 72 
+Dec 13, 2021 9:15:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 73 
+Dec 13, 2021 9:15:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 74 
+Dec 13, 2021 9:15:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 75 
+Dec 13, 2021 9:15:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 76 
+Dec 13, 2021 9:15:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 77 
+Dec 13, 2021 9:15:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 78 
+Dec 13, 2021 9:15:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 79 
+Dec 13, 2021 9:15:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 80 
+Dec 13, 2021 9:15:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 81 
+Dec 13, 2021 9:15:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 82 
+Dec 13, 2021 9:15:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 83 
+Dec 13, 2021 9:16:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 84 
+Dec 13, 2021 9:16:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 85 
+Dec 13, 2021 9:16:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 86 
+Dec 13, 2021 9:16:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 87 
+Dec 13, 2021 9:16:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 88 
+Dec 13, 2021 9:16:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 89 
+Dec 13, 2021 9:16:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 90 
+Dec 13, 2021 9:16:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 91 
+Dec 13, 2021 9:16:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 92 
+Dec 13, 2021 9:16:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 93 
+Dec 13, 2021 9:16:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 94 
+Dec 13, 2021 9:16:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 95 
+Dec 13, 2021 9:16:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 96 
+Dec 13, 2021 9:16:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 97 
+Dec 13, 2021 9:16:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 98 
+Dec 13, 2021 9:16:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 99 
+Dec 13, 2021 9:17:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 100 
+Dec 13, 2021 9:17:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 101 
+Dec 13, 2021 9:17:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 102 
+Dec 13, 2021 9:17:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 103 
+Dec 13, 2021 9:17:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 104 
+Dec 13, 2021 9:17:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 105 
+Dec 13, 2021 9:17:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 106 
+Dec 13, 2021 9:17:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 107 
+Dec 13, 2021 9:17:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 108 
+Dec 13, 2021 9:17:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 109 
+Dec 13, 2021 9:17:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 110 
+Dec 13, 2021 9:17:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 111 
+Dec 13, 2021 9:17:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 112 
+Dec 13, 2021 9:17:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 113 
+Dec 13, 2021 9:17:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 114 
+Dec 13, 2021 9:17:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 115 
+Dec 13, 2021 9:18:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 116 
+Dec 13, 2021 9:18:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 117 
+Dec 13, 2021 9:18:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 118 
+Dec 13, 2021 9:18:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 119 
+Dec 13, 2021 9:18:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 120 
+Dec 13, 2021 9:18:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 121 
+Dec 13, 2021 9:18:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 122 
+Dec 13, 2021 9:18:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 123 
+Dec 13, 2021 9:18:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 124 
+Dec 13, 2021 9:18:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 125 
+Dec 13, 2021 9:18:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 126 
+Dec 13, 2021 9:18:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 127 
+Dec 13, 2021 9:18:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 128 
+Dec 13, 2021 9:18:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 129 
+Dec 13, 2021 9:18:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 130 
+Dec 13, 2021 9:18:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 131 
+Dec 13, 2021 9:19:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 132 
+Dec 13, 2021 9:19:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 133 
+Dec 13, 2021 9:19:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 134 
+Dec 13, 2021 9:19:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 135 
+Dec 13, 2021 9:19:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 136 
+Dec 13, 2021 9:19:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 137 
+Dec 13, 2021 9:19:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 138 
+Dec 13, 2021 9:19:23 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 139 
+Dec 13, 2021 9:19:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 140 
+Dec 13, 2021 9:19:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 141 
+Dec 13, 2021 9:19:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 142 
+Dec 13, 2021 9:19:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 143 
+Dec 13, 2021 9:19:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 144 
+Dec 13, 2021 9:19:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 145 
+Dec 13, 2021 9:19:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 146 
+Dec 13, 2021 9:19:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 147 
+Dec 13, 2021 9:19:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 148 
+Dec 13, 2021 9:19:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 149 
+Dec 13, 2021 9:20:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 150 
+Dec 13, 2021 9:20:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 151 
+Dec 13, 2021 9:20:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 152 
+Dec 13, 2021 9:20:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 153 
+Dec 13, 2021 9:20:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 154 
+Dec 13, 2021 9:20:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 155 
+Dec 13, 2021 9:20:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 156 
+Dec 13, 2021 9:20:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 157 
+Dec 13, 2021 9:20:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 158 
+Dec 13, 2021 9:20:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 159 
+Dec 13, 2021 9:20:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 160 
+Dec 13, 2021 9:20:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 161 
+Dec 13, 2021 9:20:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 162 
+Dec 13, 2021 9:20:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 163 
+Dec 13, 2021 9:20:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 164 
+Dec 13, 2021 9:20:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 165 
+Dec 13, 2021 9:20:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 166 
+Dec 13, 2021 9:20:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 167 
+Dec 13, 2021 9:20:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 168 
+Dec 13, 2021 9:21:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 169 
+Dec 13, 2021 9:21:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 170 
+Dec 13, 2021 9:21:07 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 171 
+Dec 13, 2021 9:21:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 172 
+Dec 13, 2021 9:21:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 173 
+Dec 13, 2021 9:21:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 174 
+Dec 13, 2021 9:21:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 175 
+Dec 13, 2021 9:21:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 176 
+Dec 13, 2021 9:21:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 177 
+Dec 13, 2021 9:21:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 178 
+Dec 13, 2021 9:21:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 179 
+Dec 13, 2021 9:21:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 180 
+Dec 13, 2021 9:21:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 181 
+Dec 13, 2021 9:21:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 182 
+Dec 13, 2021 9:21:48 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 183 
+Dec 13, 2021 9:21:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 184 
+Dec 13, 2021 9:21:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 185 
+Dec 13, 2021 9:21:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 186 
+Dec 13, 2021 9:22:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 187 
+Dec 13, 2021 9:22:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 188 
+Dec 13, 2021 9:22:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 189 
+Dec 13, 2021 9:22:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 190 
+Dec 13, 2021 9:22:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 191 
+Dec 13, 2021 9:22:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 192 
+Dec 13, 2021 9:22:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 193 
+Dec 13, 2021 9:22:29 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 194 
+Dec 13, 2021 9:22:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 195 
+Dec 13, 2021 9:22:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 196 
+Dec 13, 2021 9:22:39 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 197 
+Dec 13, 2021 9:22:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 198 
+Dec 13, 2021 9:22:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 199 
+Dec 13, 2021 9:22:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 200 
+Dec 13, 2021 9:22:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 201 
+Dec 13, 2021 9:22:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 202 
+Dec 13, 2021 9:23:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 203 
+Dec 13, 2021 9:23:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 204 
+Dec 13, 2021 9:23:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 205 
+Dec 13, 2021 9:23:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 206 
+Dec 13, 2021 9:23:13 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 207 
+Dec 13, 2021 9:23:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 208 
+Dec 13, 2021 9:23:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 209 
+Dec 13, 2021 9:23:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 210 
+Dec 13, 2021 9:23:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 211 
+Dec 13, 2021 9:23:30 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 212 
+Dec 13, 2021 9:23:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 213 
+Dec 13, 2021 9:23:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 214 
+Dec 13, 2021 9:23:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 215 
+Dec 13, 2021 9:23:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 216 
+Dec 13, 2021 9:23:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 217 
+Dec 13, 2021 9:23:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 218 
+Dec 13, 2021 9:23:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 219 
+Dec 13, 2021 9:23:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 220 
+Dec 13, 2021 9:24:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 221 
+Dec 13, 2021 9:24:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 222 
+Dec 13, 2021 9:24:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 223 
+Dec 13, 2021 9:24:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 224 
+Dec 13, 2021 9:24:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 225 
+Dec 13, 2021 9:24:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 226 
+Dec 13, 2021 9:24:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 227 
+Dec 13, 2021 9:24:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 228 
+Dec 13, 2021 9:24:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 229 
+Dec 13, 2021 9:24:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 230 
+Dec 13, 2021 9:24:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 231 
+Dec 13, 2021 9:24:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 232 
+Dec 13, 2021 9:24:46 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 233 
+Dec 13, 2021 9:24:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 234 
+Dec 13, 2021 9:24:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 235 
+Dec 13, 2021 9:24:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 236 
+Dec 13, 2021 9:25:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 237 
+Dec 13, 2021 9:25:05 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 238 
+Dec 13, 2021 9:25:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 239 
+Dec 13, 2021 9:25:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 240 
+Dec 13, 2021 9:25:15 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 241 
+Dec 13, 2021 9:25:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 242 
+Dec 13, 2021 9:25:22 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 243 
+Dec 13, 2021 9:25:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 244 
+Dec 13, 2021 9:25:28 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 245 
+Dec 13, 2021 9:25:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 246 
+Dec 13, 2021 9:25:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 247 
+Dec 13, 2021 9:25:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 248 
+Dec 13, 2021 9:25:41 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 249 
+Dec 13, 2021 9:25:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 250 
+Dec 13, 2021 9:25:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 251 
+Dec 13, 2021 9:25:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 252 
+Dec 13, 2021 9:25:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 253 
+Dec 13, 2021 9:25:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 254 
+Dec 13, 2021 9:26:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 255 
+Dec 13, 2021 9:26:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: Starting with options:  {:seed 26, :nb-games 1024, :label-distr-fn ansp, :player-opts {:computation-mode :cpu, :layer-dims (2048 2048), :batch-size 16}}
+Dec 13, 2021 9:26:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 0 
+Dec 13, 2021 9:26:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1 
+Dec 13, 2021 9:26:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 2 
+Dec 13, 2021 9:26:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 3 
+Dec 13, 2021 9:26:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 4 
+Dec 13, 2021 9:26:51 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 5 
+Dec 13, 2021 9:27:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 6 
+Dec 13, 2021 9:27:09 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 7 
+Dec 13, 2021 9:27:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 8 
+Dec 13, 2021 9:27:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 9 
+Dec 13, 2021 9:27:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 10 
+Dec 13, 2021 9:27:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 11 
+Dec 13, 2021 9:27:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 12 
+Dec 13, 2021 9:27:54 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 13 
+Dec 13, 2021 9:28:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 14 
+Dec 13, 2021 9:28:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 15 
+Dec 13, 2021 9:28:19 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 16 
+Dec 13, 2021 9:28:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 17 
+Dec 13, 2021 9:28:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 18 
+Dec 13, 2021 9:28:43 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 19 
+Dec 13, 2021 9:28:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 20 
+Dec 13, 2021 9:28:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 21 
+Dec 13, 2021 9:29:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 22 
+Dec 13, 2021 9:29:10 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 23 
+Dec 13, 2021 9:29:17 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 24 
+Dec 13, 2021 9:29:24 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 25 
+Dec 13, 2021 9:29:31 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 26 
+Dec 13, 2021 9:29:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 27 
+Dec 13, 2021 9:29:44 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 28 
+Dec 13, 2021 9:29:52 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 29 
+Dec 13, 2021 9:29:59 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 30 
+Dec 13, 2021 9:30:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 31 
+Dec 13, 2021 9:30:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 32 
+Dec 13, 2021 9:30:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 33 
+Dec 13, 2021 9:30:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 34 
+Dec 13, 2021 9:30:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 35 
+Dec 13, 2021 9:30:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 36 
+Dec 13, 2021 9:30:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 37 
+Dec 13, 2021 9:30:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 38 
+Dec 13, 2021 9:31:04 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 39 
+Dec 13, 2021 9:31:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 40 
+Dec 13, 2021 9:31:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 41 
+Dec 13, 2021 9:31:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 42 
+Dec 13, 2021 9:31:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 43 
+Dec 13, 2021 9:31:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 44 
+Dec 13, 2021 9:31:47 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 45 
+Dec 13, 2021 9:31:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 46 
+Dec 13, 2021 9:32:00 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 47 
+Dec 13, 2021 9:32:06 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 48 
+Dec 13, 2021 9:32:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 49 
+Dec 13, 2021 9:32:20 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 50 
+Dec 13, 2021 9:32:27 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 51 
+Dec 13, 2021 9:32:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 52 
+Dec 13, 2021 9:32:42 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 53 
+Dec 13, 2021 9:32:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 54 
+Dec 13, 2021 9:32:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 55 
+Dec 13, 2021 9:33:03 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 56 
+Dec 13, 2021 9:33:11 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 57 
+Dec 13, 2021 9:33:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 58 
+Dec 13, 2021 9:33:25 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 59 
+Dec 13, 2021 9:33:32 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 60 
+Dec 13, 2021 9:33:38 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 61 
+Dec 13, 2021 9:33:45 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 62 
+Dec 13, 2021 9:33:53 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 63 
+Dec 13, 2021 9:34:01 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: Starting with options:  {:seed 26, :nb-games 1024, :label-distr-fn ansp, :player-opts {:computation-mode :cpu, :layer-dims (2048 2048), :batch-size 64}}
+Dec 13, 2021 9:34:02 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 0 
+Dec 13, 2021 9:34:26 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1 
+Dec 13, 2021 9:34:49 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 2 
+Dec 13, 2021 9:35:12 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 3 
+Dec 13, 2021 9:35:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 4 
+Dec 13, 2021 9:35:56 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 5 
+Dec 13, 2021 9:36:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 6 
+Dec 13, 2021 9:36:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 7 
+Dec 13, 2021 9:36:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 8 
+Dec 13, 2021 9:37:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 9 
+Dec 13, 2021 9:37:37 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 10 
+Dec 13, 2021 9:37:57 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 11 
+Dec 13, 2021 9:38:16 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 12 
+Dec 13, 2021 9:38:36 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 13 
+Dec 13, 2021 9:38:55 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 14 
+Dec 13, 2021 9:39:14 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 15 
+Dec 13, 2021 9:39:33 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: Starting with options:  {:seed 26, :nb-games 1024, :label-distr-fn ansp, :player-opts {:computation-mode :cpu, :layer-dims (2048 2048), :batch-size 128}}
+Dec 13, 2021 9:39:35 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 0 
+Dec 13, 2021 9:40:21 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 1 
+Dec 13, 2021 9:41:08 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 2 
+Dec 13, 2021 9:41:50 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 3 
+Dec 13, 2021 9:42:34 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 4 
+Dec 13, 2021 9:43:18 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 5 
+Dec 13, 2021 9:43:58 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 6 
+Dec 13, 2021 9:44:40 PM clojure.tools.logging$eval142$fn__145 invoke
+INFO: run-and-measure-game-batch : call # 7 
