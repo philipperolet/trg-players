@@ -41,7 +41,7 @@
 
 (defn parse-all
   [measure-key nb-games computation-mode]
-  (let [commit "a1907ad"
+  (let [commit "1f5a4ad"
         outfile
         (format "xps/results/%s-%s-%s-%s-%s.out"
                 (ns-name *ns*) nb-games computation-mode "" commit)
