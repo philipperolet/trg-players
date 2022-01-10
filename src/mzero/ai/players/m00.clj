@@ -131,8 +131,12 @@
              ::step-measure-fn (:step-measure-fn opts))))
 
   (update-player [player {:as world, :keys [::gs/game-state ::aiw/game-step]}]
-    (let [flattened-input-matrix
-          (reduce into (mzs/stm-input-vector (-> player ::mzs/senses)))
+    (let [forward-pass
+          (fn [player]
+            (update player :ann-impl
+                    mzann/forward-pass!
+                    ;; flattened input matrix
+                    [(reduce into (mzs/stm-input-vector (-> player ::mzs/senses)))]))
           step-measure #((::step-measure-fn player) world %)]
       (binding [g/*rnd* (-> player :rng)]
         (-> player
@@ -140,7 +144,7 @@
             step-measure
             (update ::mzs/senses mzs/update-senses world player)
             (m00r/backward-pass game-state game-step)
-            (update :ann-impl mzann/forward-pass! [flattened-input-matrix])
+            forward-pass
             make-move))))
   
   Releaseable
