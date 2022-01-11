@@ -276,6 +276,12 @@ pendant quelques tours."
 
 (s/def ::senses (s/keys :req [::input-vector ::params ::data]))
 
+(defn- reward [new-game-state old-game-state]
+  (-> (- (::gs/score new-game-state) (::gs/score old-game-state))
+      (- (if (= (::gs/player-position new-game-state)
+                (::gs/player-position old-game-state)) 0.1 0.0))
+      double))
+
 (defn- update-data
   "Updates the senses data given player & world"
   [{:as old-data, {:keys [::gs/score ::gs/player-position]} ::gs/game-state}
@@ -286,7 +292,7 @@ pendant quelques tours."
    ::previous-score score
    ::previous-datapoints (cons {::state (-> senses ::input-vector)
                                 ::action next-movement
-                                ::reward (float (- (-> game-state ::gs/score) score))}
+                                ::reward (reward game-state (::gs/game-state old-data))}
                                (-> old-data ::previous-datapoints))})
 
 (s/fdef update-input-vector

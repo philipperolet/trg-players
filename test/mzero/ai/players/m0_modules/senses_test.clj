@@ -158,27 +158,31 @@
         ;; |     |
         ;; |  o  |
         (binding [g/*rnd* (:rng player)]
-          (is (= (-> (::sut/senses player)
-                     (sut/update-senses world player)
-                     (dissoc ::sut/params))
-                 #::sut{:input-vector (vec (concat [0.0 0.0 1.0 0.5 0.0]
+          (let [updated-senses
+                (-> (::sut/senses player)
+                    (sut/update-senses world player)
+                    (dissoc ::sut/params))]
+            
+            (is (= (::sut/input-vector updated-senses)
+                   (vec (concat [0.0 0.0 1.0 0.5 0.0]
                                                    [0.0 0.0 1.0 0.0 0.5]
                                                    [0.0 0.0 0.0 0.0 0.0]
                                                    [0.0 0.0 0.0 0.0 0.0]
                                                    [0.0 0.0 0.5 0.0 0.0]
                                                    [1.0 0.0]
                                                    [0.4493142366409302
-                                                    0.39644312858581543]))
-                        :data {::sut/previous-score 0
-                               ::sut/last-position [5 12]
-                               ::sut/previous-datapoints
-                               '({::sut/state [0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 0.5927296876907349 0.0223122239112854]
-                                  ::sut/action :left
-                                  ::sut/reward 0.0}
-                                 {::sut/state [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
-                                  ::sut/action nil
-                                  ::sut/reward 0.0})
-                               ::gs/game-state (::gs/game-state world)}})))))))
+                                                    0.39644312858581543]))))
+            (is (=  (::sut/data updated-senses)
+                    {::sut/previous-score 0
+                     ::sut/last-position [5 12]
+                     ::sut/previous-datapoints
+                     '({::sut/state [0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 0.5927296876907349 0.0223122239112854]
+                        ::sut/action :left
+                        ::sut/reward 0.0}
+                       {::sut/state [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
+                        ::sut/action nil
+                        ::sut/reward -0.1})
+                     ::gs/game-state (::gs/game-state world)}))))))))
 
 (deftest vision-cell-index
   (is (= (sut/vision-cell-index [0 0])
