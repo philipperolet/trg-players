@@ -62,10 +62,10 @@
         (->> (aip/load-player "m00" m00-opts-difseed reference-world)
              (aim/run (aim/parse-run-args "-v WARNING -n 1000") reference-world)
              :world ::gs/game-state)]
-    (is (= (-> result1 ::gs/player-position) [22 12]))
-    (is (= (-> result1 ::gs/score) 29))
-    (is (= (-> result2 ::gs/player-position) [2 28]))
-    (is (= (-> result2 ::gs/score) 42))))
+    (is (= (-> result1 ::gs/player-position) [3 18])) ;; [22 12] with stm =1
+    (is (= (-> result1 ::gs/score) 46)) ;; 29
+    (is (= (-> result2 ::gs/player-position) [1 3])) ;; [2 28]
+    (is (= (-> result2 ::gs/score) 34)))) ;; 42
 
 (deftest ^:integration m00-run
   :unstrumented

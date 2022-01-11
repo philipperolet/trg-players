@@ -8,9 +8,9 @@
             [mzero.utils.xp :as xp]))
 
 (def mean-res
-  {(repeat 4 256) {mzi/draft1-sparse-weights 88.33333
-                   mzi/angle-sparse-weights 101.0}
-   (repeat 3 512) {mzi/draft1-sparse-weights 72.6666
+  {(repeat 4 256) {mzi/draft1-sparse-weights 82.66666
+                   mzi/angle-sparse-weights 101.66666}
+   (repeat 3 512) {mzi/draft1-sparse-weights 84.33333
                    mzi/angle-sparse-weights 102.0}})
 
 (deftest ^:integration refactoring-non-regression
