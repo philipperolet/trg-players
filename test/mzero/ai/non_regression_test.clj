@@ -33,10 +33,10 @@
                      :weights-generation-fn mzi/angle-sparse-weights}
               :type "m00"
               :result 102.0}
-             #_{:opts {:layer-dims (repeat 3 512)
+             {:opts {:layer-dims (repeat 2 256)
                      :weights-generation-fn mzi/angle-sparse-weights}
               :type "m0-dqn"
-              :result 102.0}]]
+              :result 87.0}]]
       (let [opts
             (merge (:opts test-seq)
                    {:ann-impl {:act-fns mza/usual
