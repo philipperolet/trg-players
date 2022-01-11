@@ -44,7 +44,8 @@
             [mzero.game.state :as gs]
             [mzero.utils.modsubvec :refer [modsubvec]]
             [mzero.utils.utils :as u]
-            [mzero.ai.players.m0-modules.motoneurons :as mzm]))
+            [mzero.ai.players.m0-modules.motoneurons :as mzm]
+            [mzero.ai.world :as aiw]))
 
 
 (def short-term-memory-length
@@ -319,11 +320,19 @@ pendant quelques tours."
     (initialize-senses brain-tau game-state)
     (throw (java.lang.RuntimeException. "Vision depth incompatible w. game board"))))
 
+(defn- reset-if-new-game
+  [{:as senses {:keys [::brain-tau]} ::params}
+   {:as world :keys [::gs/game-state ::aiw/game-step]}]
+  (if (= 0 game-step) ;; new game
+    (initialize-senses! brain-tau game-state)
+    senses))
+
 (defn update-senses
   "Compute a new input-vector using its previous value and various game data,
   updating score with the previous score"
   [senses world player]
   (-> senses
+      (reset-if-new-game world)
       (update ::data update-data world player)
       (#(update % ::input-vector update-input-vector (::params %) (::data %)))))
 

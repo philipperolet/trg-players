@@ -24,7 +24,8 @@
              #(cons (:next-movement player) %)))
 
 (defn- mock-game-measure [world player]
-  (is (= sut/nb-steps-per-game (-> player :step-measurements :moves count)))
+  (is (= (dec sut/nb-steps-per-game) ;; no measurement at step 0
+         (-> player :step-measurements :moves count)))
   {:ups (->> player :step-measurements :moves (filter #{:up}) count)
    :score (-> world ::gs/game-state ::gs/score)})
 
@@ -124,14 +125,14 @@
                   (fn [ann-impl target-distr-tensor]
                     (-> (update ann-impl :bp-requests #(or % []))
                         (update :bp-requests conj target-distr-tensor)))
-                  m00/reset-senses-if-new-game
-                  (let [reset-fn (var-get #'m00/reset-senses-if-new-game)]
-                    (fn [p gs s]
-                      (if (zero? s)
-                        (-> (reset-fn p gs s)
+                  m00/record-measure
+                  (let [reset-fn (var-get #'m00/record-measure)]
+                    (fn [p w]
+                      (if (zero? (-> w ::aiw/game-step))
+                        (-> p
                             store-bp-requests
                             (assoc :rng (java.util.Random. 3)))
-                        p)))]
+                        (reset-fn p w))))]
       (let [run-opts {:layer-dims [64 64]}
             single-player-run (sut/run-games run-opts 9 42)
             _3players-run (sut/run-games (assoc run-opts :batch-size 3) 9 42)

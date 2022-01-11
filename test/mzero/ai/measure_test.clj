@@ -66,4 +66,4 @@
     (let [result
           (-> (mzt/run-games {:layer-dims [128 128 128]} 1 42)
               :game-measurements)]
-      (is (u/almost= (-> result first :wall-move-ratio) 4/7)))))
+      (is (u/almost= (-> result first :wall-move-ratio) 4/6)))))

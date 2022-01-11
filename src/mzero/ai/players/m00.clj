@@ -88,6 +88,13 @@
              (-> player mzm/motoneuron-values
                  (next-direction label-distribution-fn)))))
 
+(defn- select-action [player]
+  (let [flattened-input-matrix
+        (reduce into (mzs/stm-input-vector (-> player ::mzs/senses)))]
+    (-> player
+        (update :ann-impl mzann/forward-pass! [flattened-input-matrix])
+        make-move)))
+
 (def m00-default-opts
   {:step-measure-fn (fn [_ p] p)})
 
@@ -106,21 +113,15 @@
     :else
     (throw (ex-info "Invalid ann spec: " ann-impl))))
 
-(defn- reset-senses-if-new-game
-  [player game-state game-step]
-  (let [brain-tau (-> player ::mzs/senses ::mzs/params ::mzs/brain-tau)
-        new-game? (= 0 game-step)]
-    (cond-> player
-      new-game?
-      (assoc ::mzs/senses (mzs/initialize-senses! brain-tau game-state)))))
+(defn- record-measure
+  [player {:as world :keys [::aiw/game-step]}]
+  (cond->> player
+      (not= 0 game-step) ;; nothing to measure when game starts
+      ((::step-measure-fn player) world)))
 
-
-(defrecord M00Player []
-  aip/Player
-  (init-player
-    [player opts {:as world, :keys [::gs/game-state]}]
-    (assert (s/valid? ::m00-opts opts) opts)
-    (let [opts (merge m00-default-opts opts)
+(defn initialize-player [player opts {:as world, :keys [::gs/game-state]}]
+  (assert (s/valid? ::m00-opts opts) opts)
+  (let [opts (merge m00-default-opts opts)
           seed (. (:rng player) nextInt)
           ann-impl (initialize-ann-impl opts seed)          
           brain-tau (mzann/nb-layers ann-impl)
@@ -130,22 +131,17 @@
              :ann-impl ann-impl
              ::step-measure-fn (:step-measure-fn opts))))
 
+(defrecord M00Player []
+  aip/Player
+  (init-player [player opts world] (initialize-player player opts world))
+
   (update-player [player {:as world, :keys [::gs/game-state ::aiw/game-step]}]
-    (let [forward-pass
-          (fn [player]
-            (update player :ann-impl
-                    mzann/forward-pass!
-                    ;; flattened input matrix
-                    [(reduce into (mzs/stm-input-vector (-> player ::mzs/senses)))]))
-          step-measure #((::step-measure-fn player) world %)]
-      (binding [g/*rnd* (-> player :rng)]
-        (-> player
-            (reset-senses-if-new-game game-state game-step)
-            step-measure
-            (update ::mzs/senses mzs/update-senses world player)
-            (m00r/backward-pass game-state game-step)
-            forward-pass
-            make-move))))
+    (binding [g/*rnd* (-> player :rng)]
+      (-> player
+          (record-measure world)
+          (update ::mzs/senses mzs/update-senses world player)
+          (m00r/backward-pass game-state game-step)
+          select-action)))
   
   Releaseable
   (release [{:keys [ann-impl]}]
