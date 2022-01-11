@@ -89,8 +89,7 @@
 
 (defn sequential-forward-pass!
   "Forward pass: run the network of `layers` using an initial
-  `input-tensor`. Return the `raw-outputs` of the last layer--NOT the
-  outputs. Almost everything in `layers` is changed.
+  `input-tensor`. Almost everything in `layers` is changed.
 
   For each layers it will compute weights * input and run the
   activation function. If called with flag `plusb?` on, before
@@ -99,7 +98,7 @@
   the rest of the code is aware that inputs' last elements are
   dedicated to this use.
 
-  This pass is deemed sequential because layers are computed in turn
+  This pass is called sequential because layers are computed in turn
   from first to last, with each layer using the new value of its
   previous layer's output, rather than being computed all at once,
   using their previous layer's old output."
@@ -172,7 +171,7 @@
                 (loss-deriv label-distribution-fn target-distribution-tensor)
                 (nc/transfer! rog)))))
 
-(defn- compute-gradients
+(defn- compute-gradients!
   [{:as ann-impl :keys [label-distribution-fn current-batch-size]}
    target-distribution-tensor]  
   (let [compute-last-layer-gradients
@@ -187,14 +186,12 @@
         compute-other-layers-gradients
         (fn [layers]
           (reduce reduce-layer (vector (first layers)) (rest layers)))]
-    (update ann-impl :layers
-            (fn [layers]
-              (-> layers reverse ;; backprop starts form last layer & goes to first
-                  (batch-size-layers current-batch-size)
-                  compute-last-layer-gradients
-                  compute-other-layers-gradients)))))
+    (-> ann-impl :layers reverse ;; backprop starts form last layer & goes to first
+        (batch-size-layers current-batch-size)
+        compute-last-layer-gradients
+        compute-other-layers-gradients)))
 
-(defn- update-weights
+(defn- update-weights!
   [layers discount-factor-matrix]
   (let [update-layer-weights
         (fn [{:as layer :keys [::raw-output-gradients ::inputs]}]
@@ -269,13 +266,13 @@
     (assert (= (-> this :current-batch-size) (count target-distribution-tensor)))
     (computation-setup! this)
     (with-release [discount-factor-matrix (diagonal-matrix this discount-factor)]
-      (->  this
-           (compute-gradients target-distribution-tensor)
-           (update :layers update-weights discount-factor-matrix))))
+      (-> (compute-gradients! this target-distribution-tensor)
+          (update-weights! discount-factor-matrix))
+      this))
   
   (-backward-pass! [this input-tensor target-distribution-tensor discount-factor]
-     (mzann/-forward-pass! this input-tensor)
-     (mzann/-backward-pass! this target-distribution-tensor discount-factor))
+    (-> (mzann/-forward-pass! this input-tensor)
+        (mzann/-backward-pass! target-distribution-tensor discount-factor)))
 
   (-layer-data [{:as this :keys [layers current-batch-size]} lindex lkey]
     (computation-setup! this)
