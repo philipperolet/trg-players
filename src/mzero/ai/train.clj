@@ -13,7 +13,8 @@
             [mzero.utils.random :refer [seeded-seeds]]
             [mzero.utils.utils :as u]
             [mzero.ai.players.m00 :as m00]
-            [mzero.ai.game-runner :as gr]))
+            [mzero.ai.game-runner :as gr]
+            [mzero.ai.players.base :as mzb]))
 
 (def nb-steps-per-game 5000)
 (def default-board-size 30)
@@ -26,7 +27,7 @@
   [{:as opts :keys [batch-size]} worlds]
   ;; mimic the seed used in M00Player for ANN
   (let [seed (. (java.util.Random. (:seed opts)) nextInt)
-        ann-impl (#'m00/initialize-ann-impl opts seed)]
+        ann-impl (#'mzb/initialize-ann-impl opts seed)]
     (map #(-> (aip/load-player "m00" (assoc opts :ann-impl %1) %2)
               (assoc :game-measurements []))
          (mzsmp/shallow-mpanns batch-size ann-impl)

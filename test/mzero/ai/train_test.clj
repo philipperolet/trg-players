@@ -16,7 +16,8 @@
             [mzero.ai.ann.label-distributions :as mzld]
             [mzero.ai.ann.common :as mzc]
             [mzero.utils.xp :as xp]
-            [mzero.game.board :as gb]))
+            [mzero.game.board :as gb]
+            [mzero.ai.players.base :as mzb]))
 
 (defn- mock-step-measure [_ player]
   (update-in player
@@ -125,8 +126,8 @@
                   (fn [ann-impl target-distr-tensor]
                     (-> (update ann-impl :bp-requests #(or % []))
                         (update :bp-requests conj target-distr-tensor)))
-                  m00/record-measure
-                  (let [reset-fn (var-get #'m00/record-measure)]
+                  mzb/record-measure
+                  (let [reset-fn (var-get #'mzb/record-measure)]
                     (fn [p w]
                       (if (zero? (-> w ::aiw/game-step))
                         (-> p

@@ -12,7 +12,7 @@
             [mzero.ai.measure :as mzme]
             [mzero.ai.player :as aip]
             [mzero.ai.players.m0-modules.senses :as mzs]
-            [mzero.ai.players.m00 :as m00]
+            [mzero.ai.players.base :as mzb]
             [mzero.ai.train :as mzt :refer [default-board-size]]
             [mzero.ai.world :as aiw]
             [mzero.game.board :as gb]
@@ -175,7 +175,7 @@
    (reset! curr-seed seed)
    (let [player
          (-> (mzt/run-games opts 1 seed)
-             (update ::m00/step-measure-fn #(partial wrapped-measure-fn %)))
+             (update ::mzb/step-measure-fn #(partial wrapped-measure-fn %)))
          world-seed (first (seeded-seeds seed nb-games 1))]
      (reset! curr-game {:player (mzt/continue-games player (dec nb-games) seed)
                         :world (aiw/world mzt/default-board-size world-seed)})))

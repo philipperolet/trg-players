@@ -16,7 +16,8 @@
             [mzero.game.generation :as gg]
             [mzero.game.state :as gs]
             [mzero.utils.testing :refer [check-spec deftest]]
-            [mzero.utils.utils :as u]))
+            [mzero.utils.utils :as u]
+            [mzero.ai.players.base :as mzb]))
 
 (def seed 44)
 (defn run-n-steps
@@ -108,17 +109,17 @@
 (deftest m00-initialization
   (testing "m00 player can be initialized with an already-existing ann"
     (let [ann
-          (#'sut/create-ann-impl-from-opts
+          (#'mzb/create-ann-impl-from-opts
            {:layer-dims (repeat 11 11)
             :weights-generation-fn mzi/angle-sparse-weights
-            :ann-impl (assoc sut/ann-default-opts :act-fns mza/spike)}
+            :ann-impl (assoc mzb/ann-default-opts :act-fns mza/spike)}
            25)
           test-world (aiw/world 26 26)
           m00 (aip/load-player "m00" {:layer-dims (repeat 11 11) :ann-impl ann} test-world)
           {{:keys [ann-impl]} :player}
           (aim/run (aim/parse-run-args "-v WARNING -n 1") test-world m00)]
       ;; act-fns should not be equal to default
-      (is (not= (:act-fns sut/ann-default-opts) (mzann/act-fns ann-impl)))
+      (is (not= (:act-fns mzb/ann-default-opts) (mzann/act-fns ann-impl)))
       ;; should be equal to what we initialized it with
       (is (= mza/spike (mzann/act-fns ann-impl)))
       ;; and layers too
