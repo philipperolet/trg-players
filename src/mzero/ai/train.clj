@@ -33,9 +33,9 @@
          (mzsmp/shallow-mpanns batch-size ann-impl)
          (take batch-size worlds))))
 
-(defn initial-m00-players
-  [{:as opts :keys [batch-size] :or {batch-size 1}} worlds]
-  (map #(-> (aip/load-player "m00" opts %)
+(defn initial-players
+  [player-type {:as opts :keys [batch-size] :or {batch-size 1}} worlds]
+  (map #(-> (aip/load-player player-type opts %)
             (assoc :game-measurements []))
        (take batch-size worlds)))
 
@@ -95,9 +95,9 @@
   taken via `step-measure` and `game-measure`"
   [{:as opts :keys [batch-size] :or {batch-size 1}} nb-games seed initial-players-fn]
   (assert (s/valid? ::batch-size batch-size))
-  (assert (or (< 1 batch-size) (= initial-m00-players initial-players-fn))
-          "For a single player (batch size 1), the only valid
-          initial-players-fn is inital-m00-players")
+  (assert (or (< 1 batch-size) (not= initial-shallow-players initial-players-fn))
+          "For a single player (batch size 1), the 
+          initial-shallow-players cannot be used as init-players-fn")
   (assert (zero? (mod nb-games batch-size))
           "Number of games must be a multiple of batch size")
   (let [world-seeds (seeded-seeds seed 0 nb-games)
@@ -139,11 +139,8 @@
          (#'clojure.core/serialized-require (symbol "mzero.ai.train-cuda"))
          (apply (resolve (symbol "mzero.ai.train-cuda/run-cuda"))
                 run-games-with-factory nil)))))
-  ([{:as opts :keys [batch-size]} nb-games seed]
-   (let [initial-players-fn
-         (if (and batch-size (< 1 batch-size))
-           initial-shallow-players
-           initial-m00-players)]
+  ([opts nb-games seed]
+   (let [initial-players-fn (partial initial-players "m00")]
      (run-games opts nb-games seed initial-players-fn))))
 
 (defmulti continue-games  

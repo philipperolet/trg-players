@@ -52,7 +52,7 @@
   game measurements. Game measurements are the nb of :up
   moves and the score."
       (let [run-opts {:layer-dims [64 64] :batch-size 3}
-            players (sut/run-games run-opts 6 42 sut/initial-m00-players)
+            players (sut/run-games run-opts 6 42 (partial sut/initial-players "m00"))
             game-measurements (flatten (map :game-measurements players))]
         (is (= (count game-measurements) 6))
         ;; check last measured score correct
@@ -80,13 +80,13 @@
     (testing "Multiple players case"
       (let [run-opts {:layer-dims [64 64] :batch-size 2}
             game-measurements
-            (->> (sut/run-games run-opts 4 42 sut/initial-m00-players)
+            (->> (sut/run-games run-opts 4 42 (partial sut/initial-players "m00"))
                  (map :game-measurements)
                  flatten)
             measurements-rungame
             (map #(dissoc % :moves-per-sec) game-measurements)
             measurements-rungame-and-continue
-            (-> (sut/run-games run-opts 2 42 sut/initial-m00-players)
+            (-> (sut/run-games run-opts 2 42 (partial sut/initial-players "m00"))
                 (sut/continue-games 2 42)
                 (#(map :game-measurements %))
                 flatten
@@ -136,7 +136,7 @@
                         (reset-fn p w))))]
       (let [run-opts {:layer-dims [64 64]}
             single-player-run (sut/run-games run-opts 9 42)
-            _3players-run (sut/run-games (assoc run-opts :batch-size 3) 9 42)
+            _3players-run (sut/run-games (assoc run-opts :batch-size 3) 9 42 sut/initial-shallow-players)
             measurements-single-player (:game-measurements single-player-run)
             bp-requests-single-player
             (flatten (:bp-requests (store-bp-requests single-player-run)))
@@ -187,7 +187,7 @@
       (with-redefs [sut/run-and-measure-game-batch
                     (partial change-world-fn
                              (var-get #'sut/run-and-measure-game-batch))]
-        (is (= 3 (count (sut/run-games run-opts 3 42))))))))
+        (is (= 3 (count (sut/run-games run-opts 3 42 sut/initial-shallow-players))))))))
 
 (deftest ^:integration ^:skip multiplayer-learns-roughly-equally-to-single-player
   (testing "This test illustrates that batch learning using agents
