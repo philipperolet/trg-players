@@ -24,16 +24,26 @@
   1/the change should indeed impact the result of this
   test, which hopefully should not happen too much;
   2/the change doesn't break anything"
-    (doseq [layer-dims [(repeat 4 256)
-                        (repeat 3 512)]
-            init-fn [mzi/draft1-sparse-weights mzi/angle-sparse-weights]]
-      (let [opts {:layer-dims layer-dims
-                  :weights-generation-fn init-fn
-                  :ann-impl {:act-fns mza/usual
-                             :label-distribution-fn mzld/softmax}}
+    (doseq [test-seq
+            [{:opts {:layer-dims (repeat 4 256)
+                     :weights-generation-fn mzi/draft1-sparse-weights}
+              :type "m00"
+              :result 82.66666}
+             {:opts {:layer-dims (repeat 3 512)
+                     :weights-generation-fn mzi/angle-sparse-weights}
+              :type "m00"
+              :result 102.0}
+             #_{:opts {:layer-dims (repeat 3 512)
+                     :weights-generation-fn mzi/angle-sparse-weights}
+              :type "m0-dqn"
+              :result 102.0}]]
+      (let [opts
+            (merge (:opts test-seq)
+                   {:ann-impl {:act-fns mza/usual
+                               :label-distribution-fn mzld/softmax}})
             measurements
-            (->> (mzt/run-games opts 3 27)
+            (->> (mzt/run-games opts 3 27 (partial mzt/initial-players (:type test-seq)))
                  :game-measurements)]
-        (is (u/almost= (get-in mean-res [layer-dims init-fn])
+        (is (u/almost= (:result test-seq)
                        (xp/mean (map :score measurements))) opts)))))
 

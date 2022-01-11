@@ -261,8 +261,11 @@ pendant quelques tours."
 (s/def ::last-position ::gs/player-position)
 (s/def ::params (s/keys :req [::brain-tau]))
 
+(s/def ::state ::input-vector)
+(s/def ::action (fn [v] (some #(= % v) mzm/movements)))
+(s/def ::reward float?)
 ;; couples of inputs/outputs (outputs = movements)
-(s/def ::datapoint (s/tuple ::input-vector (fn [v] (some #(= % v) mzm/movements))))
+(s/def ::datapoint (s/keys :req [::state ::action ::reward]))
 (s/def ::previous-datapoints (s/every ::datapoint))
 
 (s/def ::data
@@ -281,7 +284,9 @@ pendant quelques tours."
   {::gs/game-state game-state
    ::last-position player-position
    ::previous-score score
-   ::previous-datapoints (cons [(-> senses ::input-vector) next-movement]
+   ::previous-datapoints (cons {::state (-> senses ::input-vector)
+                                ::action next-movement
+                                ::reward (float (- (-> game-state ::gs/score) score))}
                                (-> old-data ::previous-datapoints))})
 
 (s/fdef update-input-vector
@@ -339,7 +344,7 @@ pendant quelques tours."
 (defn stm-input-vector
   [{:as senses :keys [::input-vector ::previous-datapoints]}]
   (->> previous-datapoints
-       (map first)
+       (map ::state)
        (take (dec short-term-memory-length))
        (cons input-vector)
        vec))

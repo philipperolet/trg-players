@@ -171,7 +171,13 @@
                                                     0.39644312858581543]))
                         :data {::sut/previous-score 0
                                ::sut/last-position [5 12]
-                               ::sut/previous-datapoints '([[0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 0.5927296876907349 0.0223122239112854] :left] [[0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0] nil])
+                               ::sut/previous-datapoints
+                               '({::sut/state [0.0 0.5 0.0 0.0 0.0 0.0 0.0 0.5 0.0 0.0 0.5 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 0.5927296876907349 0.0223122239112854]
+                                  ::sut/action :left
+                                  ::sut/reward 0.0}
+                                 {::sut/state [0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0]
+                                  ::sut/action nil
+                                  ::sut/reward 0.0})
                                ::gs/game-state (::gs/game-state world)}})))))))
 
 (deftest vision-cell-index
@@ -186,7 +192,10 @@
          (dec (* sut/visible-matrix-edge-size sut/visible-matrix-edge-size)))))
 
 (deftest stm-input-vector-test
-  (let [previous-dps '([[1 2] :up] [[3 4] :down] [[4 5] :left] [[5 6] :left])
+  (let [previous-dps '({::sut/state [1 2] ::sut/action :up}
+                       {::sut/state [3 4] ::sut/action :down}
+                       {::sut/state [4 5] ::sut/action :left}
+                       {::sut/state [5 6] ::sut/action :left})
         senses {::sut/input-vector [7 7]
                 ::sut/previous-datapoints previous-dps}]
     (is (= [[7 7] [1 2] [3 4] [4 5]] (sut/stm-input-vector senses)))))
