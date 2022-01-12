@@ -200,6 +200,5 @@
                        {::sut/state [3 4] ::sut/action :down}
                        {::sut/state [4 5] ::sut/action :left}
                        {::sut/state [5 6] ::sut/action :left})
-        senses {::sut/input-vector [7 7]
-                ::sut/previous-datapoints previous-dps}]
-    (is (= [[7 7] [1 2] [3 4] [4 5]] (sut/stm-input-vector senses)))))
+        input-vector [7 7]]
+    (is (= [[7 7] [1 2] [3 4] [4 5]] (sut/stm-input-vector previous-dps input-vector)))))

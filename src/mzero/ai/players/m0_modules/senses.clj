@@ -348,9 +348,11 @@ pendant quelques tours."
       (#(update % ::input-vector update-input-vector (::params %) (::data %)))))
 
 (defn stm-input-vector
-  [{:as senses :keys [::input-vector ::previous-datapoints]}]
-  (->> previous-datapoints
-       (map ::state)
-       (take (dec short-term-memory-length))
-       (cons input-vector)
-       vec))
+  ([previous-datapoints input-vector]
+   (->> previous-datapoints
+        (map ::state)
+        (take (dec short-term-memory-length))
+        (cons input-vector)
+        vec))
+  ([{:as senses :keys [::input-vector ::data]}]
+   (stm-input-vector (::previous-datapoints data) input-vector)))
