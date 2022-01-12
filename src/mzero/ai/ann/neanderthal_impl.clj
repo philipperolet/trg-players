@@ -129,56 +129,28 @@
         (update ::raw-output-gradients compute-raw-output-gradients)
         (cons prev-layers))))
 
-(defn- loss-deriv
-  "Compute the derivative of the loss wrt final output neurons' values,
-  a.k.a. `motoneurons-tensor`, assuming class probabilities that the
-  ANN outputs are computed by applying `label-distribution-fn` to
-  `motoneurons`, with the real class distribution given by
-  `target-distribution-tensor`. A `nil` value in a target distribution
-  vector indicates that backprop should not occur on this output
-  neuron--i.e. it forces a null gradient.Details of cross entropy loss
-  derivative computation are [here](doc/cel-derivations.jpg)
-  and [here](doc/cel-normalized-relin-softplus.jpg)"
-  [motoneurons-tensor label-distribution-fn target-distribution-tensor]
-  (let [gradient-scaling-fn (mzld/gradient-scaling-factor label-distribution-fn)
-        substract-or-cancel-nil
-        (fn [label-distribution target-distribution-vector]
-          (map #(if (nil? %2) 0.0 (- %1 %2))
-               label-distribution
-               target-distribution-vector))
-        scale-by-gradient-factor
-        (fn [proba-vect mn-vect]
-          (map (fn [motoneuron proba-value]
-                 (* (gradient-scaling-fn motoneuron) proba-value))
-               mn-vect proba-vect))]
-    (-> (fn [motoneurons-vector target-distribution-vector]
-           (-> (label-distribution-fn motoneurons-vector)
-               (substract-or-cancel-nil target-distribution-vector)
-               (scale-by-gradient-factor motoneurons-vector)))
-        (map motoneurons-tensor target-distribution-tensor))))
-
 (defn- compute-last-layer-gradients
   "Compute gradients for last layer (derivative of
   loss). See [there](doc/ce-loss-deriv.pdf)
   and [there](doc/ce-loss-multiclass.pdf)."
   [{:as last-layer :keys [::raw-outputs]}
    target-distribution-tensor
-   label-distribution-fn]
+   loss-gradient-fn]
   (update last-layer ::raw-output-gradients
           (fn [rog]
             (-> raw-outputs
                 mzc/tens->vec
-                (loss-deriv label-distribution-fn target-distribution-tensor)
+                (loss-gradient-fn target-distribution-tensor)
                 (nc/transfer! rog)))))
 
 (defn- compute-gradients!
-  [{:as ann-impl :keys [label-distribution-fn current-batch-size]}
+  [{:as ann-impl :keys [loss-gradient-fn current-batch-size]}
    target-distribution-tensor]  
   (let [compute-last-layer-gradients
         (fn [layers]
           (-> (compute-last-layer-gradients (first layers)
                                             target-distribution-tensor
-                                            label-distribution-fn)
+                                            loss-gradient-fn)
               (cons (rest layers))))
         reduce-layer
         (fn [prev-layers next-layer]

@@ -15,7 +15,8 @@
             [mzero.utils.testing :refer [deftest]]
             [mzero.utils.utils :as u]
             [uncomplicate.neanderthal.core :as nc]
-            [uncomplicate.neanderthal.native :as nn]))
+            [uncomplicate.neanderthal.native :as nn]
+            [mzero.ai.ann.losses :as mzl]))
 
 (deftest sequential-fp-speed-test
   :unstrumented
@@ -29,7 +30,9 @@
           (mzann/initialize (sut/->NeanderthalImpl)
                             (mzn/new-layers dims mzi/draft1-sparse-weights 42)
                             {:act-fns mza/usual
-                             :label-distribution-fn mzld/softmax})
+                             :label-distribution-fn mzld/softmax
+                             :loss-gradient-fn
+                             (partial mzl/cross-entropy-loss-gradient mzld/softmax)})
           inputs
           (binding [g/*rnd* (java.util.Random. 42)]
             [(vec (repeatedly dim #(g/float)))])
@@ -70,7 +73,8 @@
           (-> (mzann/initialize (sut/->NeanderthalImpl)
                                 layers
                                 {:act-fns mza/usual
-                                 :label-distribution-fn mzld/softmax})
+                                 :label-distribution-fn mzld/softmax
+                                 :loss-gradient-fn (partial mzl/cross-entropy-loss-gradient mzld/softmax)})
               (sut/sequential-forward-pass! [[0.5 0.425 1.0]] false))]
       (doseq [[layer-idx result] [[0 [[1.0 0.9]]]
                                   [1 [[1.0 1.0]]]
@@ -90,7 +94,9 @@
         (-> (mzann/initialize (sut/->NeanderthalImpl)
                               [layer1 layer2 layer3]
                               {:act-fns mza/usual
-                               :label-distribution-fn mzld/softmax})
+                               :label-distribution-fn mzld/softmax
+                               :loss-gradient-fn
+                               (partial mzl/cross-entropy-loss-gradient mzld/softmax)})
             (mzann/forward-pass! [[0.5 0.425 1.0]]))]
     (is (mzc/coll-almost= (mzann/layer-data test-neanderthal-impl 0 "outputs")
                           [[1.0 1.0]]))
@@ -227,12 +233,4 @@
     (is (= 0.0 (nc/asum (-> test-impl :layers last ::sut/weights (nc/row 1)))))
     (mzann/clear-neuron! test-impl -1 0)
     (is (= 0.0 (nc/asum (-> test-impl :layers last ::sut/weights (nc/row 0)))))))
-
-(deftest loss-deriv-test
-  (are [motos-tensor ldf tdf res] (= (#'sut/loss-deriv motos-tensor ldf tdf) res)
-    [[50.0 0.0 -10.0] [0.0 30.0 30.0]] mzld/softmax
-    [[1.0 0.0 0.0] [1.0 0.0 0.0]] [[0.0 0.0 0.0] [-1.0 0.5 0.5]]
-    
-    [[0.0 50.0 50.0 50.0 50.0]] mzld/softmax
-    [[0.0 0.0 nil 0.25 0.75]] [[0.0 0.25 0.0 0.0 -0.5]]))
 

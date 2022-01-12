@@ -8,14 +8,16 @@
             [mzero.ai.ann.initialization :as mzi]
             [mzero.ai.ann.label-distributions :as mzld]
             [mzero.ai.ann.neanderthal-impl :as sut]
-            [mzero.ai.ann.network :as mzn]))
+            [mzero.ai.ann.network :as mzn]
+            [mzero.ai.ann.losses :as mzl]))
 
 (def layer-dims [16 128 128 16])
 (defn test-ann-impl []
   (mzann/initialize (sut/->NeanderthalImpl)
                     (mzn/new-layers layer-dims mzi/random-weights 25)
                     {:act-fns mza/usual
-                     :label-distribution-fn mzld/ansp}))
+                     :label-distribution-fn mzld/ansp
+                     :loss-gradient-fn (partial mzl/cross-entropy-loss-gradient mzld/ansp)}))
 
 (defn- generate-datapoint-for-seed
   [seed]

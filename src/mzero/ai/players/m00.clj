@@ -17,13 +17,15 @@
             [mzero.ai.players.m0-modules.m00-reinforcement :as m00r]
             [mzero.ai.players.m0-modules.motoneurons :as mzm]
             [mzero.ai.players.m0-modules.senses :as mzs]
+            [mzero.ai.ann.losses :as mzl]
             [mzero.ai.world :as aiw]
             [mzero.game.events :as ge]
             [mzero.game.state :as gs]
             [mzero.utils.utils :as u]
             [uncomplicate.commons.core
              :refer
-             [release Releaseable]]))
+             [release Releaseable]]
+            [mzero.ai.ann.label-distributions :as mzld]))
 
 (defn- reflex-movement
   "Random move reflex : Reflex to move randomly when player has not moved for a
@@ -56,9 +58,19 @@
         (update :ann-impl mzann/forward-pass! [flattened-input-matrix])
         make-move)))
 
+(def m00-ann-default-opts {:label-distribution-fn mzld/ansp})
+
 (defrecord M00Player []
   aip/Player
-  (init-player [player opts world] (mzb/initialize-player player opts world))
+  (init-player [player opts world]
+    (let [opts-with-m00-ann-defaults
+          (update opts :ann-impl #(merge m00-ann-default-opts %))
+          label-distribution-fn
+          (-> opts-with-m00-ann-defaults :ann-impl :label-distribution-fn)
+          opts-with-ce-loss
+          (assoc-in opts-with-m00-ann-defaults [:ann-impl :loss-gradient-fn]
+                    (partial mzl/cross-entropy-loss-gradient label-distribution-fn))]
+      (mzb/initialize-player player opts-with-ce-loss world)))
 
   (update-player [player {:as world, :keys [::gs/game-state ::aiw/game-step]}]
     (binding [g/*rnd* (-> player :rng)]

@@ -4,6 +4,8 @@
 
    -`:act-fns` for the network's activation function & derivative;
 
+   - `::loss-gradient-fn` a function to compute the loss gradient wrt output values;
+  
    -`:label-distribution-fn` for computing a label probability distribution
     given motoneuron values."
   (:require [clojure.spec.alpha :as s]
@@ -62,8 +64,11 @@
 (s/def ::computation-mode (s/keys :req-un [::type]))
 (s/def ::ann-impl-name string?)
 
+(s/def ::loss-gradient-fn fn?)
+
 (s/def ::ann-opts
-  (s/or :opts-map (s/keys :opt-un [::ann-impl-name
+  (s/or :opts-map (s/keys :req-un [::loss-gradient-fn]
+                          :opt-un [::ann-impl-name
                                    ::computation-mode
                                    ::act-fns
                                    ::mzld/label-distribution-fn])

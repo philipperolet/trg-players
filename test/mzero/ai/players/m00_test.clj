@@ -17,7 +17,8 @@
             [mzero.game.state :as gs]
             [mzero.utils.testing :refer [check-spec deftest]]
             [mzero.utils.utils :as u]
-            [mzero.ai.players.base :as mzb]))
+            [mzero.ai.players.base :as mzb]
+            [mzero.ai.ann.losses :as mzl]))
 
 (def seed 44)
 (defn run-n-steps
@@ -112,7 +113,10 @@
           (#'mzb/create-ann-impl-from-opts
            {:layer-dims (repeat 11 11)
             :weights-generation-fn mzi/angle-sparse-weights
-            :ann-impl (assoc mzb/ann-default-opts :act-fns mza/spike)}
+            :ann-impl (assoc mzb/ann-default-opts
+                             :act-fns mza/spike
+                             :label-distribution mzld/ansp
+                             :loss-gradient-fn (partial mzl/cross-entropy-loss-gradient mzld/ansp))}
            25)
           test-world (aiw/world 26 26)
           m00 (aip/load-player "m00" {:layer-dims (repeat 11 11) :ann-impl ann} test-world)

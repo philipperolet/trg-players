@@ -15,7 +15,6 @@
             [mzero.ai.ann.network :as mzn]
             [mzero.ai.players.m0-modules.motoneurons :as mzm]
             [mzero.ai.ann.activations :as mza]
-            [mzero.ai.ann.label-distributions :as mzld]
             [mzero.utils.utils :as u]
             [mzero.ai.players.m0-modules.senses :as mzs]
             [mzero.ai.ann.initialization :as mzi]
@@ -46,7 +45,6 @@
 
 (def ann-default-opts
   {:act-fns mza/trelu
-   :label-distribution-fn mzld/ansp
    :ann-impl-name "neanderthal-impl"})
 
 (defn create-ann-impl-from-opts

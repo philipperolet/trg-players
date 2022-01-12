@@ -12,6 +12,7 @@
             [mzero.ai.world :as aiw]
             [mzero.utils.random :refer [seeded-seeds]]
             [mzero.utils.utils :as u]
+            [clojure.pprint :refer [pprint]]
             [mzero.ai.players.m00 :as m00]
             [mzero.ai.game-runner :as gr]
             [mzero.ai.players.base :as mzb]))
@@ -167,4 +168,9 @@
   (continue-games (vector player) nb-games seed))
 
 (defn -main [& args]
-  (apply run-games (map read-string args)))
+  (let [wrap (fn [elt] (if (not (seq? elt)) [elt] elt))]
+    (->> (apply run-games (map read-string args))
+         wrap
+         (map :game-measurements)
+         (mapv pprint)))
+  (shutdown-agents))
