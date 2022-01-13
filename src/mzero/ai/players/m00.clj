@@ -25,7 +25,8 @@
             [uncomplicate.commons.core
              :refer
              [release Releaseable]]
-            [mzero.ai.ann.label-distributions :as mzld]))
+            [mzero.ai.ann.label-distributions :as mzld]
+            [clojure.spec.alpha :as s]))
 
 (defn- reflex-movement
   "Random move reflex : Reflex to move randomly when player has not moved for a
@@ -60,17 +61,20 @@
 
 (def m00-ann-default-opts {:label-distribution-fn mzld/ansp})
 
+(defn- add-defaults-and-ce-loss [ann-impl]
+  (let [ann-impl-with-defaults
+        (merge-with #(if (nil? %1) %2 %1) ann-impl m00-ann-default-opts)
+        label-distribution-fn
+        (:label-distribution-fn ann-impl-with-defaults)]
+    (assoc ann-impl-with-defaults :loss-gradient-fn
+           (partial mzl/cross-entropy-loss-gradient label-distribution-fn))))
+
 (defrecord M00Player []
   aip/Player
   (init-player [player opts world]
-    (let [opts-with-m00-ann-defaults
-          (update opts :ann-impl #(merge m00-ann-default-opts %))
-          label-distribution-fn
-          (-> opts-with-m00-ann-defaults :ann-impl :label-distribution-fn)
-          opts-with-ce-loss
-          (assoc-in opts-with-m00-ann-defaults [:ann-impl :loss-gradient-fn]
-                    (partial mzl/cross-entropy-loss-gradient label-distribution-fn))]
-      (mzb/initialize-player player opts-with-ce-loss world)))
+    (let [updated-opts
+          (update opts :ann-impl add-defaults-and-ce-loss)]
+      (mzb/initialize-player player updated-opts world)))
 
   (update-player [player {:as world, :keys [::gs/game-state ::aiw/game-step]}]
     (binding [g/*rnd* (-> player :rng)]

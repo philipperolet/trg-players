@@ -12,7 +12,8 @@
             [mzero.ai.ann.common :as mzc]
             [mzero.utils.random :as mzr]
             [clojure.tools.logging :as log]
-            [mzero.utils.utils :as u]))
+            [mzero.utils.utils :as u]
+            [mzero.ai.ann.losses :as mzl]))
 
 (defrecord fakenn []
   mzann/ANN
@@ -103,7 +104,8 @@
         #(mzann/initialize (mzni/->NeanderthalImpl)
                           layers
                           {:act-fns mza/usual
-                           :label-distribution-fn mzld/ansp})
+                           :label-distribution-fn mzld/ansp
+                           :loss-gradient-fn (partial mzl/cross-entropy-loss-gradient mzld/ansp)})
         smpanns #(sut/shallow-mpanns 4 (underlying-ann))
         fn-counts (atom {:fwd 0 :bkd 0})
         inc-if-underlying
