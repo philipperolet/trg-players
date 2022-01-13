@@ -168,7 +168,10 @@
   (let [update-layer-weights
         (fn [{:as layer :keys [::raw-output-gradients ::inputs]}]
           ;; if discount factor matrix is identity ignore it
-          (when (not-every? #(= % 1.0) discount-factor-matrix) 
+          (when (not-every? #(= % 1.0) discount-factor-matrix)
+            (throw (ex-info
+                    "Discount factor not implemented,  1.0-valued vector required"
+                    {:discount discount-factor-matrix}))
             (nc/mm! raw-output-gradients discount-factor-matrix))
           (update layer ::weights #(nc/mm! (- mzann/step-size)
                                            raw-output-gradients
@@ -237,10 +240,9 @@
   (-backward-pass! [this target-distribution-tensor discount-factor]
     (assert (= (-> this :current-batch-size) (count target-distribution-tensor)))
     (computation-setup! this)
-    (with-release [discount-factor-matrix (diagonal-matrix this discount-factor)]
-      (-> (compute-gradients! this target-distribution-tensor)
-          (update-weights! discount-factor-matrix))
-      this))
+    (-> (compute-gradients! this target-distribution-tensor)
+        (update-weights! discount-factor))
+    this)
   
   (-backward-pass! [this input-tensor target-distribution-tensor discount-factor]
     (-> (mzann/-forward-pass! this input-tensor)

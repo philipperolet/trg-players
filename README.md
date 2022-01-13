@@ -121,6 +121,13 @@ To train an M0 DQN player:
 
 Games are capped to `mzero.ai.train/nb-steps-per-game`, defaulting to 5000, and board size is set to 30*30, as defined by `mzero.ai.train/default-board-size`.
 
+To train using GPU:
+```
+lein with-profile +cuda repl
+(def player-options-map {:layer-dims [512 512] :computation-mode :gpu-cuda})
+```
+and proceed as above (replace `cuda` by `opencl` if needed).
+
 ### Player options
 #### Required
 - **:layer-dims**: seq of ints describing the neural network's dense hidden layers--in other words excluding the input layer and the final output layer whose number of units are already fixed.
