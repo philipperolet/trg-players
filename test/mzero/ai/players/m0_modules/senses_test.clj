@@ -201,4 +201,4 @@
                        {::sut/state [4 5] ::sut/action :left}
                        {::sut/state [5 6] ::sut/action :left})
         input-vector [7 7]]
-    (is (= [[7 7] [1 2] [3 4] [4 5]] (sut/stm-input-vector previous-dps input-vector)))))
+    (is (= [[7 7] [1 2] [3 4] [4 5]] (sut/stm-input-vector previous-dps input-vector 4)))))

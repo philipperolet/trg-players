@@ -59,21 +59,21 @@
         (update :ann-impl mzann/forward-pass! [flattened-input-matrix])
         make-move)))
 
-(def m00-ann-default-opts {:label-distribution-fn mzld/ansp})
+(def m00-default-opts {:ann-impl {:label-distribution-fn mzld/ansp}
+                       :senses-params {::mzs/short-term-memory-length 1}})
 
-(defn- add-defaults-and-ce-loss [ann-impl]
-  (let [ann-impl-with-defaults
-        (merge-with #(if (nil? %1) %2 %1) ann-impl m00-ann-default-opts)
-        label-distribution-fn
-        (:label-distribution-fn ann-impl-with-defaults)]
-    (assoc ann-impl-with-defaults :loss-gradient-fn
+(defn- add-ce-loss [ann-impl]
+  (let [label-distribution-fn
+        (:label-distribution-fn ann-impl)]
+    (assoc ann-impl :loss-gradient-fn
            (partial mzl/cross-entropy-loss-gradient label-distribution-fn))))
 
 (defrecord M00Player []
   aip/Player
   (init-player [player opts world]
     (let [updated-opts
-          (update opts :ann-impl add-defaults-and-ce-loss)]
+          (-> (mzb/add-defaults opts m00-default-opts)
+              (update :ann-impl add-ce-loss))]
       (mzb/initialize-player player updated-opts world)))
 
   (update-player [player {:as world, :keys [::gs/game-state ::aiw/game-step]}]

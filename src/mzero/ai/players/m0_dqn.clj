@@ -43,17 +43,19 @@
 (defn- pick-datapoint
   "At index 0 of `previous-datapoints`, the current input
   vector (without action/reward)"
-  [previous-datapoints index]
+  [previous-datapoints short-term-memory-length index]
   (let [{:keys [::mzs/reward ::mzs/action] input-vector-t ::mzs/state}
         (nth previous-datapoints (inc index))
         input-vector-tp1 (::mzs/state (nth previous-datapoints index))
         state-t
-        (->> input-vector-t
-             (mzs/stm-input-vector (drop (+ 2 index) previous-datapoints))
+        (->> (mzs/stm-input-vector (drop (+ 2 index) previous-datapoints)
+                               input-vector-t
+                               short-term-memory-length)
              (reduce into))
         state-tp1
-        (->> input-vector-tp1
-             (mzs/stm-input-vector (drop (inc index) previous-datapoints))
+        (->> (mzs/stm-input-vector (drop (inc index) previous-datapoints)
+                                input-vector-tp1
+                                short-term-memory-length)
              (reduce into))]
     {:st state-t :at action :rt reward :st1 state-tp1}))
 
@@ -61,16 +63,18 @@
   "Replay batch sampling. `current-input-vector` is appended to previous
   datapoints as a possible state t+1 (but cannot be a state t since
   its associated reward not known."
-  ([previous-datapoints current-input-vector]
+  ([previous-datapoints current-input-vector short-term-memory-length]
    (let [datapoints-range
-         (- (count previous-datapoints) mzs/short-term-memory-length)
+         (- (count previous-datapoints) short-term-memory-length)
          previous-dps-with-current-iv
          (cons {::mzs/state current-input-vector} previous-datapoints)]
      (when (>= datapoints-range replay-batch-size)
-       (map (partial pick-datapoint previous-dps-with-current-iv)
+       (map (partial pick-datapoint previous-dps-with-current-iv short-term-memory-length)
             (g/reservoir-sample replay-batch-size (range datapoints-range))))))
-  ([{:as senses :keys [::mzs/input-vector ::mzs/data]}]
-   (replay-batch (::mzs/previous-datapoints data) input-vector)))
+  ([{:as senses :keys [::mzs/input-vector ::mzs/data ::mzs/params]}]
+   (replay-batch (::mzs/previous-datapoints data)
+                 input-vector
+                 (::mzs/short-term-memory-length params))))
 
 (defn- create-target-tensor
   [ann-impl batch]
@@ -100,12 +104,15 @@
     (update player :ann-impl backpropagate batch)
     player))
 
+(def m0-dqn-default-opts {:ann-impl {:loss-gradient-fn mzl/mse-loss-gradient}
+                          :senses-params {::mzs/short-term-memory-length 4}})
+
 (defrecord M0DqnPlayer []
   aip/Player
   (init-player [player opts world]
-    (let [opts-with-mse-loss
-          (assoc-in opts [:ann-impl :loss-gradient-fn] mzl/mse-loss-gradient)]
-      (-> (mzb/initialize-player player opts-with-mse-loss world)
+    (let [opts-with-defaults
+          (mzb/add-defaults opts m0-dqn-default-opts)]
+      (-> (mzb/initialize-player player opts-with-defaults world)
           (assoc :epsilon 1.0))))
 
   (update-player [player {:as world, :keys [::gs/game-state ::aiw/game-step]}]

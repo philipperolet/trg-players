@@ -113,6 +113,7 @@
           (#'mzb/create-ann-impl-from-opts
            {:layer-dims (repeat 11 11)
             :weights-generation-fn mzi/angle-sparse-weights
+            :senses-params {::mzs/short-term-memory-length 1}
             :ann-impl (assoc mzb/ann-default-opts
                              :act-fns mza/spike
                              :label-distribution mzld/ansp

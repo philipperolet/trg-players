@@ -28,7 +28,11 @@
   [{:as opts :keys [batch-size]} worlds]
   ;; mimic the seed used in M00Player for ANN
   (let [seed (. (java.util.Random. (:seed opts)) nextInt)
-        ann-impl (#'mzb/initialize-ann-impl opts seed)]
+        opts (-> opts
+                 (mzb/add-defaults m00/m00-default-opts)
+                 (update :ann-impl #'m00/add-ce-loss))
+        ann-impl
+        (#'mzb/initialize-ann-impl opts seed)]
     (map #(-> (aip/load-player "m00" (assoc opts :ann-impl %1) %2)
               (assoc :game-measurements []))
          (mzsmp/shallow-mpanns batch-size ann-impl)

@@ -26,7 +26,7 @@ Similarly, negative reinforcement happens when the player bumps in a wall (i.e. 
 The player was developed as an exercise to refresh my knowledge of artificial neural networks, and explore how they can be implemented in Clojure. It learns simple game concepts in a few hours of training (not going into walls, grabbing a fruit when next to it). The simple design and network architecture suggests that it cannot really learn to play well with lots of training (although this has not been tested).
 
 #### Performance
-Using a simple network (2 to 3 hidden layers of 500 to 2000 neurons), the player will learn after playing ~ 500 games (of 5K moves each) to avoid walls and move towards a fruit when it walks next to one.
+Using a simple network (2 hidden layers of 500 neurons), the player will learn after playing ~ 500 games (of 5K moves each) to avoid walls and move towards a fruit when it walks next to one.
 
 #### Training speed
 Training M00 on a recent laptop will take about 1s per game for a 2-hidden-512-units layer network (aka 85-512-512-5 network overall). Thus the performance described above should take ~ 10 minutes to compute.
@@ -167,14 +167,19 @@ Note: plotting requires GUI and should be run on a local machine.
 ## Watch trained player play a game
 In the REPL:
 ```
-mzero.ai.train> (require '[mzero.ai.main :refer [gon]])
-> (run-games {:layer-dims [512 512]} 500 42)
-> (def trained-player *1)
-> (def newly-generated-world (aiw/world 30 42)) ;; world of size 30, seed 42
-> (gon "-n 100" newly-generated-world trained-player) ;; starts game, run 100 steps
-> (gon) ;; run a step
-...
-> (gon "-n 10000" (aiw/world 30 43) trained-player) ;; starts a new game, runs 10000 steps
+(require '[mzero.ai.main :refer [gon]])
+;; training player, about ~ 5mns in recent laptop
+(run-games {:layer-dims [512 512]} 500 42)
+;; once trained, save
+(def trained-player *1)
+;; world of size 30, seed 42
+(def newly-generated-world (aiw/world 30 42)) 
+;; starts game, run 100 steps
+(gon "-n 100" newly-generated-world trained-player) 
+;; run a step
+(gon) 
+;; starts a new game, runs 10000 steps
+(gon "-n 10000" (aiw/world 30 43) trained-player)
 ```
 At each gon invocation, starting and ending game board will be displayed. `gon` with no args or integer arg runs a few steps on the current game. `gon` with string / world / player starts a new game, see [Mzero Game](https://github.com/sittingbull/mzero-game).
 

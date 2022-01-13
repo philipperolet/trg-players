@@ -23,19 +23,18 @@
   - `::data` on the player and the world, updated at each iteration along
   with `::input-vector`.
 
-  **Short-term memory**
-
-  `stm-input-vector` merges input vectors of the last N steps into a
-  single vector. It is a way to implement a 'memory' of the last steps
-  for the player. N is defined by `short-term-memory-length`.
+  **`::short-term-memory-length`**
   
-  **Brain time constant, brain-tau**
+  Number of last steps, including current one, included in the full
+  input vector.  `stm-input-vector` merges input vectors of the last
+  N (=short-term-memory-legnth) steps into a single vector. It is a
+  way to implement a 'memory' of the last steps for the player
+
+  **`::brain-tau` Brain time constant**
   Represents the time taken to perceive things in 'brain iterations'
   -- it is for now the brain depth in # of layers, conditionning
   persistence for satiety & motoception. In humans, ~ 50ms to perceive
-  things indicate a depth of about 50 for 1ms synapses.
-
-  "
+  things indicate a depth of about 50 for 1ms synapses." 
   (:require [clojure.data.generators :as g]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
@@ -48,12 +47,7 @@
             [mzero.ai.world :as aiw]))
 
 
-(def short-term-memory-length
-  "Number of last steps, including current one, included in the full
-  input vector."
-  4)
-
-;; Brain time constant
+(s/def ::short-term-memory-length (s/int-in 1 16))
 (s/def ::brain-tau (s/int-in 1 200))
 
 (defn- default-persistence [brain-tau] (* 2 brain-tau))
@@ -259,7 +253,7 @@ pendant quelques tours."
                  (s/valid? ::motoception (motoception sv))))))
 
 (s/def ::last-position ::gs/player-position)
-(s/def ::params (s/keys :req [::brain-tau]))
+(s/def ::params (s/keys :req [::brain-tau ::short-term-memory-length]))
 
 (s/def ::state ::input-vector)
 (s/def ::action (fn [v] (some #(= % v) mzm/movements)))
@@ -317,25 +311,25 @@ pendant quelques tours."
           alea1 alea2)))
 
 (defn- initialize-senses
-  [brain-tau game-state]
+  [params game-state]
   {::input-vector (vec (repeat input-vector-size 0.0))
-   ::params {::brain-tau brain-tau}
+   ::params params
    ::data {::previous-score 0
            ::gs/game-state game-state
            ::last-position (::gs/player-position game-state)
            ::previous-datapoints nil}})
 
 (defn initialize-senses!
-  [brain-tau game-state]
+  [params game-state]
   (if (vision-depth-fits-game? (::gb/game-board game-state))
-    (initialize-senses brain-tau game-state)
+    (initialize-senses params game-state)
     (throw (java.lang.RuntimeException. "Vision depth incompatible w. game board"))))
 
 (defn- reset-if-new-game
-  [{:as senses {:keys [::brain-tau]} ::params}
+  [{:as senses :keys [::params]}
    {:as world :keys [::gs/game-state ::aiw/game-step]}]
   (if (= 0 game-step) ;; new game
-    (initialize-senses! brain-tau game-state)
+    (initialize-senses! params game-state)
     senses))
 
 (defn update-senses
@@ -348,11 +342,13 @@ pendant quelques tours."
       (#(update % ::input-vector update-input-vector (::params %) (::data %)))))
 
 (defn stm-input-vector
-  ([previous-datapoints input-vector]
+  ([previous-datapoints input-vector short-term-memory-length]
    (->> previous-datapoints
         (map ::state)
         (take (dec short-term-memory-length))
         (cons input-vector)
         vec))
-  ([{:as senses :keys [::input-vector ::data]}]
-   (stm-input-vector (::previous-datapoints data) input-vector)))
+  ([{:as senses :keys [::input-vector ::data ::params]}]
+   (stm-input-vector (::previous-datapoints data)
+                     input-vector
+                     (::short-term-memory-length params))))

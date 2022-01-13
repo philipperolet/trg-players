@@ -25,11 +25,20 @@
 (s/def ::layer-dims (s/every ::mzn/dimension :min-count 1))
 (s/def ::weights-generation-fn mzn/weights-generating-fn-spec)
 (s/def ::ann-impl (s/or :impl ::mzann/ann :opts ::mzann/ann-opts))
+(s/def ::senses-params ::mzs/params)
 (s/def ::player-opts
   (s/keys :req-un [::mzann/layer-dims]
           :opt-un [::step-measure-fn
                    ::weight-generation-fn
-                   ::ann-impl]))
+                   ::ann-impl
+                   ::senses-params]))
+
+(defn add-defaults
+  "Add defaults in options maps; options that are maps are updated recursively."
+  [opts default-opts]
+  (merge-with #(cond (map? %1) (add-defaults %1 %2) (nil? %1) %2 :else %1)
+              opts
+              default-opts))
 
 (defn initialize-layers
   "Initialize layers with given `dimensions` (the first dimension is the
@@ -48,12 +57,13 @@
    :ann-impl-name "neanderthal-impl"})
 
 (defn create-ann-impl-from-opts
-  [{:as opts :keys [weights-generation-fn ann-impl layer-dims]}
+  [{:as opts :keys [weights-generation-fn ann-impl layer-dims senses-params]}
    seed]
-  (let [network-dims
-        (cons (* mzs/input-vector-size mzs/short-term-memory-length) layer-dims)
+  (let [input-dim
+        (* mzs/input-vector-size (::mzs/short-term-memory-length senses-params))
+        network-dims (cons input-dim layer-dims)
         layers (initialize-layers network-dims weights-generation-fn seed)
-        ann-impl-with-defaults (merge ann-default-opts ann-impl)]
+        ann-impl-with-defaults (add-defaults ann-impl ann-default-opts)]
     (-> (u/load-impl (-> ann-impl-with-defaults :ann-impl-name) "mzero.ai.ann")
         (mzann/initialize layers ann-impl-with-defaults))))
 
@@ -76,12 +86,15 @@
     (throw (ex-info "Invalid ann spec: " ann-impl))))
 
 (defn initialize-player [player opts {:as world, :keys [::gs/game-state]}]
-  (assert (s/valid? ::player-opts opts) opts)
-  (let [opts (merge player-default-opts opts)
-          seed (. (:rng player) nextInt)
-          ann-impl (initialize-ann-impl opts seed)          
-          brain-tau (mzann/nb-layers ann-impl)
-          senses (mzs/initialize-senses! brain-tau game-state)]
+  (let [player-default-opts
+        (add-defaults player-default-opts
+                      {:senses-params
+                       {::mzs/brain-tau (+ 2 (count (:layer-dims opts)))}})
+        opts (add-defaults opts player-default-opts)
+        seed (. (:rng player) nextInt)
+        ann-impl (initialize-ann-impl opts seed)
+        senses (mzs/initialize-senses! (:senses-params opts) game-state)]
+      (assert (s/valid? ::player-opts opts) opts)
       (assoc player
              ::mzs/senses senses
              :ann-impl ann-impl

@@ -67,8 +67,8 @@
 (s/def ::loss-gradient-fn fn?)
 
 (s/def ::ann-opts
-  (s/or :opts-map (s/keys :req-un [::loss-gradient-fn]
-                          :opt-un [::ann-impl-name
+  (s/or :opts-map (s/keys :opt-un [::loss-gradient-fn
+                                   ::ann-impl-name
                                    ::computation-mode
                                    ::act-fns
                                    ::mzld/label-distribution-fn])

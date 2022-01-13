@@ -18,7 +18,7 @@
         (map #(hash-map ::mzs/state %1 ::mzs/action %2 ::mzs/reward %3)
              states actions rewards)]  
     (with-redefs [sut/replay-batch-size 3]
-      (is (= (#'sut/replay-batch sample-dps current-iv)
+      (is (= (#'sut/replay-batch sample-dps current-iv 4)
              '({:st [0 0 1 1 2 2 3 3] :rt 0.0 :at :up :st1 [-1 -1 0 0 1 1 2 2]}
                {:st [1 1 2 2 3 3 4 4] :rt 1.0 :at :down :st1 [0 0 1 1 2 2 3 3]}
                {:st [2 2 3 3 4 4 5 5] :rt -0.1 :at :left :st1 [1 1 2 2 3 3 4 4]}))))))
