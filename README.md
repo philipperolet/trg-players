@@ -1,13 +1,16 @@
-# Mzero-players
-AI players for the [Mzero Game](https://github.com/sittingbull/mzero-game) using Deep Neural Networks.
+# The Rabbit Game - Deep Learning Players
 
-Try the Mzero Game (as a human) here: [game.machine-zero.com](https://game.machine-zero.com). Click on the big red question mark to start the game.
+### [The Rabbit Game](https://game.machine-zero.com) - A game cute for humans and tough for AIs
 
-**Note**: Game tested on chromium-based and firefox browsers, **not** mobile compliant.
- 
+Discover various kinds of artificial intelligence algorithms by watching them play a simple game: a rabbit eating strawberries in a maze (humans can play too 😉). Play it [here](https://game.machine-zero.com).
+
+**Note**: The game was tested on Chrome (& chromium-based) and firefox browsers; it is not yet mobile compliant unfortunately.
+
+This repository contains Deep-learning based players (work in progress) for the game. All the frontend/backend for the game website can be found [here](https://github.com/philipperolet/the-rabbit-game). Core libs for the game engine, along with artificial players code and a CLI, can be found [here](https://github.com/philipperolet/the-rabbit-game-libs).
+
+## Deep Learning Players - Overview
 Below are instructions to train currently implemented AI players, plot their performance and watch them play.
 
-## Overview
 Currently implemented AI players:
 
 - the **M00** Player: It uses a dense DNN in a simple way to choose a move at each step of the game;
@@ -77,9 +80,9 @@ Players can be trained via GPU using the `computation-mode` option described [be
 
 ### Installation
 ```
-# Install mzero-game
-git clone https://github.com/sittingbull/mzero-game.git
-cd mzero-game
+# Install TRG libs
+git clone https://github.com/philipperolet/trg-libs.git
+cd trg-libs
 lein clean && lein install
 cd ..
 # Install mzero-players & test run
@@ -181,7 +184,7 @@ In the REPL:
 ;; starts a new game, runs 10000 steps
 (gon "-n 10000" (aiw/world 30 43) trained-player)
 ```
-At each gon invocation, starting and ending game board will be displayed. `gon` with no args or integer arg runs a few steps on the current game. `gon` with string / world / player starts a new game, see [Mzero Game](https://github.com/sittingbull/mzero-game).
+At each gon invocation, starting and ending game board will be displayed. `gon` with no args or integer arg runs a few steps on the current game. `gon` with string / world / player starts a new game, see [TRG libs](https://github.com/philipperolet/trg-libs).
 
 ## Code overview
 The entry point to the code is [train.clj](src/mzero/ai/train.clj). The M00 player is implemented at [src/mzero/ai/players/m00.clj](src/mzero/ai/players/m00.clj). Below are details on other main namespaces.
@@ -227,3 +230,4 @@ At each step, the environment data is converted into [senses](src/mzero/ai/playe
 Copyright © 2020 Philippe Rolet
 
 Distributed under the Apache Public License 2.0
+
